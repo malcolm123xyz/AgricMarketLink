@@ -24,6 +24,8 @@ class FragmentWelfareSummary : BaseDataBindingFragment<FragmentWelfareSummaryBin
         vb?.percentageContribution?.text = "$percentage%"
         vb?.monthsDefaulted?.text = numMonths.toString()
         //vb.ranking.text =
+        
+        // I edited the line on github
     }
 
 }
