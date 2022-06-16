@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/set_clearance"
+        android:orderInCategory="100"
+        android:title="Authorization"
+        app:showAsAction="never"
+        android:visible="false"/>
+
+    <item
+        android:id="@+id/living_status"
+        android:orderInCategory="100"
+        android:title="Living"
+        app:showAsAction="never"
+        android:visible="false"/>
+
+    <item
+        android:id="@+id/delete"
+        android:orderInCategory="100"
+        android:title="Delete"
+        android:visible="false"
+        app:showAsAction="never" />
+</menu>

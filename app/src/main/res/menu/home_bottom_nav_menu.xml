@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/notice_board_host_frag"
+        android:icon="@drawable/announcement_icon"
+        android:title="@string/notice_board" />
+
+    <item
+        android:id="@+id/database_nav_host"
+        android:icon="@drawable/database_icon"
+        android:title="@string/title_home_database" />
+
+    <item
+        android:id="@+id/welfare_host_fragment"
+        android:icon="@drawable/welfare"
+        android:title="@string/title_home_welfare" />
+
+    <item
+        android:id="@+id/prof_nav_host_fragment"
+        android:icon="@drawable/profession_icon"
+        android:title="@string/title_home_profession" />
+
+    <item
+        android:id="@+id/gallery_nav_host"
+        android:icon="@drawable/photo_galary"
+        android:title="@string/title_home_gallary" />
+
+</menu>

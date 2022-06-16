@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/welfare_host_fragment"
+    app:startDestination="@id/welfare_fragment1">
+
+    <fragment
+        android:id="@+id/welfare_fragment1"
+        android:name="mx.mobile.solution.nabia04.main.fragment.welfare.FragmentWelfareSummary"
+        android:label="WELFARE"
+        tools:layout="@layout/fragment_prof1">
+        <action
+            android:id="@+id/action_welfareFragment1_to_welfareFragment2"
+            app:destination="@id/welfare_fragment2" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/welfare_fragment2"
+        android:name="mx.mobile.solution.nabia04.main.fragment.welfare.FragmentContHistory"
+        android:label="Welfare Fragment2"
+        tools:layout="@layout/fragment_prof3">
+        <action
+            android:id="@+id/action_welfarefragment2_to_welfarefragment3"
+            app:destination="@id/welfare_fragment3" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/welfare_fragment3"
+        android:name="mx.mobile.solution.nabia04.main.fragment.welfare.FragmentContribution"
+        android:label="Welfare Fragment3"
+        tools:layout="@layout/fragment_prof3" >
+        <action
+            android:id="@+id/action_welfarefragment3_to_welfarefragment1"
+            app:destination="@id/welfare_fragment1"
+            app:popUpTo="@id/welfare_fragment1"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

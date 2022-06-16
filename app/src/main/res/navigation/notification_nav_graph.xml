@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/notice_board_host_frag"
+    app:startDestination="@id/payment_details_view">
+
+    <!-- ViewPagerContainerFragment-->
+    <fragment
+        android:id="@+id/payment_details_view"
+        android:name="mx.mobile.solution.nabia04.main.fragment.host_fragments.NoticeBoardHostFragment"
+        android:label="NOTICE BOARD"
+        tools:layout="@layout/fragment_viewpager_container">
+
+        <!-- Login -->
+        <action
+            android:id="@+id/action_gen_not_to_events_not"
+            app:destination="@id/detail_fragment" />
+    </fragment>
+
+    <!-- Login -->
+    <fragment
+        android:id="@+id/detail_fragment"
+        android:name="mx.mobile.solution.nabia04.main.fragment.notice_board.FragmentDetailView"
+        android:label="Details"
+        tools:layout="@layout/fragment_detail">
+        <action
+            android:id="@+id/action_detail_fragment_to_view_pager"
+            app:destination="@id/payment_details_view"
+            app:popUpTo="@id/payment_details_view"
+            app:popUpToInclusive="true"/>
+    </fragment>
+
+</navigation>

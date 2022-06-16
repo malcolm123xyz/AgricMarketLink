@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".core.old_package.home.view_fragments.database.FragmentDone">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/editor_nestedScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/border1"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:paddingBottom="80dp">
+
+                <ImageView
+                    android:id="@+id/profile_pic"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="100dp"
+                    android:src="@drawable/logo"/>
+
+                <TextView
+                    android:id="@+id/fullNameTv_Nickname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Navrongo Senior High School"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/folio_number_Tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="(Great Navasco)"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="10dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:text="School Details"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="0.70"
+                            android:text="1. House:"
+                            android:textSize="15sp" />
+
+                        <Spinner
+                            android:id="@+id/house_held_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="0.30"
+                            android:entries="@array/house"
+                            android:paddingBottom="4dp"
+                            android:paddingTop="4dp"
+                            android:spinnerMode="dropdown"
+                            android:theme="@style/ThemeOverlay.AppCompat.Light" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="0.70"
+                            android:text="2. Class: "
+                            android:textSize="15sp" />
+
+                        <Spinner
+                            android:id="@+id/clsass_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="0.30"
+                            android:entries="@array/classes"
+                            android:paddingBottom="4dp"
+                            android:paddingTop="4dp"
+                            android:spinnerMode="dropdown"
+                            android:theme="@style/ThemeOverlay.AppCompat.Light" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="0.70"
+                            android:text="3. Course:"
+                            android:textSize="15sp" />
+
+                        <Spinner
+                            android:id="@+id/course_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_weight="0.30"
+                            android:entries="@array/courses"
+                            android:paddingBottom="4dp"
+                            android:paddingTop="4dp"
+                            android:spinnerMode="dropdown"
+                            android:theme="@style/ThemeOverlay.AppCompat.Light" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="0.70"
+                            android:text="4. Position held: "
+                            android:textSize="15sp" />
+
+                        <Spinner
+                            android:id="@+id/position_held_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="10dp"
+                            android:layout_weight="0.30"
+                            android:entries="@array/position_held"
+                            android:gravity="bottom"
+                            android:paddingBottom="4dp"
+                            android:paddingTop="4dp"
+                            android:spinnerMode="dropdown"
+                            android:theme="@style/ThemeOverlay.AppCompat.Light" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+<!--                    <LinearLayout-->
+<!--                        android:layout_width="200dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_marginTop="10dp"-->
+<!--                        android:orientation="vertical">-->
+
+
+<!--                        <Spinner-->
+<!--                            android:id="@+id/house_held_spinner"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="50dp"-->
+<!--                            android:layout_gravity="center_horizontal"-->
+<!--                            android:layout_marginLeft="5dp"-->
+<!--                            android:layout_marginRight="5dp"-->
+<!--                            android:entries="@array/house"-->
+<!--                            android:paddingBottom="4dp"-->
+<!--                            android:paddingTop="10dp"-->
+<!--                            android:spinnerMode="dropdown"-->
+<!--                            android:theme="@style/ThemeOverlay.AppCompat.Light" />-->
+
+<!--                        <Spinner-->
+<!--                            android:id="@+id/clsass_spinner"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="50dp"-->
+<!--                            android:layout_gravity="center_horizontal"-->
+<!--                            android:layout_marginLeft="5dp"-->
+<!--                            android:layout_marginRight="5dp"-->
+<!--                            android:entries="@array/classes"-->
+<!--                            android:paddingBottom="4dp"-->
+<!--                            android:paddingTop="10dp"-->
+<!--                            android:spinnerMode="dropdown"-->
+<!--                            android:theme="@style/ThemeOverlay.AppCompat.Light" />-->
+
+<!--                        <Spinner-->
+<!--                            android:id="@+id/course_spinner"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="50dp"-->
+<!--                            android:layout_gravity="center_horizontal"-->
+<!--                            android:layout_marginLeft="5dp"-->
+<!--                            android:layout_marginRight="5dp"-->
+<!--                            android:entries="@array/courses"-->
+<!--                            android:paddingBottom="4dp"-->
+<!--                            android:paddingTop="10dp"-->
+<!--                            android:spinnerMode="dropdown"-->
+<!--                            android:theme="@style/ThemeOverlay.AppCompat.Light" />-->
+
+<!--                        <Spinner-->
+<!--                            android:id="@+id/position_held_spinner"-->
+<!--                            android:layout_width="match_parent"-->
+<!--                            android:layout_height="50dp"-->
+<!--                            android:layout_gravity="center_horizontal"-->
+<!--                            android:layout_marginLeft="5dp"-->
+<!--                            android:layout_marginRight="5dp"-->
+<!--                            android:entries="@array/position_held"-->
+<!--                            android:gravity="bottom"-->
+<!--                            android:paddingBottom="4dp"-->
+<!--                            android:paddingTop="4dp"-->
+<!--                            android:spinnerMode="dropdown"-->
+<!--                            android:theme="@style/ThemeOverlay.AppCompat.Light" />-->
+
+<!--                    </LinearLayout>-->
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/nextButtonSchoolD"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_margin="10dp"
+            android:layout_gravity="bottom|end"
+            android:src="@drawable/arrow_right"
+            android:text="@string/next"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2/3"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="10dp"
+            android:textStyle="bold"
+            android:textColor="@color/blue_light"/>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/backButtonSchoolD"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:src="@drawable/arrow_left"
+            android:padding="@dimen/padding_10"
+            android:layout_gravity="bottom|left"
+            android:text="@string/Back"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

@@ -1,0 +1,903 @@
+{
+ "auth": {
+  "oauth2": {
+   "scopes": {
+    "https://www.googleapis.com/auth/userinfo.email": {
+     "description": "View your email address"
+    }
+   }
+  }
+ },
+ "basePath": "/_ah/api/mainEndpoint/v1/",
+ "baseUrl": "https://nabia04.appspot.com/_ah/api/mainEndpoint/v1/",
+ "batchPath": "batch",
+ "description": "This is an API",
+ "discoveryVersion": "v1",
+ "icons": {
+  "x16": "https://www.gstatic.com/images/branding/product/1x/googleg_16dp.png",
+  "x32": "https://www.gstatic.com/images/branding/product/1x/googleg_32dp.png"
+ },
+ "id": "mainEndpoint:v1",
+ "kind": "discovery#restDescription",
+ "methods": {
+  "addNewMember": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.addNewMember",
+   "path": "addNewMember",
+   "request": {
+    "$ref": "DatabaseObject",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "DatabaseResponse"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "addTribute": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.addTribute",
+   "parameterOrder": [
+    "folio",
+    "message"
+   ],
+   "parameters": {
+    "folio": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    },
+    "message": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    }
+   },
+   "path": "addTribute",
+   "response": {
+    "$ref": "Response"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "deleteFromServer": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.deleteFromServer",
+   "parameterOrder": [
+    "long"
+   ],
+   "parameters": {
+    "long": {
+     "format": "int64",
+     "location": "query",
+     "required": true,
+     "type": "string"
+    }
+   },
+   "path": "deleteFromServer",
+   "response": {
+    "$ref": "ReturnObj"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "deleteUser": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.deleteUser",
+   "parameterOrder": [
+    "folio"
+   ],
+   "parameters": {
+    "folio": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    }
+   },
+   "path": "deleteUser",
+   "response": {
+    "$ref": "ReturnObj"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "getMembers": {
+   "httpMethod": "GET",
+   "id": "mainEndpoint.getMembers",
+   "parameterOrder": [
+    "accessToken"
+   ],
+   "parameters": {
+    "accessToken": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    }
+   },
+   "path": "getMembers",
+   "response": {
+    "$ref": "DatabaseResponse"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "getNoticeBoardData": {
+   "httpMethod": "GET",
+   "id": "mainEndpoint.getNoticeBoardData",
+   "path": "getNoticeBoardData",
+   "response": {
+    "$ref": "AnnouncementResponse"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "insertAnnouncement": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.insertAnnouncement",
+   "parameterOrder": [
+    "accessToken"
+   ],
+   "parameters": {
+    "accessToken": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    }
+   },
+   "path": "insertAnnouncement",
+   "request": {
+    "$ref": "Announcement",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "AnnouncementResponse"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "insertDataModel": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.insertDataModel",
+   "path": "insertDataModel",
+   "request": {
+    "$ref": "DatabaseObject",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "DatabaseResponse"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "login": {
+   "httpMethod": "GET",
+   "id": "mainEndpoint.login",
+   "parameterOrder": [
+    "folioNumber",
+    "pass"
+   ],
+   "parameters": {
+    "folioNumber": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    },
+    "pass": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    }
+   },
+   "path": "login",
+   "response": {
+    "$ref": "SignUpLoginResponse"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "sendMessageToMember": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.sendMessageToMember",
+   "parameterOrder": [
+    "folio",
+    "msg"
+   ],
+   "parameters": {
+    "folio": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    },
+    "msg": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    }
+   },
+   "path": "sendMessageToMember",
+   "response": {
+    "$ref": "ReturnObj"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "setBiography": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.setBiography",
+   "parameterOrder": [
+    "biography",
+    "folio"
+   ],
+   "parameters": {
+    "folio": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    },
+    "biography": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    }
+   },
+   "path": "setBiography",
+   "response": {
+    "$ref": "Response"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "setDeceaseStatus": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.setDeceaseStatus",
+   "parameterOrder": [
+    "date",
+    "folio",
+    "status"
+   ],
+   "parameters": {
+    "folio": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    },
+    "date": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    },
+    "status": {
+     "format": "int32",
+     "location": "query",
+     "required": true,
+     "type": "integer"
+    }
+   },
+   "path": "setDeceaseStatus",
+   "response": {
+    "$ref": "ReturnObj"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "setUserClearance": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.setUserClearance",
+   "parameterOrder": [
+    "folio",
+    "position"
+   ],
+   "parameters": {
+    "folio": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    },
+    "position": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    }
+   },
+   "path": "setUserClearance",
+   "response": {
+    "$ref": "Response"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "signUp": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.signUp",
+   "path": "signUp",
+   "request": {
+    "$ref": "LoginData",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "SignUpLoginResponse"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "suspend": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.suspend",
+   "parameterOrder": [
+    "folio",
+    "status"
+   ],
+   "parameters": {
+    "folio": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    },
+    "status": {
+     "format": "int32",
+     "location": "query",
+     "required": true,
+     "type": "integer"
+    }
+   },
+   "path": "suspend",
+   "response": {
+    "$ref": "ReturnObj"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "upDateToken": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.upDateToken",
+   "path": "upDateToken",
+   "request": {
+    "$ref": "RegistrationToken",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "ReturnObj"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  }
+ },
+ "name": "mainEndpoint",
+ "ownerDomain": "com.malcolm1234xyz.mx.mobile.solutions",
+ "ownerName": "backend.nabia04.endpoint",
+ "parameters": {
+  "alt": {
+   "default": "json",
+   "description": "Data format for the response.",
+   "enum": [
+    "json"
+   ],
+   "enumDescriptions": [
+    "Responses with Content-Type of application/json"
+   ],
+   "location": "query",
+   "type": "string"
+  },
+  "fields": {
+   "description": "Selector specifying which fields to include in a partial response.",
+   "location": "query",
+   "type": "string"
+  },
+  "key": {
+   "description": "API key. Your API key identifies your project and provides you with API access, quota, and reports. Required unless you provide an OAuth 2.0 token.",
+   "location": "query",
+   "type": "string"
+  },
+  "oauth_token": {
+   "description": "OAuth 2.0 token for the current user.",
+   "location": "query",
+   "type": "string"
+  },
+  "prettyPrint": {
+   "default": "true",
+   "description": "Returns response with indentations and line breaks.",
+   "location": "query",
+   "type": "boolean"
+  },
+  "quotaUser": {
+   "description": "Available to use for quota purposes for server-side applications. Can be any arbitrary string assigned to a user, but should not exceed 40 characters. Overrides userIp if both are provided.",
+   "location": "query",
+   "type": "string"
+  },
+  "userIp": {
+   "description": "IP address of the site where the request originates. Use this if you want to enforce per-user limits.",
+   "location": "query",
+   "type": "string"
+  }
+ },
+ "protocol": "rest",
+ "rootUrl": "https://nabia04.appspot.com/_ah/api/",
+ "schemas": {
+  "Announcement": {
+   "id": "Announcement",
+   "properties": {
+    "arelative": {
+     "type": "boolean"
+    },
+    "eventDate": {
+     "format": "int64",
+     "type": "string"
+    },
+    "heading": {
+     "type": "string"
+    },
+    "id": {
+     "format": "int64",
+     "type": "string"
+    },
+    "imageUri": {
+     "type": "string"
+    },
+    "isAboutWho": {
+     "type": "string"
+    },
+    "message": {
+     "type": "string"
+    },
+    "priority": {
+     "format": "int32",
+     "type": "integer"
+    },
+    "rowNum": {
+     "format": "int32",
+     "type": "integer"
+    },
+    "type": {
+     "format": "int32",
+     "type": "integer"
+    },
+    "venue": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "AnnouncementResponse": {
+   "id": "AnnouncementResponse",
+   "properties": {
+    "announcements": {
+     "items": {
+      "$ref": "Announcement"
+     },
+     "type": "array"
+    },
+    "response": {
+     "type": "string"
+    },
+    "returnCode": {
+     "format": "int32",
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "ContributionData": {
+   "id": "ContributionData",
+   "properties": {
+    "contribution": {
+     "items": {
+      "$ref": "Map_String_String"
+     },
+     "type": "array"
+    },
+    "date": {
+     "type": "string"
+    },
+    "deadline": {
+     "format": "int64",
+     "type": "string"
+    },
+    "folio": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    },
+    "imageId": {
+     "type": "string"
+    },
+    "imageUri": {
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "title": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "DatabaseObject": {
+   "id": "DatabaseObject",
+   "properties": {
+    "biography": {
+     "type": "string"
+    },
+    "birthDayAlarm": {
+     "format": "int64",
+     "type": "string"
+    },
+    "className": {
+     "type": "string"
+    },
+    "contact": {
+     "type": "string"
+    },
+    "courseStudied": {
+     "type": "string"
+    },
+    "dateDeparted": {
+     "type": "string"
+    },
+    "districtOfResidence": {
+     "type": "string"
+    },
+    "email": {
+     "type": "string"
+    },
+    "employmentSector": {
+     "type": "string"
+    },
+    "employmentStatus": {
+     "type": "string"
+    },
+    "establishmentDist": {
+     "type": "string"
+    },
+    "establishmentRegion": {
+     "type": "string"
+    },
+    "folioNumber": {
+     "type": "string"
+    },
+    "fullName": {
+     "type": "string"
+    },
+    "homeTown": {
+     "type": "string"
+    },
+    "house": {
+     "type": "string"
+    },
+    "imageId": {
+     "type": "string"
+    },
+    "imageUri": {
+     "type": "string"
+    },
+    "jobDescription": {
+     "type": "string"
+    },
+    "nameOfEstablishment": {
+     "type": "string"
+    },
+    "nickName": {
+     "type": "string"
+    },
+    "positionHeld": {
+     "type": "string"
+    },
+    "regionOfResidence": {
+     "type": "string"
+    },
+    "sex": {
+     "type": "string"
+    },
+    "specificOrg": {
+     "type": "string"
+    },
+    "survivingStatus": {
+     "format": "int32",
+     "type": "integer"
+    },
+    "tributes": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "DatabaseResponse": {
+   "id": "DatabaseResponse",
+   "properties": {
+    "databaseObj": {
+     "items": {
+      "$ref": "DatabaseObject"
+     },
+     "type": "array"
+    },
+    "response": {
+     "type": "string"
+    },
+    "returnCode": {
+     "format": "int32",
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "EventsPicsData": {
+   "id": "EventsPicsData",
+   "properties": {
+    "id": {
+     "format": "int64",
+     "type": "string"
+    },
+    "picturName": {
+     "type": "string"
+    },
+    "picturePath": {
+     "type": "string"
+    },
+    "pictureSize": {
+     "type": "string"
+    },
+    "type": {
+     "format": "int32",
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "HotSeatPersonDataModel": {
+   "id": "HotSeatPersonDataModel",
+   "properties": {
+    "classs": {
+     "type": "string"
+    },
+    "educativeLevel": {
+     "type": "string"
+    },
+    "educativeVotes": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "folio": {
+     "type": "string"
+    },
+    "honestyVotes": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "house": {
+     "type": "string"
+    },
+    "humor": {
+     "type": "string"
+    },
+    "humorVotes": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "imageId": {
+     "type": "string"
+    },
+    "imageUri": {
+     "type": "string"
+    },
+    "informativeVotes": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "inspirationLevel": {
+     "type": "string"
+    },
+    "lastDateOn": {
+     "format": "int64",
+     "type": "string"
+    },
+    "name": {
+     "type": "string"
+    },
+    "numberOfTimes": {
+     "format": "int32",
+     "type": "integer"
+    },
+    "occupation": {
+     "type": "string"
+    },
+    "overallPerformance": {
+     "type": "string"
+    },
+    "percentageHonesty": {
+     "type": "string"
+    },
+    "percentageInformative": {
+     "type": "string"
+    },
+    "pornSkills": {
+     "type": "string"
+    },
+    "pornSkillsVotes": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    },
+    "seatStatus": {
+     "type": "string"
+    },
+    "totalQuestions": {
+     "type": "string"
+    },
+    "usersList": {
+     "items": {
+      "type": "string"
+     },
+     "type": "array"
+    }
+   },
+   "type": "object"
+  },
+  "LoginData": {
+   "id": "LoginData",
+   "properties": {
+    "accessToken": {
+     "type": "string"
+    },
+    "contact": {
+     "type": "string"
+    },
+    "emailAddress": {
+     "type": "string"
+    },
+    "executivePosition": {
+     "type": "string"
+    },
+    "folioNumber": {
+     "type": "string"
+    },
+    "fullName": {
+     "type": "string"
+    },
+    "password": {
+     "type": "string"
+    },
+    "suspended": {
+     "format": "int32",
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "Map_String_String": {
+   "additionalProperties": {
+    "type": "string"
+   },
+   "id": "Map_String_String",
+   "type": "object"
+  },
+  "RegistrationToken": {
+   "id": "RegistrationToken",
+   "properties": {
+    "folioNumber": {
+     "type": "string"
+    },
+    "fullName": {
+     "type": "string"
+    },
+    "token": {
+     "type": "string"
+    },
+    "tokenTimeStamp": {
+     "format": "int64",
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "Response": {
+   "id": "Response",
+   "properties": {
+    "response": {
+     "type": "string"
+    },
+    "returnCode": {
+     "format": "int32",
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  },
+  "ReturnObj": {
+   "id": "ReturnObj",
+   "properties": {
+    "announcements": {
+     "items": {
+      "$ref": "Announcement"
+     },
+     "type": "array"
+    },
+    "contributionData": {
+     "$ref": "ContributionData"
+    },
+    "dataBaseData": {
+     "items": {
+      "$ref": "DatabaseObject"
+     },
+     "type": "array"
+    },
+    "eventsPicsData": {
+     "items": {
+      "$ref": "EventsPicsData"
+     },
+     "type": "array"
+    },
+    "hotSeatData": {
+     "$ref": "HotSeatPersonDataModel"
+    },
+    "hotSeatNumberOftimes": {
+     "format": "int32",
+     "type": "integer"
+    },
+    "hotSeatPerfObjList": {
+     "items": {
+      "$ref": "HotSeatPersonDataModel"
+     },
+     "type": "array"
+    },
+    "loginData": {
+     "$ref": "LoginData"
+    },
+    "returnCode": {
+     "format": "int32",
+     "type": "integer"
+    },
+    "returnMsg": {
+     "type": "string"
+    },
+    "token": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "SignUpLoginResponse": {
+   "id": "SignUpLoginResponse",
+   "properties": {
+    "loginData": {
+     "$ref": "LoginData"
+    },
+    "response": {
+     "type": "string"
+    },
+    "returnCode": {
+     "format": "int32",
+     "type": "integer"
+    }
+   },
+   "type": "object"
+  }
+ },
+ "servicePath": "mainEndpoint/v1/",
+ "version": "v1"
+}

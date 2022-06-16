@@ -1,0 +1,23 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/copy"
+        android:title="@string/copy_txt"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:icon="@drawable/copy" />
+    <item
+        android:id="@+id/delete"
+        android:title="@string/delete"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:icon="@drawable/delete" />
+    <item
+        android:id="@+id/delete_from_server"
+        android:title="@string/delete_from_server"
+        android:orderInCategory="100"
+        app:showAsAction="never"
+        android:visible="false"
+        android:icon="@drawable/ic_delete_forever_white_24dp" />
+</menu>

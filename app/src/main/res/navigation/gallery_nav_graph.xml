@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/gallery_nav_host"
+    app:startDestination="@id/gallery_fragment1">
+
+    <fragment
+        android:id="@+id/gallery_fragment1"
+        android:name="mx.mobile.solution.nabia04.main.fragment.gallery.FragmentGallery1"
+        android:label="EVENTS GALLERY"
+        tools:layout="@layout/fragment_gallery1">
+        <action
+            android:id="@+id/action_galleryFragment1_to_galleryFragment2"
+            app:destination="@id/gallery_fragment2" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/gallery_fragment2"
+        android:name="mx.mobile.solution.nabia04.main.fragment.gallery.FragmentGallery2"
+        android:label="Gallery Fragment2"
+        tools:layout="@layout/fragment_gallery2">
+        <action
+            android:id="@+id/action_galleryfragment2_to_galleryfragment3"
+            app:destination="@id/gallery_fragment3" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/gallery_fragment3"
+        android:name="mx.mobile.solution.nabia04.main.fragment.gallery.FragmentGallery3"
+        android:label="Gallery Fragment3"
+        tools:layout="@layout/fragment_gallery3" >
+        <action
+            android:id="@+id/action_galleryfragment3_to_galleryfragment1"
+            app:destination="@id/gallery_fragment1"
+            app:popUpTo="@id/gallery_fragment1"
+            app:popUpToInclusive="true" />
+    </fragment>
+</navigation>

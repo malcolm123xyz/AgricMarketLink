@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="30dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tribute"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textColor="@color/colorAccentButtonEnd"
+        android:text="TRIBUTES:" />
+
+    <TextView
+        android:id="@+id/sender"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        android:gravity="center_horizontal"
+        android:textColor="@color/colorAccentButtonEnd"
+        android:text="Sender"/>
+
+
+</LinearLayout>

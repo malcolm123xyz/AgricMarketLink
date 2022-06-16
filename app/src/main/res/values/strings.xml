@@ -1,0 +1,101 @@
+<resources>
+    <string name="app_name">Nabia04</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="enter_your_folio_number">Enter folio number</string>
+    <string name="enter_your_password">Enter password</string>
+    <string name="enter_full_name">Enter fullname</string>
+    <string name="enter_email_address">Enter email</string>
+    <string name="contact">Phone number</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="title_dashboard">Register</string>
+    <string name="register">Register</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="login_txt">Log in</string>
+    <string name="sign_up_txt">Sign up</string>
+
+
+    <string name="title_activity_authentication">Login/Register</string>
+    <string name="title_home">Login</string>
+
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_home_ann">Notice Board</string>
+    <string name="title_home_database">Database</string>
+    <string name="title_home_welfare">Welfare</string>
+    <string name="notice_board">Notice Board</string>
+    <string name="title_home_profession">Profession</string>
+    <string name="title_home_gallary">Events Gallary</string>
+    <string name="title_home_events">Events Gallary</string>
+    <string name="new_annuncement">New Announcement</string>
+    <string name="event">This is an Event</string>
+    <string name="set_event_due_date">Set event due date</string>
+    <string name="heading">HEADING</string>
+    <string name="entityAnnouncement">ANNOUNCEMENTS SYSTEM</string>
+    <string name="ann_status">No Announcement found. Please click on the refresh button above to refresh the Announcements</string>
+    <string name="copy">Copy</string>
+    <string name="delete">Delete</string>
+    <string name="delete_from_server">Delete From server</string>
+
+    <string name="personal_details"><u>PERSONAL DETAILS</u></string>
+    <string name="school_details"><u>SCHOOL DETAILS</u></string>
+
+    <string name="qualification"><u>QUALIFICATION</u></string>
+    <string name="occupation_profession1"><u>WORK</u></string>
+    <string name="all"><u>ALL</u></string>
+    <string name="same_house"><u>Same house</u></string>
+    <string name="same_class"><u>Same class</u></string>
+    <string name="same_course"><u>Same course</u></string>
+    <string name="title_activity_member_detail">Details</string>
+    <string name="search">Search</string>
+    <string name="view_profile">View profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="notice_board_general">Notice Board (General)</string>
+    <string name="title_event_notice">Notice Board (Events)</string>
+    <string name="title_database_current">Database (Current)</string>
+    <string name="ann_body_hing">BODY</string>
+    <string name="warning_1">Note: if this person is assigned a position either than none,
+        then he/she have the privilege to send announcement, edit, add or delete users etc
+    .To revoke any assigned position, select "None"</string>
+    <string name="lebel_personal_details">Personal details</string>
+    <string name="school_information">School Information</string>
+    <string name="work_information">Work information</string>
+    <string name="Back">Back</string>
+    <string name="done">DONE</string>
+    <string name="database_update">Database Update</string>
+    <string name="cancel">CANCEL</string>
+    <string name="copy_txt">Copy</string>
+    <string name="date_not_set">Date not set</string>
+
+
+    <string name="show_popup_menu">Show Popup Menu</string>
+    <string name="menu1">Menu 1</string>
+    <string name="menu2">Menu 2</string>
+    <string name="menu3">Menu 3</string>
+    <string name="menu3_1">Menu 3.1</string>
+    <string name="menu3_2">Menu 3.2</string>
+    <string name="total_contributions">TOTAL CONTRIBUTIONS:</string>
+    <string name="dues_details">Dues Details</string>
+    <string name="jan">Jan</string>
+    <string name="feb">Feb</string>
+    <string name="mar">Mar</string>
+    <string name="apr">Apr</string>
+    <string name="may">May</string>
+    <string name="jun">Jun</string>
+    <string name="jul">Jul</string>
+    <string name="aug">Aug</string>
+    <string name="sep">Sep</string>
+    <string name="oct">Oct</string>
+    <string name="nov">Nov</string>
+    <string name="dec">Dec</string>
+    <string name="total">Total</string>
+
+</resources>

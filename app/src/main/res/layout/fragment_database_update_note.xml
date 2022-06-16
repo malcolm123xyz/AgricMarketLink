@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".main.fragment.database.FragmentDatabaseUpdateNote">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:text="WELCOME TO DATABASE UPDATE"/>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/nextButtonWelcome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:padding="@dimen/padding_10"
+            android:src="@drawable/arrow_right"
+            android:layout_gravity="bottom|end"
+            android:text="@string/next"/>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/buttonCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:tint="@color/blue_light"
+            android:layout_margin="10dp"
+            android:src="@android:drawable/ic_menu_close_clear_cancel" android:layout_gravity="bottom|left"
+            android:text="@string/cancel"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

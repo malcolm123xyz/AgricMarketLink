@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/note_fragment">
+
+    <fragment
+        android:id="@+id/note_fragment"
+        android:name="mx.mobile.solution.nabia04.main.fragment.database.FragmentDatabaseUpdateNote"
+        android:label="@string/database_update"
+        tools:layout="@layout/fragment_database_update_note">
+        <action
+            android:id="@+id/action_move_forward"
+            app:destination="@id/personal_details_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/personal_details_fragment"
+        android:name="mx.mobile.solution.nabia04.main.fragment.database.FragmentPersonDetails"
+        android:label="@string/lebel_personal_details"
+        tools:layout="@layout/fragment_person_details">
+        <action
+            android:id="@+id/action_personal_data_move_forward"
+            app:destination="@id/fragment_school_info" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_school_info"
+        android:name="mx.mobile.solution.nabia04.main.fragment.database.FragmentSchoolInfo"
+        android:label="@string/school_information"
+        tools:layout="@layout/fragment_school_info">
+        <action
+            android:id="@+id/action_school_info_move_forward"
+            app:destination="@id/fragment_work_info" />
+        <action
+            android:id="@+id/action_school_info_move_back"
+            app:destination="@id/personal_details_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_work_info"
+        android:name="mx.mobile.solution.nabia04.main.fragment.database.FragmentWorkInfo"
+        android:label="@string/work_information"
+        tools:layout="@layout/fragment_work_info" >
+        <action
+            android:id="@+id/action_move_work_inf_move_forward"
+            app:destination="@id/fragment_done"/>
+        <action
+            android:id="@+id/action_work_info_move_back"
+            app:destination="@id/fragment_school_info"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_done"
+        android:name="mx.mobile.solution.nabia04.main.fragment.database.FragmentDone"
+        android:label="done"
+        tools:layout="@layout/fragment_done" >
+        <action
+            android:id="@+id/action_fragment_done_move_back"
+            app:destination="@id/fragment_work_info"/>
+    </fragment>
+
+</navigation>
