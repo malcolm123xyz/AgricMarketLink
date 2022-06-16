@@ -26,6 +26,7 @@ class FragmentWelfareSummary : BaseDataBindingFragment<FragmentWelfareSummaryBin
         //vb.ranking.text =
         
         // I edited the line on github
+        // I edited the line on github
     }
 
 }
