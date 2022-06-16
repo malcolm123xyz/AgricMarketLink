@@ -37,8 +37,22 @@ class FragmentWelfareSummary : BaseDataBindingFragment<FragmentWelfareSummaryBin
             vb?.percentageContribution?.text = "${strPecentage}%"
 
             vb?.ranking?.text = excelhelper.getRank(userTotalAmount).toString()
+
+            showProgress(false)
         }
 
+    }
+
+    private fun showProgress(show: Boolean) {
+        if (show) {
+            vb!!.shimmer.startShimmer()
+            vb!!.shimmer.visibility = View.VISIBLE
+            vb!!.container.visibility = View.INVISIBLE
+        } else {
+            vb!!.shimmer.stopShimmer()
+            vb!!.shimmer.visibility = View.GONE
+            vb!!.container.visibility = View.VISIBLE
+        }
     }
 
 }

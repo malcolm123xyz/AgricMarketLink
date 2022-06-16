@@ -74,198 +74,237 @@
                         android:layout_height="2dp"
                         android:background="#ffffffff" />
 
-
-                    <LinearLayout
-                        android:id="@+id/container"
+                    <FrameLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_gravity="center_horizontal"
-                        android:orientation="vertical">
-
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal">
 
                         <LinearLayout
+                            android:id="@+id/container"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginLeft="40dp"
-                            android:layout_marginRight="40dp">
+                            android:layout_marginTop="20dp"
+                            android:layout_gravity="center_horizontal"
+                            android:visibility="gone"
+                            android:orientation="vertical">
 
-                            <com.google.android.material.textview.MaterialTextView
-                                android:layout_width="200dp"
-                                android:layout_height="wrap_content"
-                                android:textColor="#FFFFFFFF"
-                                android:text="1. No. of Months Contributed:" />
 
-                            <com.google.android.material.textview.MaterialTextView
-                                android:id="@+id/num_months"
+                            <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:textColor="#FFFFFFFF"
-                                android:layout_gravity="center_horizontal"
-                                android:layout_marginBottom="2dp"
-                                android:layout_marginTop="7dp"
-                                android:text="22/10" />
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp">
 
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="200dp"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#FFFFFFFF"
+                                    android:text="1. No. of Months Contributed:" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/num_months"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#FFFFFFFF"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginBottom="2dp"
+                                    android:layout_marginTop="7dp"
+                                    android:text="22/10" />
+
+
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp"
+                                android:background="#FFFFFFFF" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="200dp"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#FFFFFFFF"
+                                    android:text="2. Num of Months owed:" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/num_months_owed"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#FFFFFFFF"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginBottom="2dp"
+                                    android:layout_marginTop="7dp"
+                                    android:text="22/10" />
+
+
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp"
+                                android:background="#FFFFFFFF" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="200dp"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#FFFFFFFF"
+                                    android:text="3. Percentage contribution: " />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/percentage_contribution"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#FFFFFFFF"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginBottom="2dp"
+                                    android:layout_marginTop="7dp"
+                                    android:text="22/10" />
+
+
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp"
+                                android:background="#FFFFFFFF" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="200dp"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#FFFFFFFF"
+                                    android:text="4. Ranking:" />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/ranking"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#FFFFFFFF"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginBottom="2dp"
+                                    android:layout_marginTop="7dp"
+                                    android:text="22/10" />
+
+
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp"
+                                android:background="#FFFFFFFF" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp">
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:layout_width="200dp"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#FFFFFFFF"
+                                    android:text="5. Last payment: " />
+
+                                <com.google.android.material.textview.MaterialTextView
+                                    android:id="@+id/last_payment"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textColor="#FFFFFFFF"
+                                    android:layout_gravity="center_horizontal"
+                                    android:layout_marginBottom="2dp"
+                                    android:layout_marginTop="7dp"
+                                    android:text=" -------" />
+
+
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginLeft="40dp"
+                                android:layout_marginRight="40dp"
+                                android:background="#FFFFFFFF" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/pay"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="15dp"
+                                android:text="Make payment"
+                                android:layout_gravity="center_horizontal" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/notify_payment"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Notify payment"
+                                android:layout_gravity="center_horizontal" />
 
                         </LinearLayout>
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginLeft="40dp"
-                            android:layout_marginRight="40dp"
-                            android:background="#FFFFFFFF" />
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/shimmer"
+                            android:layout_width="300dp"
+                            android:layout_height="400dp"
+                            android:orientation="vertical"
+                            app:layout_constraintLeft_toLeftOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                            app:duration="800">
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginLeft="40dp"
-                            android:layout_marginRight="40dp">
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:layout_width="200dp"
+                            <!-- Adding 7 rows of placeholders -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="#FFFFFFFF"
-                                android:text="2. Num of Months owed:" />
+                                android:orientation="vertical">
 
-                            <com.google.android.material.textview.MaterialTextView
-                                android:id="@+id/num_months_owed"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="#FFFFFFFF"
-                                android:layout_gravity="center_horizontal"
-                                android:layout_marginBottom="2dp"
-                                android:layout_marginTop="7dp"
-                                android:text="22/10" />
+                                <include layout="@layout/data_placeholder_layout" />
 
+                                <include layout="@layout/data_placeholder_layout" />
 
-                        </LinearLayout>
+                                <include layout="@layout/data_placeholder_layout" />
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginLeft="40dp"
-                            android:layout_marginRight="40dp"
-                            android:background="#FFFFFFFF" />
+                                <include layout="@layout/data_placeholder_layout" />
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginLeft="40dp"
-                            android:layout_marginRight="40dp">
+                                <include layout="@layout/data_placeholder_layout" />
 
-                            <com.google.android.material.textview.MaterialTextView
-                                android:layout_width="200dp"
-                                android:layout_height="wrap_content"
-                                android:textColor="#FFFFFFFF"
-                                android:text="3. Percentage contribution: " />
+                                <include layout="@layout/data_placeholder_layout" />
 
-                            <com.google.android.material.textview.MaterialTextView
-                                android:id="@+id/percentage_contribution"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="#FFFFFFFF"
-                                android:layout_gravity="center_horizontal"
-                                android:layout_marginBottom="2dp"
-                                android:layout_marginTop="7dp"
-                                android:text="22/10" />
+                                <include layout="@layout/data_placeholder_layout" />
+                            </LinearLayout>
 
+                        </com.facebook.shimmer.ShimmerFrameLayout>
 
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginLeft="40dp"
-                            android:layout_marginRight="40dp"
-                            android:background="#FFFFFFFF" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginLeft="40dp"
-                            android:layout_marginRight="40dp">
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:layout_width="200dp"
-                                android:layout_height="wrap_content"
-                                android:textColor="#FFFFFFFF"
-                                android:text="4. Ranking:" />
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:id="@+id/ranking"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="#FFFFFFFF"
-                                android:layout_gravity="center_horizontal"
-                                android:layout_marginBottom="2dp"
-                                android:layout_marginTop="7dp"
-                                android:text="22/10" />
-
-
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginLeft="40dp"
-                            android:layout_marginRight="40dp"
-                            android:background="#FFFFFFFF" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginLeft="40dp"
-                            android:layout_marginRight="40dp">
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:layout_width="200dp"
-                                android:layout_height="wrap_content"
-                                android:textColor="#FFFFFFFF"
-                                android:text="5. Last payment: " />
-
-                            <com.google.android.material.textview.MaterialTextView
-                                android:id="@+id/last_payment"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textColor="#FFFFFFFF"
-                                android:layout_gravity="center_horizontal"
-                                android:layout_marginBottom="2dp"
-                                android:layout_marginTop="7dp"
-                                android:text=" -------" />
-
-
-                        </LinearLayout>
-
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginLeft="40dp"
-                            android:layout_marginRight="40dp"
-                            android:background="#FFFFFFFF" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/pay"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="15dp"
-                            android:text="Make payment"
-                            android:layout_gravity="center_horizontal" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/notify_payment"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Notify payment"
-                            android:layout_gravity="center_horizontal" />
-
-                    </LinearLayout>
-
+                    </FrameLayout>
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/overall_performance"
