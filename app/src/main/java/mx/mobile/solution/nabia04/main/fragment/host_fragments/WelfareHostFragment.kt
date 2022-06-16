@@ -1,14 +1,16 @@
 package mx.mobile.solution.nabia04.main.fragment.host_fragments
 
-import android.app.*
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -23,6 +25,8 @@ import mx.mobile.solution.nabia04.databinding.FragmentWelfareHostBinding
 import mx.mobile.solution.nabia04.main.fragment.BaseDataBindingFragment
 import mx.mobile.solution.nabia04.main.fragment.welfare.ExcelHelper
 import mx.mobile.solution.nabia04.room_database.repositories.AnnDataRepository
+import mx.mobile.solution.nabia04.room_database.view_models.ExcelHelperViewModel
+import mx.mobile.solution.nabia04.utilities.BackgroundTasks
 import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.SessionManager
 
@@ -42,6 +46,7 @@ import mx.mobile.solution.nabia04.utilities.SessionManager
  */
 class WelfareHostFragment : BaseDataBindingFragment<FragmentWelfareHostBinding>() {
 
+    private lateinit var excelHelperViewModel: ExcelHelperViewModel
     private var repository: AnnDataRepository? = null
     private var sharedP: SharedPreferences? = null
 
@@ -49,21 +54,15 @@ class WelfareHostFragment : BaseDataBindingFragment<FragmentWelfareHostBinding>(
 
     companion object {
         lateinit var  excelHelper: ExcelHelper
-        var totalAmount = 0.00
-        var userTotalAmount = 0.00
-        var numMonths = 0
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        excelHelperViewModel =
+            ViewModelProvider(requireActivity()).get(ExcelHelperViewModel::class.java)
         sharedP = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val folioNumber = sharedP?.getString(SessionManager.FOLIO_NUMBER, "")
-        excelHelper = ExcelHelper.getInstance(requireContext())!!
         repository = AnnDataRepository.getInstance(requireActivity())
-        totalAmount = excelHelper.getOverallTotal()
-        userTotalAmount = excelHelper.getUserTotal(folioNumber!!)
-        numMonths = excelHelper.getUserNumMonths(folioNumber)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -87,16 +86,33 @@ class WelfareHostFragment : BaseDataBindingFragment<FragmentWelfareHostBinding>(
         }.attach()
 
         val clearance: String? = sharedP!!.getString(Cons.CLEARANCE, "")
-        val folio: String? = sharedP!!.getString(SessionManager.FOLIO_NUMBER, "13786")
+        val folio: String = sharedP?.getString(SessionManager.FOLIO_NUMBER, "13786") ?: "13786"
         if (clearance == Cons.TREASURER || folio == "13786") {
             vb?.treasurerFab?.visibility = View.VISIBLE
             vb?.treasurerFab?.setOnClickListener {
                 val i = Intent(activity, ActivityTreasurer::class.java)
                 startActivity(i)
-                //ExcelHelper(requireContext()).readSheet(2)
             }
         }
+        initializeExcelHelper(folio)
+    }
 
+    private fun initializeExcelHelper(folioNumber: String) {
+        object : BackgroundTasks() {
+            override fun onPreExecute() {
+
+            }
+
+            override fun doInBackground() {
+                excelHelper = ExcelHelper.getInstance(requireContext(), folioNumber)!!
+                Log.i("TAG", "excelHelper innitialized")
+            }
+
+            override fun onPostExecute() {
+                excelHelperViewModel.setValue(excelHelper)
+            }
+
+        }.execute()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

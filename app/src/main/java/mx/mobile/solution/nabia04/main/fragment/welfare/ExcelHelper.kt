@@ -3,39 +3,52 @@ package mx.mobile.solution.nabia04.main.fragment.welfare
 import android.content.Context
 import android.os.Environment
 import android.util.Log
-import mx.mobile.solution.nabia04.room_database.repositories.YearlyDuesRepository
 import mx.mobile.solution.nabia04.utilities.Cons
 import org.apache.poi.hssf.util.CellReference
 import org.apache.poi.ss.usermodel.*
 import java.io.File
 import java.io.FileInputStream
+import java.util.*
 
 
-class ExcelHelper (val context: Context?){
+class ExcelHelper(val context: Context?, val folio: String) {
 
-    private var formatter: DataFormatter
+    private var formatter = DataFormatter()
     private var OVERRALL_TOTAL: Int = 0
     private var workbook: Workbook? = null
+    private lateinit var totals: MutableList<TotalAmount>
 
     companion object {
+        var totalAmount = 0.00
+        var userTotalAmount = 0.00
+        var numMonths = 0
+        var numMonthsOwed = 0
+
         @Volatile
         private var INSTANCE: ExcelHelper? = null
-        fun getInstance(context: Context?): ExcelHelper? {
+        fun getInstance(context: Context?, folio: String): ExcelHelper? {
             if (INSTANCE == null) {
-                synchronized(YearlyDuesRepository::class.java) {
+                synchronized(ExcelHelper::class.java) {
                     if (INSTANCE == null) {
-                        INSTANCE = ExcelHelper(context)
+                        INSTANCE = ExcelHelper(context, folio)
                     }
                 }
             }
             return INSTANCE
         }
-
     }
 
     init {
         workbook = getWorkBook()
-        formatter = DataFormatter()
+        getTotals()
+        totalAmount = getOverallTotal()
+        userTotalAmount = getUserTotal(folio)
+        numMonths = getUserNumMonths(folio)
+        val calendar = Calendar.getInstance()
+        val month = calendar.get(Calendar.MONTH)
+        val currYearMonths = 12 - month
+        val totalMonths = (12 * Cons.DUES_NUM_YEARS) - (7 + currYearMonths)
+        numMonthsOwed = totalMonths - numMonths
     }
 
     private fun getExcelFile(): File? {
@@ -62,7 +75,6 @@ class ExcelHelper (val context: Context?){
                 e.printStackTrace()
             }
         }
-        Log.i("TAG", "retrieveWorkbook(): File not found")
         //the workbook may not exist
         return null
     }
@@ -85,10 +97,8 @@ class ExcelHelper (val context: Context?){
         //choosing the workbook
         workbook?.let { workbook ->
             var i = 0
-            Log.i("TAG", "Number of sheet: "+workbook.numberOfSheets)
             while (i < workbook.numberOfSheets) {
                 sheets.add(workbook.getSheetAt(i))
-                Log.i("TAG", "counting sheets returned: $i")
                 i++
             }
         }
@@ -104,8 +114,12 @@ class ExcelHelper (val context: Context?){
                 val folioValue = formatter.formatCellValue(folioCell)
                 if(folioValue == folio){
                     for (cell in row) {
-                        val cellValue: String = formatter.formatCellValue(cell)
-                        if(cellValue.isNotEmpty()){
+                        val cellValue = formatter.formatCellValue(cell)
+                        if (cell.columnIndex > 2 &&
+                            cellValue.isNotEmpty() &&
+                            cell.cellTypeEnum != CellType.FORMULA &&
+                            cellValue.toInt() > 0
+                        ) {
                             numMonths++
                         }
                     }
@@ -116,46 +130,66 @@ class ExcelHelper (val context: Context?){
         return numMonths
     }
 
-    private inner class TotalAmounts(mfolio: String, mAmount: Double) {
+    inner class TotalAmount(mfolio: String, mAmount: Double) {
         val folio = mfolio
         var amount = mAmount
     }
 
-    fun getRank (folio: String) {
+    private fun getTotals() {
         val sheets = getAllSheets()
-        val usersWithAmounts: MutableList<TotalAmounts> = ArrayList()
-        //Go true all the sheet
-        for (sheet in sheets){
+        totals = ArrayList()
+        for (sheet in sheets) {
             for (row in sheet) {
-                val cell = row.getCell(2)
-                val folioValue = formatter.formatCellValue(cell)
-                val amountToAdd = row.getCell(15).numericCellValue
-                var found = false
-                for (user in usersWithAmounts){
-                    if(user.folio == folioValue){
-                        user.amount =+ amountToAdd
-                        found = true
-                        break
+                if (row.rowNum != sheet.lastRowNum) {
+                    val folioValue = formatter.formatCellValue(row.getCell(2))
+                    if (row.getCell(15)?.cellTypeEnum == CellType.FORMULA) {
+                        val amountToAdd = row.getCell(15).numericCellValue
+                        var found = false
+                        for (user in totals) {
+                            if (user.folio == folioValue) {
+                                val amount = user.amount
+                                user.amount = amount + amountToAdd
+                                found = true
+                                break
+                            }
+                        }
+                        if (!found) {
+                            totals.add(TotalAmount(folioValue, amountToAdd))
+                        }
                     }
-                }
-                if (!found){
-                    usersWithAmounts.add(TotalAmounts( folioValue, amountToAdd))
                 }
             }
         }
-        Log.i("TAG", "Total amounts: $usersWithAmounts")
     }
 
-    fun getUserTotal(folio: String): Double{
+
+    fun getRank(amount: Double): Int? {
+        if (totals == null) {
+            Log.i("TAG", "Totals is null")
+        } else {
+            Log.i("TAG", "Totals size " + totals.size)
+        }
+        val localList: List<TotalAmount> = totals.toList()
+        Collections.sort(
+            localList,
+            Comparator<TotalAmount>(fun(first: TotalAmount, second: TotalAmount): Int {
+                return if (second.amount <= first.amount) -1 else 1
+            })
+        )
+        for (i in localList.indices) {
+            if (localList[i].amount == amount) return i + 1
+        }
+        return null
+    }
+
+    fun getUserTotal(folio: String): Double {
         var totalAmount = 0.00
-
         val sheets = getAllSheets()
-
-        for (sheet in sheets){
+        for (sheet in sheets) {
             for (row in sheet) {
                 val cell = row.getCell(2)
                 val folioValue = formatter.formatCellValue(cell)
-                if(folioValue == folio){
+                if (folioValue == folio) {
                     totalAmount += row.getCell(15).numericCellValue
                     break
                 }

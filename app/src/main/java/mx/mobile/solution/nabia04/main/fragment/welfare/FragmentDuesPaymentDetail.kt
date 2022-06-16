@@ -14,6 +14,7 @@ import com.amulyakhare.textdrawable.util.ColorGenerator
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.databinding.FragmentDuesPaymentDetailBinding
 import mx.mobile.solution.nabia04.main.fragment.BaseDataBindingFragment
+import mx.mobile.solution.nabia04.main.fragment.host_fragments.WelfareHostFragment.Companion.excelHelper
 import mx.mobile.solution.nabia04.room_database.DuesDetailDao
 import mx.mobile.solution.nabia04.room_database.MainDataBase
 import mx.mobile.solution.nabia04.room_database.entities.EntityYearlyDues
@@ -24,13 +25,11 @@ import mx.mobile.solution.nabia04.room_database.view_models.YearlyDuesViewModel
 import mx.mobile.solution.nabia04.utilities.BackgroundTasks
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class FragmentDuesPaymentDetail() : BaseDataBindingFragment<FragmentDuesPaymentDetailBinding>() {
 
     private var dao: DuesDetailDao? = null
     private val generator: ColorGenerator = ColorGenerator.MATERIAL
-    private var excelHelper: ExcelHelper? = null
 
     companion object {
         var year = "2018"
@@ -49,9 +48,9 @@ class FragmentDuesPaymentDetail() : BaseDataBindingFragment<FragmentDuesPaymentD
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
         duesModel = ViewModelProvider(requireActivity()).get(YearlyDuesViewModel::class.java)
-        duesLoadingModel = ViewModelProvider(requireActivity()).get(DuesLoadingStatusViewModel::class.java)
-        excelHelper = ExcelHelper.getInstance(requireContext())
-        repository = YearlyDuesRepository.getInstance(excelHelper!!)
+        duesLoadingModel =
+            ViewModelProvider(requireActivity()).get(DuesLoadingStatusViewModel::class.java)
+        repository = YearlyDuesRepository.getInstance(excelHelper)
         dao = MainDataBase.getDatabase(context).duesDetailsDao()
     }
 
