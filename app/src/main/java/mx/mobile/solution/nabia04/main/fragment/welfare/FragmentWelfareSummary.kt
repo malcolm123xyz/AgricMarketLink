@@ -18,14 +18,13 @@ class FragmentWelfareSummary : BaseDataBindingFragment<FragmentWelfareSummaryBin
         super.onCreate(savedInstanceState)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        vb?.totalAmount?.text = "Ghc $totalAmount"
-        val percentage: Double = Math(totalAmount * userTotalAmount)
-        vb?.percentageContribution?.text = "$percentage%"
-        vb?.monthsDefaulted?.text = numMonths.toString()
-        //vb.ranking.text =
+//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        super.onViewCreated(view, savedInstanceState)
+//        vb?.totalAmount?.text = "Ghc $totalAmount"
+//        val percentage: Double = Math(totalAmount * userTotalAmount)
+//        vb?.percentageContribution?.text = "$percentage%"
+//        vb?.monthsDefaulted?.text = numMonths.toString()
+//        //vb.ranking.text =
     }
 
 }
