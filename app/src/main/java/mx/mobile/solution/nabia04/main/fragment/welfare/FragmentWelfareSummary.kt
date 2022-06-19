@@ -45,7 +45,7 @@ class FragmentWelfareSummary : BaseDataBindingFragment<FragmentWelfareSummaryBin
         val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, namesList)
         vb?.userDuesSpinner?.adapter = adapter
         vb?.userDuesSpinner?.onItemSelectedListener = OnSpinnerItemClick()
-        Log.i("TAG", "Adapter size before = " + adapter.count)
+
         excelHelperViewModel.value.observe(viewLifecycleOwner) { mExcelHelper: ExcelHelper ->
             Log.i("TAG", "Observed value recieved....................... ")
             excelhelper = mExcelHelper
@@ -83,21 +83,25 @@ class FragmentWelfareSummary : BaseDataBindingFragment<FragmentWelfareSummaryBin
                 vb?.goodStandingTv?.text = "Good Standing"
             }
 
-            adapter.notifyDataSetChanged()
-            Log.i("TAG", "Adapter size after = " + adapter.count)
+        //adapter.notifyDataSetChanged()
 
             showProgress(false)
         }
     }
 
     inner class OnSpinnerItemClick() : AdapterView.OnItemSelectedListener {
+        var isUserClick = false
         override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, i: Int, l: Long) {
-            val folio = excelhelper?.reloadUserData(i - 1)
 
-            if (folio != null) {
-                loadImage(folio)
+            if (isUserClick) {
+                Log.i("TAG", "onItemSelected()......................." + i)
+                val folio = excelhelper?.reloadUserData(i - 1)
+                excelHelperViewModel.setValue(excelhelper)
+                if (folio != null) {
+                    loadImage(folio)
+                }
             }
-            excelHelperViewModel.setValue(excelhelper)
+            isUserClick = true
         }
 
         override fun onNothingSelected(adapterView: AdapterView<*>?) {}

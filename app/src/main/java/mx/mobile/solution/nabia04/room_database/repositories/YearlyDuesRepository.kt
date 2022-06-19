@@ -1,7 +1,6 @@
 package mx.mobile.solution.nabia04.room_database.repositories
 
 import android.content.Context
-import android.util.Log
 import mx.mobile.solution.nabia04.main.fragment.welfare.ExcelHelper.Companion.sheets
 import mx.mobile.solution.nabia04.main.fragment.welfare.FragmentDuesPaymentDetail.Companion.duesLoadingModel
 import mx.mobile.solution.nabia04.main.fragment.welfare.FragmentDuesPaymentDetail.Companion.duesModel
@@ -44,21 +43,16 @@ class YearlyDuesRepository(context: Context) {
     }
 
     fun reloadFromLocalDB(year: String) {
-        Log.i("TAG", "reloadFromLocalDB()")
         object : BackgroundTasks() {
             override fun onPreExecute() {
-                Log.i("TAG", "Progressbar = true")
                 duesLoadingModel.setValue(LoadingStatus(true))
             }
 
             override fun doInBackground() {
-                Log.i("TAG", "doInBackground()")
                 dues = dao?.getThisYearDues(year)
             }
 
             override fun onPostExecute() {
-                Log.i("TAG", "reloadFromLocalDB ended")
-                Log.i("TAG", "Progressbar = false")
                 duesModel.setData(dues)
                 duesLoadingModel.setValue(LoadingStatus(false))
             }
@@ -66,16 +60,13 @@ class YearlyDuesRepository(context: Context) {
     }
 
     fun reloadFromBackend() {
-        Log.i("TAG", "reloadFromBackend()")
         object : BackgroundTasks() {
             val formatter = DataFormatter()
             override fun onPreExecute() {
-                Log.i("TAG", "ProgressBar = true")
                 duesLoadingModel.setValue(LoadingStatus(true))
             }
 
             override fun doInBackground() {
-                Log.i("TAG", "doInBackground()")
                 for ((sheetNum, sheet) in sheets.withIndex()) {
                     val duesEntityList: MutableList<EntityYearlyDues> = ArrayList()
                     for (row in sheet) {
@@ -106,8 +97,6 @@ class YearlyDuesRepository(context: Context) {
             }
 
             override fun onPostExecute() {
-                Log.i("TAG", "reloadFromBackend Ended")
-                Log.i("TAG", "ProgressBar = false")
                 duesLoadingModel.setValue(LoadingStatus(false))
                 loadData(year)
             }
@@ -116,7 +105,6 @@ class YearlyDuesRepository(context: Context) {
 
 
     fun loadData(year: String){
-        Log.i("TAG", "loadData($year)..........")
         object : BackgroundTasks() {
             var b: Boolean = false
             override fun onPreExecute() {}

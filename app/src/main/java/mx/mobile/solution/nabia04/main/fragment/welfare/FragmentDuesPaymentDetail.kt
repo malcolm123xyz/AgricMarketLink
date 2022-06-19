@@ -74,6 +74,7 @@ class FragmentDuesPaymentDetail() : BaseDataBindingFragment<FragmentDuesPaymentD
 
     private fun observeLiveData() {
         duesModel.data.observe(viewLifecycleOwner) { data: List<EntityYearlyDues> ->
+            Log.i("TAG", "duesModel.data.observe")
             setData(data)
         }
     }
@@ -128,13 +129,12 @@ class FragmentDuesPaymentDetail() : BaseDataBindingFragment<FragmentDuesPaymentD
     }
 
     private fun showProgress(show: Boolean) {
-        Log.i("TAG", "showProgress: " + show)
         if (show) {
             vb!!.progressBar.visibility = View.VISIBLE
-            vb!!.scrollView.visibility = View.INVISIBLE
+            vb!!.recyclerView.visibility = View.INVISIBLE
         } else {
             vb!!.progressBar.visibility = View.GONE
-            vb!!.scrollView.visibility = View.VISIBLE
+            vb!!.recyclerView.visibility = View.VISIBLE
         }
     }
 
@@ -243,7 +243,6 @@ class FragmentDuesPaymentDetail() : BaseDataBindingFragment<FragmentDuesPaymentD
         amountSubMenu.add(1, 2, 0, "Highest to Lowest")
         amountSubMenu.add(1, 3, 1, "Lowest to Highest")
         popupMenu.setOnMenuItemClickListener { item ->
-            Log.i("TAG", "item.itemId: " + item.itemId)
             if (item.itemId < 5) {
                 SORT = item.itemId
                 repository?.loadData(year)
@@ -271,21 +270,7 @@ class FragmentDuesPaymentDetail() : BaseDataBindingFragment<FragmentDuesPaymentD
             val name: TextView = itemView.findViewById(R.id.name)
             val folio: TextView = itemView.findViewById(R.id.folio)
             val itemHolder: View = itemView.findViewById(R.id.item_holder)
-
-            val jan: TextView = itemView.findViewById(R.id.jan)
-            val feb: TextView = itemView.findViewById(R.id.feb)
-            val mar: TextView = itemView.findViewById(R.id.mar)
-            val apr: TextView = itemView.findViewById(R.id.apr)
-            val may: TextView = itemView.findViewById(R.id.may)
-            val jun: TextView = itemView.findViewById(R.id.jun)
-            val jul: TextView = itemView.findViewById(R.id.jul)
-            val aug: TextView = itemView.findViewById(R.id.aug)
-            val sep: TextView = itemView.findViewById(R.id.sep)
-            val oct: TextView = itemView.findViewById(R.id.oct)
-            val nov: TextView = itemView.findViewById(R.id.nov)
-            val dec: TextView = itemView.findViewById(R.id.dec)
             val total: TextView = itemView.findViewById(R.id.total)
-
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -303,19 +288,6 @@ class FragmentDuesPaymentDetail() : BaseDataBindingFragment<FragmentDuesPaymentD
             holder.index.text = i.toString()
             holder.name.text = payment.name
             holder.folio.text = payment.folio
-
-            holder.jan.text = amounts[0]
-            holder.feb.text = amounts[1]
-            holder.mar.text = amounts[2]
-            holder.apr.text = amounts[3]
-            holder.may.text = amounts[4]
-            holder.jun.text = amounts[5]
-            holder.jul.text = amounts[6]
-            holder.aug.text = amounts[7]
-            holder.sep.text = amounts[8]
-            holder.oct.text = amounts[9]
-            holder.nov.text = amounts[10]
-            holder.dec.text = amounts[11]
             holder.total.text = amounts[12]
 
             holder.itemHolder.setBackgroundColor(generator.randomColor)
