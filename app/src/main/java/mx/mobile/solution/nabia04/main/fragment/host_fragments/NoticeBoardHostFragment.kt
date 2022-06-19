@@ -1,8 +1,7 @@
 package mx.mobile.solution.nabia04.main.fragment.host_fragments
 
-import android.app.*
+import android.app.AlertDialog
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -10,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
-import androidx.preference.PreferenceManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
@@ -20,10 +18,11 @@ import com.smarttoolfactory.tutorial7_2bnv_viewpager2_complexarchitecture.viewmo
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.activities.ActivitySendAnnouncement
 import mx.mobile.solution.nabia04.databinding.FragmentViewpagerContainerBinding
+import mx.mobile.solution.nabia04.main.MainActivity.Companion.clearance
+import mx.mobile.solution.nabia04.main.MainActivity.Companion.userFolioNumber
 import mx.mobile.solution.nabia04.main.fragment.BaseDataBindingFragment
 import mx.mobile.solution.nabia04.room_database.repositories.AnnDataRepository
 import mx.mobile.solution.nabia04.utilities.Cons
-import mx.mobile.solution.nabia04.utilities.SessionManager
 
 
 /**
@@ -42,14 +41,12 @@ import mx.mobile.solution.nabia04.utilities.SessionManager
 class NoticeBoardHostFragment : BaseDataBindingFragment<FragmentViewpagerContainerBinding>() {
 
     private var repository: AnnDataRepository? = null
-    private var sharedP: SharedPreferences? = null
 
     override fun getLayoutRes(): Int = R.layout.fragment_viewpager_container
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        sharedP = PreferenceManager.getDefaultSharedPreferences(requireContext())
         repository = AnnDataRepository.getInstance(requireActivity())
     }
 
@@ -77,11 +74,9 @@ class NoticeBoardHostFragment : BaseDataBindingFragment<FragmentViewpagerContain
             }
         }.attach()
 
-        val clearance: String? = sharedP!!.getString(Cons.CLEARANCE, "")
-        val folio: String? = sharedP!!.getString(SessionManager.FOLIO_NUMBER, "13786")
-
         if (clearance == Cons.PRO || clearance == Cons.PRESIDENT
-            || clearance == Cons.VICE_PRESIDENT || folio == "13786") {
+            || clearance == Cons.VICE_PRESIDENT || userFolioNumber == "13786"
+        ) {
             vb?.fabSendAnn?.visibility = View.VISIBLE
             vb?.fabSendAnn?.setOnClickListener {
                 val i = Intent(activity, ActivitySendAnnouncement::class.java)

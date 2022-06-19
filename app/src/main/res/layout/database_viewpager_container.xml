@@ -53,7 +53,7 @@
                             android:textStyle="bold" />
 
                         <View
-                            android:layout_width="match_parent"
+                            android:layout_width="100dp"
                             android:layout_height="2dp"
                             android:background="#FF0000"/>
 

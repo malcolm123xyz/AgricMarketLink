@@ -3,7 +3,6 @@ package mx.mobile.solution.nabia04.main.fragment.database
 import android.Manifest
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -20,7 +19,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
@@ -38,6 +36,7 @@ import mx.mobile.solution.nabia04.activities.DatabaseUpdateViewModel
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager.CallBack
 import mx.mobile.solution.nabia04.databinding.FragmentPersonDetailsBinding
+import mx.mobile.solution.nabia04.main.MainActivity.Companion.sharedP
 import mx.mobile.solution.nabia04.utilities.GlideApp
 import mx.mobile.solution.nabia04.utilities.Utils
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DatabaseObject
@@ -83,14 +82,12 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
         R.array.north_east
     )
 
-    private var sharedP: SharedPreferences? = null
     private val fd = SimpleDateFormat("EEE, d MMM", Locale.US)
 
     private var contentLauncher: ActivityResultLauncher<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedP = PreferenceManager.getDefaultSharedPreferences(requireContext())
         updateMode = ViewModelProvider(requireActivity()).get(DatabaseUpdateViewModel::class.java)
         Log.i(TAG, "onCreate()")
     }
@@ -126,21 +123,17 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
                 birthDayButton.text = fd.format(Date(birthDayValue!!))
 
                 val selRegion = userData?.regionOfResidence ?: "SELECT REGION"
-                Log.i("FragPersonalDetails", ("DataModel region of residence = $selRegion"))
                 region_spinner.setSelection((region_spinner.adapter as ArrayAdapter<String>).getPosition(selRegion))
 
                 region_spinner.onItemSelectedListener = OnRegionSpinnerAdapterClick()
 
                 val selRegIndex = region_spinner.selectedItemPosition
-                Log.i("FragPersonalDetails", "selRegIndex = $selRegIndex")
 
                 if(selRegIndex  > 0){
                     val selectedArray: Array<String> = resources.getStringArray(regionsId[selRegIndex])
                     val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, selectedArray)
                     district_spinner.adapter = adapter
                     val selDistrict = userData?.districtOfResidence ?: "SELECT DISTRICT"
-                    Log.i("FragPersonalDetails", "District_1 = $selDistrict")
-                    Log.i("FragPersonalDetails", "District code = "+adapter.getPosition(selDistrict))
                     district_spinner.setSelection(adapter.getPosition(selDistrict))
                     adapter.notifyDataSetChanged()
                 }
@@ -218,7 +211,7 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
         userData?.contact = contact.text.toString()
         userData?.email = email.text.toString()
         userData?.nickName = nickName_edit_view.text.toString()
-        sharedP?.edit()?.putString("nickName", nickName_edit_view.text.toString())?.apply()
+        sharedP.edit()?.putString("nickName", nickName_edit_view.text.toString())?.apply()
         userData?.sex =  sex_spinner.selectedItem.toString()
         userData?.birthDayAlarm = birthDayValue ?: 0
         userData?.homeTown = homeTown_edit_view.text.toString()

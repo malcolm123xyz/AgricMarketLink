@@ -2,44 +2,39 @@ package mx.mobile.solution.nabia04.room_database.repositories
 
 import android.app.AlertDialog
 import android.content.Context
-import mx.mobile.solution.nabia04.room_database.entities.EntityUserData
-import mx.mobile.solution.nabia04.utilities.BackgroundTasks
-import mx.mobile.solution.nabia04.main.MainActivity
-import mx.mobile.solution.nabia04.room_database.view_models.LoadingStatus
-import mx.mobile.solution.nabia04.utilities.Cons
-import mx.mobile.solution.nabia04.R
 import android.content.DialogInterface
-import mx.mobile.solution.nabia04.room_database.UserDataDao
-import android.content.SharedPreferences
 import android.util.Log
-import androidx.preference.PreferenceManager
-import kotlin.jvm.Volatile
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.extensions.android.json.AndroidJsonFactory
+import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager
+import mx.mobile.solution.nabia04.main.MainActivity
 import mx.mobile.solution.nabia04.main.MainActivity.Companion.databaseViewModel
+import mx.mobile.solution.nabia04.main.MainActivity.Companion.sharedP
+import mx.mobile.solution.nabia04.main.MainActivity.Companion.userFolioNumber
 import mx.mobile.solution.nabia04.room_database.MainDataBase
+import mx.mobile.solution.nabia04.room_database.UserDataDao
+import mx.mobile.solution.nabia04.room_database.entities.EntityUserData
+import mx.mobile.solution.nabia04.room_database.view_models.LoadingStatus
+import mx.mobile.solution.nabia04.utilities.BackgroundTasks
+import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.SessionManager
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DatabaseObject
 import java.io.IOException
-import java.lang.NullPointerException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.*
 import javax.net.ssl.SSLHandshakeException
-import kotlin.collections.ArrayList
 
 class DatabaseRepository(private val context: Context) {
     var birthDayPerson: EntityUserData? = null
-    private val userFolio: String?
     private val token: String?
     val filterString = "none"
     val filterType = 0
     private val TAG = "DatabaseRepository"
     private var allUserData: List<EntityUserData>? = null
     private var dao: UserDataDao? = null
-    private var sharedP: SharedPreferences? = null
     private var endpoint: MainEndpoint? = null
 
     val hometownDistrict: MutableList<String> = ArrayList()
@@ -101,9 +96,8 @@ class DatabaseRepository(private val context: Context) {
 
     init {
         dao = MainDataBase.getDatabase(context).userDataDao()
-        sharedP = PreferenceManager.getDefaultSharedPreferences(context)
-        userFolio = sharedP?.getString(SessionManager.FOLIO_NUMBER, "")
-        token = sharedP?.getString(SessionManager.LOGIN_TOKEN, "")
+        userFolioNumber = sharedP.getString(SessionManager.FOLIO_NUMBER, "") ?: ""
+        token = sharedP.getString(SessionManager.LOGIN_TOKEN, "")
     }
 
     fun getAllData(): List<EntityUserData>{

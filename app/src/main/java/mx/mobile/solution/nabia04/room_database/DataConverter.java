@@ -5,8 +5,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
 
 import androidx.room.TypeConverter;
 
@@ -24,6 +22,7 @@ public class DataConverter {
 
     @TypeConverter
     public String[] getPaymentFrmStr(String payments) {
+
         if (payments == null) {
             return (null);
         }

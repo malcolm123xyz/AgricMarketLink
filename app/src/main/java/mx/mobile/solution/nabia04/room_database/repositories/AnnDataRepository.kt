@@ -3,22 +3,20 @@ package mx.mobile.solution.nabia04.room_database.repositories
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
-import android.content.SharedPreferences
 import android.preference.PreferenceManager
-import android.util.Log
 import com.google.api.client.extensions.android.http.AndroidHttp
 import com.google.api.client.extensions.android.json.AndroidJsonFactory
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.main.MainActivity.Companion.annViewModel
 import mx.mobile.solution.nabia04.main.MainActivity.Companion.annloadingStatus
+import mx.mobile.solution.nabia04.main.MainActivity.Companion.sharedP
 import mx.mobile.solution.nabia04.room_database.AnnDao
 import mx.mobile.solution.nabia04.room_database.MainDataBase
 import mx.mobile.solution.nabia04.room_database.entities.EntityAnnouncement
 import mx.mobile.solution.nabia04.room_database.view_models.LoadingStatus
 import mx.mobile.solution.nabia04.utilities.BackgroundTasks
 import mx.mobile.solution.nabia04.utilities.Cons
-import mx.mobile.solution.nabia04.utilities.SessionManager
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Announcement
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.AnnouncementResponse
@@ -103,14 +101,14 @@ class AnnDataRepository(private val context: Context?) {
             override fun doInBackground() {
                 try {
                     endpoint = endpointObject
-                    val token = sharedP?.getString(SessionManager.LOGIN_TOKEN, "")
                     response = endpoint!!.noticeBoardData.execute()
                     if (response.returnCode == 1) {
                         allAnnouncements = getAnnDataObjects(response.announcements)
                         dao?.insertAnnouncement(allAnnouncements)
-                        sharedP?.edit()?.putBoolean(Cons.ANN_REFRESH, false)?.apply()
+                        sharedP.edit()?.putBoolean(Cons.ANN_REFRESH, false)?.apply()
                         val refreshTimeStamp = System.currentTimeMillis()
-                        sharedP?.edit()?.putLong(Cons.ANN_REFRESH_TIME_STAMP, refreshTimeStamp)?.apply()
+                        sharedP.edit()?.putLong(Cons.ANN_REFRESH_TIME_STAMP, refreshTimeStamp)
+                            ?.apply()
                         alarmManager.scheduleEventNotification(allAnnouncements!!)
                     }
                 } catch (ex: IOException) {
@@ -164,7 +162,6 @@ class AnnDataRepository(private val context: Context?) {
         private const val TAG = "AnnDataRepository"
         private var allAnnouncements: MutableList<EntityAnnouncement>? = null
         private var dao: AnnDao? = null
-        private var sharedP: SharedPreferences? = null
         private var endpoint: MainEndpoint? = null
 
         @Volatile

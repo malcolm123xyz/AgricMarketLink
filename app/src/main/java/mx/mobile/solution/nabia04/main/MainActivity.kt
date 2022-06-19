@@ -1,10 +1,14 @@
 package mx.mobile.solution.nabia04.main
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION
 import android.os.Bundle
+import android.os.Environment
 import android.provider.Settings
 import android.util.Log
 import androidx.activity.viewModels
@@ -16,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.smarttoolfactory.tutorial7_2bnv_viewpager2_complexarchitecture.viewmodel.MainAppbarViewModel
@@ -24,10 +29,10 @@ import mx.mobile.solution.nabia04.databinding.ActivityMainBinding
 import mx.mobile.solution.nabia04.main.fragment.host_fragments.NoticeBoardHostFragment
 import mx.mobile.solution.nabia04.main.fragment.welfare.ExcelHelper
 import mx.mobile.solution.nabia04.main.util.Event
-import mx.mobile.solution.nabia04.room_database.view_models.AnnLoadingStatusViewModel
-import mx.mobile.solution.nabia04.room_database.view_models.AnnViewModel
-import mx.mobile.solution.nabia04.room_database.view_models.DBLoadingStatusViewModel
-import mx.mobile.solution.nabia04.room_database.view_models.DatabaseListViewModel
+import mx.mobile.solution.nabia04.room_database.view_models.*
+import mx.mobile.solution.nabia04.utilities.BackgroundTasks
+import mx.mobile.solution.nabia04.utilities.Cons
+import mx.mobile.solution.nabia04.utilities.SessionManager
 import pub.devrel.easypermissions.EasyPermissions
 
 
@@ -69,17 +74,21 @@ import pub.devrel.easypermissions.EasyPermissions
  * in the NavigationExtensions code for setting BottomNavigationView back stack
  */
 class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
-
-    private val PERMISSION_STORAGE_REQUEST: Int = 877
+    private val RC_APP_PERM = 1244
     private val appbarViewModel by viewModels<MainAppbarViewModel>()
 
     private lateinit var dataBinding: ActivityMainBinding
 
     companion object {
+        lateinit var excelHelper: ExcelHelper
+        lateinit var excelHelperViewModel: ExcelHelperViewModel
         lateinit var annloadingStatus: AnnLoadingStatusViewModel
         lateinit var databaseLoadingStatus: DBLoadingStatusViewModel
         lateinit var annViewModel: AnnViewModel
         lateinit var databaseViewModel: DatabaseListViewModel
+        lateinit var userFolioNumber: String
+        lateinit var clearance: String
+        lateinit var sharedP: SharedPreferences
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,10 +99,15 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        sharedP = PreferenceManager.getDefaultSharedPreferences(this)
+        userFolioNumber = sharedP.getString(SessionManager.FOLIO_NUMBER, "") ?: ""
+        clearance = sharedP.getString(Cons.CLEARANCE, "") ?: ""
+
         annloadingStatus = ViewModelProvider(this).get(AnnLoadingStatusViewModel::class.java)
         databaseLoadingStatus = ViewModelProvider(this).get(DBLoadingStatusViewModel::class.java)
         annViewModel = ViewModelProvider(this).get(AnnViewModel::class.java)
         databaseViewModel = ViewModelProvider(this).get(DatabaseListViewModel::class.java)
+        excelHelperViewModel = ViewModelProvider(this).get(ExcelHelperViewModel::class.java)
 
         if (savedInstanceState == null) {
             setupBottomNavigationBar()
@@ -101,8 +115,31 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         requestPermissions()
     }
 
+    private fun initializeExcelHelper(context: Context) {
+        object : BackgroundTasks() {
+            override fun onPreExecute() {
+
+            }
+
+            override fun doInBackground() {
+                excelHelper = ExcelHelper.getInstance(context)!!
+                Log.i("TAG", "excelHelper innitialized")
+            }
+
+            override fun onPostExecute() {
+                excelHelperViewModel.setValue(excelHelper)
+            }
+
+        }.execute()
+    }
+
     private fun requestPermissions() {
-        if (EasyPermissions.hasPermissions(this,Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)) {
+        Log.i("TAG", "Checking Permission b4 Initializing excelHelper")
+        if (sharedP.getBoolean(Cons.HAS_STORAGE_MANAGEMENT_PERM, false)) {
+            Log.i("TAG", "Has permission... Initializing excelHelper...")
+            initializeExcelHelper(this)
+        } else {
+            Log.i("TAG", "No permissions... Requesting...")
             requestStoragePermission()
         }
     }
@@ -120,21 +157,47 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
                 startActivityForResult(intent, 2296)
             }
+        } else {
+            EasyPermissions.requestPermissions(
+                this,
+                "This app needs access to your storage", RC_APP_PERM,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String?>, grantResults: IntArray) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.i("TAG", "requestCode = " + requestCode)
+        if (requestCode == 2296) {
+            if (VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    sharedP.edit().putBoolean(Cons.HAS_STORAGE_MANAGEMENT_PERM, true).apply()
+                    initializeExcelHelper(this)
+                } else {
+                    sharedP.edit().putBoolean(Cons.HAS_STORAGE_MANAGEMENT_PERM, false).apply()
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String?>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
 
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        TODO("Not yet implemented")
+        Log.i("TAG", "Permission granted, Initializing excelHelper")
+        initializeExcelHelper(this)
     }
 
     override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
-        TODO("Not yet implemented")
+        Log.i("TAG", "Permission not granted")
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {

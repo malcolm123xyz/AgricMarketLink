@@ -3,7 +3,6 @@ package mx.mobile.solution.nabia04.main.fragment.database
 import android.Manifest
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -19,7 +18,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
@@ -35,6 +33,7 @@ import mx.mobile.solution.nabia04.activities.ActivityUpdateUserData.Companion.se
 import mx.mobile.solution.nabia04.activities.ActivityUpdateUserData.Companion.userFolio
 import mx.mobile.solution.nabia04.activities.DatabaseUpdateViewModel
 import mx.mobile.solution.nabia04.databinding.FragmentDoneBinding
+import mx.mobile.solution.nabia04.main.MainActivity.Companion.sharedP
 import mx.mobile.solution.nabia04.utilities.*
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DatabaseObject
@@ -55,7 +54,6 @@ class FragmentDone : BaseFragment<FragmentDoneBinding>() {
     override fun getLayoutRes(): Int = R.layout.fragment_done
     override fun getCallBack(): OnBackPressedCallback = callback
     private var endpoint: MainEndpoint? = null
-    private var sharedP: SharedPreferences? = null
     private var file: File? = null
     private val MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE: Int = 3485
     private var userData: DatabaseObject? = null
@@ -64,7 +62,6 @@ class FragmentDone : BaseFragment<FragmentDoneBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedP = PreferenceManager.getDefaultSharedPreferences(requireContext())
         updateMode = ViewModelProvider(requireActivity()).get(DatabaseUpdateViewModel::class.java)
         endpoint = getEndpointObject()
     }
@@ -143,7 +140,7 @@ class FragmentDone : BaseFragment<FragmentDoneBinding>() {
                 "OK"
             ) { dialog: DialogInterface, _: Int ->
                 val p = passEdit.text.toString()
-                if (p == sharedP?.getString(SessionManager.PASSWORK, "")) {
+                if (p == sharedP.getString(SessionManager.PASSWORK, "")) {
                     dialog.dismiss()
                     sendPicture()
                 } else {

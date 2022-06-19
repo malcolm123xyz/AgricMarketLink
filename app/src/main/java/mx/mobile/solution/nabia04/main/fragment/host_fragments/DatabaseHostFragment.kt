@@ -1,7 +1,6 @@
 package mx.mobile.solution.nabia04.main.fragment.host_fragments
 
 import android.content.Intent
-import android.content.SharedPreferences
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
@@ -18,6 +17,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat.requireViewById
 import androidx.core.os.bundleOf
@@ -25,7 +25,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.amulyakhare.textdrawable.TextDrawable
@@ -42,11 +41,16 @@ import kotlinx.coroutines.Runnable
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.activities.ActivityUpdateUserData
 import mx.mobile.solution.nabia04.databinding.DatabaseViewpagerContainerBinding
+import mx.mobile.solution.nabia04.main.MainActivity.Companion.clearance
 import mx.mobile.solution.nabia04.main.MainActivity.Companion.databaseViewModel
+import mx.mobile.solution.nabia04.main.MainActivity.Companion.userFolioNumber
 import mx.mobile.solution.nabia04.main.fragment.BaseDataBindingFragment
 import mx.mobile.solution.nabia04.room_database.entities.EntityUserData
 import mx.mobile.solution.nabia04.room_database.repositories.DatabaseRepository
-import mx.mobile.solution.nabia04.utilities.*
+import mx.mobile.solution.nabia04.utilities.BackgroundTasks
+import mx.mobile.solution.nabia04.utilities.Cons
+import mx.mobile.solution.nabia04.utilities.Event
+import mx.mobile.solution.nabia04.utilities.GlideApp
 import java.util.concurrent.TimeUnit
 
 
@@ -76,15 +80,12 @@ class DatabaseHostFragment : BaseDataBindingFragment<DatabaseViewpagerContainerB
     private val appbarViewModel by activityViewModels<mx.mobile.solution.nabia04.core.old_package.database.view_models.AppbarViewModel>()
     private var selSpinnerItem: String? = null
     private var thisUser: EntityUserData? = null
-    private var folioNumber: String? = null
     private var animationCounter = 1
     private val generator: ColorGenerator = ColorGenerator.DEFAULT
     private val labels = arrayOf(
         "ALL:", "Search results:", "Folio :", "My House members:", "My Classmates:",
         "MY Course mates:", "My Hometown:", "My District", "My Region:"
     )
-
-    private var sharedP: SharedPreferences? = null
 
     override fun getLayoutRes(): Int = R.layout.database_viewpager_container
 
@@ -95,10 +96,8 @@ class DatabaseHostFragment : BaseDataBindingFragment<DatabaseViewpagerContainerB
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        sharedP = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        folioNumber = sharedP?.getString(SessionManager.FOLIO_NUMBER, "")
         repository = DatabaseRepository.getInstance(requireActivity())
-        Thread { thisUser = repository?.getUserData(folioNumber) }.start()
+        Thread { thisUser = repository?.getUserData(userFolioNumber) }.start()
         println("${this.javaClass.simpleName} #${this.hashCode()}  onCreate()")
     }
 
@@ -137,12 +136,12 @@ class DatabaseHostFragment : BaseDataBindingFragment<DatabaseViewpagerContainerB
             startActivity(i)
         }
 
-        val clearance: String? = sharedP?.getString(Cons.CLEARANCE, "NONE")
         if (clearance == Cons.PRO ||
             clearance == Cons.PRESIDENT ||
             clearance == Cons.VICE_PRESIDENT ||
             clearance == Cons.TREASURER ||
-            folioNumber == "13786") {
+            userFolioNumber == "13786"
+        ) {
             vb?.fabAddUser?.visibility = View.VISIBLE
         }
 
@@ -315,7 +314,7 @@ class DatabaseHostFragment : BaseDataBindingFragment<DatabaseViewpagerContainerB
                 super.onOptionsItemSelected(item)
             }
             R.id.profile -> {
-                val bundle = bundleOf("folio" to folioNumber)
+                val bundle = bundleOf("folio" to userFolioNumber)
                 findNavController().navigate(R.id.action_database_viewpager_to_current_members_detail, bundle)
                 super.onOptionsItemSelected(item)
             }
@@ -330,7 +329,7 @@ class DatabaseHostFragment : BaseDataBindingFragment<DatabaseViewpagerContainerB
 
     private fun showFilterPopup(view: View) {
 
-        val popupMenu = androidx.appcompat.widget.PopupMenu(requireContext(), view)
+        val popupMenu = PopupMenu(requireContext(), view)
 
         popupMenu.menu.add(0, 1, 0, "All")
         popupMenu.menu.add(1, 2, 1, "My house members")

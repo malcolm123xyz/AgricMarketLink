@@ -2,7 +2,6 @@ package mx.mobile.solution.nabia04.main.fragment.database
 
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,7 +14,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
@@ -30,7 +28,7 @@ import mx.mobile.solution.nabia04.activities.ActivityUpdateUserData
 import mx.mobile.solution.nabia04.activities.ActivityUpdateUserData.Companion.newImageUri
 import mx.mobile.solution.nabia04.activities.DatabaseUpdateViewModel
 import mx.mobile.solution.nabia04.databinding.FragmentWorkInfoBinding
-import mx.mobile.solution.nabia04.room_database.entities.EntityUserData
+import mx.mobile.solution.nabia04.main.MainActivity.Companion.sharedP
 import mx.mobile.solution.nabia04.utilities.BackgroundTasks
 import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.MyAlertDialog
@@ -53,7 +51,6 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
     override fun getCallBack(): OnBackPressedCallback = callback
 
     private var endpoint: MainEndpoint? = null
-    private var sharedP: SharedPreferences? = null
     private var userData: DatabaseObject? = null
     private var updateMode: DatabaseUpdateViewModel? = null
     private val regionsId = intArrayOf(
@@ -80,7 +77,6 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedP = PreferenceManager.getDefaultSharedPreferences(requireContext())
         updateMode = ViewModelProvider(requireActivity()).get(DatabaseUpdateViewModel::class.java)
         endpoint = getEndpointObject()
     }
@@ -204,7 +200,7 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
                 "OK"
             ) { dialog: DialogInterface, _: Int ->
                 val p = passEdit.text.toString()
-                if (p == sharedP?.getString(SessionManager.PASSWORK, "")) {
+                if (p == sharedP.getString(SessionManager.PASSWORK, "")) {
                     dialog.dismiss()
                     sendPicture()
                 } else {

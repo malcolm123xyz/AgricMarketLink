@@ -3,7 +3,6 @@ package mx.mobile.solution.nabia04.activities
 import android.Manifest
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -20,7 +19,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.preference.PreferenceManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.cloudinary.android.MediaManager
@@ -33,6 +31,7 @@ import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager.CallBack
 import mx.mobile.solution.nabia04.databinding.ActivitySendAnnBinding
+import mx.mobile.solution.nabia04.main.MainActivity.Companion.sharedP
 import mx.mobile.solution.nabia04.utilities.*
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Announcement
@@ -42,7 +41,6 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 import java.text.SimpleDateFormat
-import java.util.*
 
 class ActivitySendAnnouncement : AppCompatActivity() {
     private var file: File? = null
@@ -59,7 +57,6 @@ class ActivitySendAnnouncement : AppCompatActivity() {
 
         vbinding = DataBindingUtil.setContentView(this, R.layout.activity_send_ann)
 
-        sharedP = PreferenceManager.getDefaultSharedPreferences(this)
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -211,7 +208,7 @@ class ActivitySendAnnouncement : AppCompatActivity() {
                 "OK"
             ) { dialog: DialogInterface, _: Int ->
                 val p = passEdit.text.toString()
-                if (p == sharedP!!.getString(SessionManager.PASSWORK, "")) {
+                if (p == sharedP.getString(SessionManager.PASSWORK, "")) {
                     dialog.dismiss()
                     sendPicture()
                 } else {
@@ -316,7 +313,6 @@ class ActivitySendAnnouncement : AppCompatActivity() {
     companion object {
         private const val MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 87
         private const val TAG = "ActivitySendAnn"
-        private var sharedP: SharedPreferences? = null
         private var endpoint: MainEndpoint? = null
         val endpointObject: MainEndpoint?
             get() {

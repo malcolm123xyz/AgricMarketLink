@@ -44,4 +44,9 @@
     <color name="colorNotification3">#81C784</color>
     <color name="red">#E4190A</color>
 
+    <color name="bad_standing">#E4190A</color>
+    <color name="average_standing">#FDD835</color>
+    <color name="good_standing">#43A047</color>
+
+
 </resources>

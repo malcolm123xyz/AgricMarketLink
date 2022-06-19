@@ -1,6 +1,7 @@
 package mx.mobile.solution.nabia04.utilities
 
 object Cons {
+    const val HAS_STORAGE_MANAGEMENT_PERM = "hasStoragePermission"
     const val DUES_NUM_SHEET: Int = 5
     const val DUES_TOTAL_MONTHS: Int = 5
     const val DUES_NUM_YEARS: Int = 5

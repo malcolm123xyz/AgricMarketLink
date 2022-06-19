@@ -1,6 +1,5 @@
 package mx.mobile.solution.nabia04.activities
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -8,17 +7,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.preference.PreferenceManager
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.room_database.MainDataBase
 import mx.mobile.solution.nabia04.room_database.repositories.DatabaseRepository
 import mx.mobile.solution.nabia04.utilities.BackgroundTasks
-import mx.mobile.solution.nabia04.utilities.SessionManager
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DatabaseObject
 
 class ActivityUpdateUserData : AppCompatActivity() {
     private var updateMode: DatabaseUpdateViewModel? = null
-    private var sharedP: SharedPreferences? = null
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     companion object {
@@ -35,10 +31,7 @@ class ActivityUpdateUserData : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         updateMode = ViewModelProvider(this).get(DatabaseUpdateViewModel::class.java)
-
-        sharedP = PreferenceManager.getDefaultSharedPreferences(this)
         selectedFolio = intent.getStringExtra("folio").toString()
-        userFolio = sharedP?.getString(SessionManager.FOLIO_NUMBER, "").toString()
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nestedFragmentHolder) as NavHostFragment
         val navController = navHostFragment.navController
