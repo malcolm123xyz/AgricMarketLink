@@ -83,33 +83,7 @@ class WelfareHostFragment : BaseDataBindingFragment<FragmentWelfareHostBinding>(
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.activity_announcements, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.refresh -> {
-                repository!!.reloadFromBackend()
-                super.onOptionsItemSelected(item)
-            }
-            R.id.logout -> {
-                AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
-                    .setTitle("WARNING!!!")
-                    .setMessage("You are about to logout")
-                    .setPositiveButton(
-                        "Continue"
-                    ) { dialog, id -> dialog.dismiss()
-                    }
-                    .setNegativeButton(
-                        "Cancel"
-                    ) { dialog, id -> dialog.dismiss() }.show()
-                super.onOptionsItemSelected(item)
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
+   
 
     override fun onDestroyView() {
 
