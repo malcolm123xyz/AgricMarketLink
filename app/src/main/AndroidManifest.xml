@@ -27,20 +27,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".main.MainActivity"
+            android:name=".main.ui.activities.MainActivity"
             android:exported="true"
             android:label="Main" />
         <activity
-            android:name=".activities.ActivitySendAnnouncement"
+            android:name=".main.ui.activities.ActivitySendAnnouncement"
             android:exported="true"
             android:label="New Announcement" />
         <activity
-            android:name=".activities.ActivityUpdateUserData"
+            android:name=".main.ui.activities.ActivityUpdateUserData"
             android:exported="true"
             android:label="Database Update" />
 
         <activity
-            android:name=".activities.ActivityTreasurer"
+            android:name=".main.ui.activities.ActivityTreasurer"
             android:exported="true"
             android:label="Treasurer" />
 

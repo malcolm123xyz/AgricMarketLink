@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/prof_fragment1"
-        android:name="mx.mobile.solution.nabia04.main.fragments.profession.FragmentProf1"
+        android:name="mx.mobile.solution.nabia04.main.ui.prof_fragments.FragmentProf1"
         android:label="PROFESSION"
         tools:layout="@layout/fragment_prof1">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/prof_fragment2"
-        android:name="mx.mobile.solution.nabia04.main.fragments.profession.FragmentProf2"
+        android:name="mx.mobile.solution.nabia04.main.ui.prof_fragments.FragmentProf2"
         android:label="Profession Fragment2"
         tools:layout="@layout/fragment_prof3">
         <action
@@ -27,7 +27,7 @@
 
     <fragment
         android:id="@+id/prof_fragment3"
-        android:name="mx.mobile.solution.nabia04.main.fragments.profession.FragmentProf3"
+        android:name="mx.mobile.solution.nabia04.main.ui.prof_fragments.FragmentProf3"
         android:label="Profession Fragment3"
         tools:layout="@layout/fragment_prof3" >
         <action

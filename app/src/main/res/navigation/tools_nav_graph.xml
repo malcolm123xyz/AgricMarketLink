@@ -8,7 +8,7 @@
     <!-- ViewPagerContainerFragment-->
     <fragment
         android:id="@+id/fragment_tools"
-        android:name="mx.mobile.solution.nabia04.main.fragments.welfare.FragmentGoodStanding"
+        android:name="mx.mobile.solution.nabia04.main.ui.dues_fragments.FragmentDuesGoodStanding"
         android:label="Tools"
         tools:layout="@layout/fragment_tools"/>
 

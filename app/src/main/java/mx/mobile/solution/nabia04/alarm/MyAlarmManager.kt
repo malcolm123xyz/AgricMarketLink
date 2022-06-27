@@ -11,8 +11,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.widget.DatePicker
-import mx.mobile.solution.nabia04.room_database.entities.EntityAnnouncement
-import mx.mobile.solution.nabia04.room_database.entities.EntityUserData
+import mx.mobile.solution.nabia04.main.data.entities.EntityAnnouncement
+import mx.mobile.solution.nabia04.main.data.entities.EntityUserData
 import java.text.SimpleDateFormat
 import java.util.*
 

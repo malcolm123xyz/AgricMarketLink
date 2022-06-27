@@ -1,15 +1,15 @@
 package mx.mobile.solution.nabia04.authentication
 
+import android.content.Intent
+import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.ui.NavigationUI.setupWithNavController
-import androidx.appcompat.app.AppCompatActivity
-import mx.mobile.solution.nabia04.authentication.RegisterFragment.Listener
-import android.os.Bundle
 import mx.mobile.solution.nabia04.R
-import android.content.Intent
-import android.util.Log
+import mx.mobile.solution.nabia04.authentication.RegisterFragment.Listener
 import mx.mobile.solution.nabia04.databinding.ActivityAuthenticationBinding
-import mx.mobile.solution.nabia04.main.MainActivity
+import mx.mobile.solution.nabia04.main.ui.activities.MainActivity
 import mx.mobile.solution.nabia04.utilities.SessionManager
 
 class AuthenticationActivity : AppCompatActivity(), LoginFragment.Listener, Listener {

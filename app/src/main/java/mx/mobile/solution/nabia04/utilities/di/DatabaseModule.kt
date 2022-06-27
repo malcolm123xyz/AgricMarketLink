@@ -22,8 +22,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import mx.mobile.solution.nabia04.room_database.AnnDao
-import mx.mobile.solution.nabia04.room_database.MainDataBase
+import mx.mobile.solution.nabia04.main.data.MainDataBase
+import mx.mobile.solution.nabia04.main.data.dao.AnnDao
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)

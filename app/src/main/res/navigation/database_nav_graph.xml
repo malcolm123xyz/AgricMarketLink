@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/database_view_pager"
-        android:name="mx.mobile.solution.nabia04.main.fragments.host_fragments.DatabaseHostFragment"
+        android:name="mx.mobile.solution.nabia04.main.ui.host_fragments.DatabaseHostFragment"
         android:label="DATABASE"
         tools:layout="@layout/database_viewpager_container">
         <action
@@ -30,7 +30,7 @@
 
     <fragment
         android:id="@+id/fragment_database_detail"
-        android:name="mx.mobile.solution.nabia04.main.fragments.database.FragmentCurrentMembersDetail"
+        android:name="mx.mobile.solution.nabia04.main.ui.database_fragments.FragmentCurrentMembersDetail"
         android:label="Details"
         tools:layout="@layout/fragment_database_detail">
         <action
@@ -49,7 +49,7 @@
 
     <fragment
         android:id="@+id/fragment_departed_members_detail"
-        android:name="mx.mobile.solution.nabia04.main.fragments.database.FragmentDepartedMembersDetail"
+        android:name="mx.mobile.solution.nabia04.main.ui.database_fragments.FragmentDepartedMembersDetail"
         android:label="Details"
         tools:layout="@layout/fragment_departed_members_detail">
         <action
@@ -63,7 +63,7 @@
 
     <fragment
         android:id="@+id/note_fragment"
-        android:name="mx.mobile.solution.nabia04.main.fragments.database.FragmentDatabaseUpdateNote"
+        android:name="mx.mobile.solution.nabia04.main.ui.database_fragments.FragmentDatabaseUpdateNote"
         android:label="@string/database_update"
         tools:layout="@layout/fragment_database_update_note">
         <action
@@ -89,7 +89,7 @@
 
     <fragment
         android:id="@+id/personal_details_fragment"
-        android:name="mx.mobile.solution.nabia04.main.fragments.database.FragmentPersonDetails"
+        android:name="mx.mobile.solution.nabia04.main.ui.database_fragments.FragmentPersonDetails"
         android:label="@string/lebel_personal_details"
         tools:layout="@layout/fragment_person_details">
         <action
@@ -108,7 +108,7 @@
 
     <fragment
         android:id="@+id/fragment_school_info"
-        android:name="mx.mobile.solution.nabia04.main.fragments.database.FragmentSchoolInfo"
+        android:name="mx.mobile.solution.nabia04.main.ui.database_fragments.FragmentSchoolInfo"
         android:label="@string/school_information"
         tools:layout="@layout/fragment_school_info">
         <action
@@ -132,7 +132,7 @@
 
     <fragment
         android:id="@+id/fragment_work_info"
-        android:name="mx.mobile.solution.nabia04.main.fragments.database.FragmentWorkInfo"
+        android:name="mx.mobile.solution.nabia04.main.ui.database_fragments.FragmentWorkInfo"
         android:label="@string/work_information"
         tools:layout="@layout/fragment_work_info" >
         <action
@@ -156,7 +156,7 @@
 
     <fragment
         android:id="@+id/fragment_done"
-        android:name="mx.mobile.solution.nabia04.main.fragments.database.FragmentDone"
+        android:name="mx.mobile.solution.nabia04.main.ui.database_fragments.FragmentDone"
         android:label="done"
         tools:layout="@layout/fragment_done" >
         <action

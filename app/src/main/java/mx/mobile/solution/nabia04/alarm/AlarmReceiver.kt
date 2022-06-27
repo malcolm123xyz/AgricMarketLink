@@ -1,21 +1,21 @@
 package mx.mobile.solution.nabia04.alarm
 
 import android.app.NotificationManager
-import android.content.BroadcastReceiver
-import android.content.Intent
-import android.os.Build
-import mx.mobile.solution.nabia04.room_database.MainDataBase
-import mx.mobile.solution.nabia04.main.MainActivity
-import mx.mobile.solution.nabia04.R
 import android.app.PendingIntent
+import android.content.BroadcastReceiver
 import android.content.Context
-import mx.mobile.solution.nabia04.utilities.Cons
+import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import mx.mobile.solution.nabia04.R
+import mx.mobile.solution.nabia04.main.data.MainDataBase
+import mx.mobile.solution.nabia04.main.ui.activities.MainActivity
 import mx.mobile.solution.nabia04.utilities.BackgroundTasks
+import mx.mobile.solution.nabia04.utilities.Cons
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, i: Intent) {
