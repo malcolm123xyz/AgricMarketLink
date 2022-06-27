@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/welfare_fragment1"
-        android:name="mx.mobile.solution.nabia04.main.fragment.welfare.FragmentWelfareSummary"
+        android:name="mx.mobile.solution.nabia04.main.fragments.welfare.FragmentWelfareSummary"
         android:label="WELFARE"
         tools:layout="@layout/fragment_prof1">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/welfare_fragment2"
-        android:name="mx.mobile.solution.nabia04.main.fragment.welfare.FragmentContHistory"
+        android:name="mx.mobile.solution.nabia04.main.fragments.welfare.FragmentContHistory"
         android:label="Welfare Fragment2"
         tools:layout="@layout/fragment_prof3">
         <action
@@ -27,7 +27,7 @@
 
     <fragment
         android:id="@+id/welfare_fragment3"
-        android:name="mx.mobile.solution.nabia04.main.fragment.welfare.FragmentContribution"
+        android:name="mx.mobile.solution.nabia04.main.fragments.welfare.FragmentContribution"
         android:label="Welfare Fragment3"
         tools:layout="@layout/fragment_prof3" >
         <action

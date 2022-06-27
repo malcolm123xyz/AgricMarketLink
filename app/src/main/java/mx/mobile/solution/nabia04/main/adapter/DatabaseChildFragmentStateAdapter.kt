@@ -5,8 +5,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import mx.mobile.solution.nabia04.main.fragment.database.FragmentCurrentMembers
-import mx.mobile.solution.nabia04.main.fragment.database.FragmentDepartedMembers
+import androidx.viewpager2.adapter.FragmentStateAdapter.FragmentTransactionCallback.OnPostEventListener
+import mx.mobile.solution.nabia04.main.fragments.database.FragmentCurrentMembers
+import mx.mobile.solution.nabia04.main.fragments.database.FragmentDepartedMembers
 
 
 /**

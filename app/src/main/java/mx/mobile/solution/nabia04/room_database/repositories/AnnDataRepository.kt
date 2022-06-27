@@ -14,7 +14,7 @@ import mx.mobile.solution.nabia04.main.MainActivity.Companion.sharedP
 import mx.mobile.solution.nabia04.room_database.AnnDao
 import mx.mobile.solution.nabia04.room_database.MainDataBase
 import mx.mobile.solution.nabia04.room_database.entities.EntityAnnouncement
-import mx.mobile.solution.nabia04.room_database.view_models.LoadingStatus
+import mx.mobile.solution.nabia04.room_database.view_models.State
 import mx.mobile.solution.nabia04.utilities.BackgroundTasks
 import mx.mobile.solution.nabia04.utilities.Cons
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
@@ -76,7 +76,11 @@ class AnnDataRepository(private val context: Context?) {
     fun reloadFromLocalDB() {
         object : BackgroundTasks() {
             override fun onPreExecute() {
-                annloadingStatus.setValue(LoadingStatus(true))
+                annloadingStatus.setValue(
+                    State(
+                        true
+                    )
+                )
             }
 
             override fun doInBackground() {
@@ -84,7 +88,11 @@ class AnnDataRepository(private val context: Context?) {
             }
 
             override fun onPostExecute() {
-                annloadingStatus.setValue(LoadingStatus(false))
+                annloadingStatus.setValue(
+                    State(
+                        false
+                    )
+                )
                 annViewModel.setData(allAnnouncements)
             }
         }.execute()
@@ -94,9 +102,7 @@ class AnnDataRepository(private val context: Context?) {
         object : BackgroundTasks() {
             private var response = AnnouncementResponse()
 
-            override fun onPreExecute() {
-                annloadingStatus.setValue(LoadingStatus(true))
-            }
+            override fun onPreExecute() {}
 
             override fun doInBackground() {
                 try {
@@ -126,7 +132,11 @@ class AnnDataRepository(private val context: Context?) {
             }
 
             override fun onPostExecute() {
-                annloadingStatus.setValue(LoadingStatus(false))
+                annloadingStatus.setValue(
+                    State(
+                        false
+                    )
+                )
                 when (response.returnCode) {
                     1 -> {
                         annViewModel.setData(allAnnouncements)

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/welfare_fragment1"
-        android:name="mx.mobile.solution.nabia04.main.fragment.host_fragments.WelfareHostFragment"
+        android:name="mx.mobile.solution.nabia04.main.fragments.host_fragments.WelfareHostFragment"
         android:label="WELFARE"
         tools:layout="@layout/fragment_welfare_host">
         <action

@@ -5,9 +5,10 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import mx.mobile.solution.nabia04.main.fragment.notice_board.FragmentBirthDay
-import mx.mobile.solution.nabia04.main.fragment.notice_board.FragmentEventsNot
-import mx.mobile.solution.nabia04.main.fragment.notice_board.FragmentGeneralNot
+import androidx.viewpager2.adapter.FragmentStateAdapter.FragmentTransactionCallback.OnPostEventListener
+import mx.mobile.solution.nabia04.main.fragments.notice_board.FragmentBirthDay
+import mx.mobile.solution.nabia04.main.fragments.notice_board.FragmentEventsNot
+import mx.mobile.solution.nabia04.main.fragments.notice_board.FragmentGeneralNot
 
 
 /**

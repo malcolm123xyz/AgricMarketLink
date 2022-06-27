@@ -8,11 +8,14 @@ import androidx.lifecycle.ViewModel;
 import mx.mobile.solution.nabia04.room_database.entities.EntityAnnouncement;
 
 public class AnnViewModel extends ViewModel {
+
     private final MutableLiveData<List<EntityAnnouncement>> announcementMutableObj;
+
     public AnnViewModel() {announcementMutableObj = new MutableLiveData<>();}
     public void setData (List<EntityAnnouncement> data){
         announcementMutableObj.setValue(data);
     }
+
     public LiveData<List<EntityAnnouncement>> getData() {
         return announcementMutableObj;
     }

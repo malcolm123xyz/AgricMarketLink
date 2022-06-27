@@ -5,6 +5,8 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
+import java.util.List;
+import java.util.Map;
 
 import androidx.room.TypeConverter;
 
@@ -27,8 +29,30 @@ public class DataConverter {
             return (null);
         }
         Gson gson = new Gson();
-        Type type = new TypeToken<String[]>() {}.getType();
+        Type type = new TypeToken<String[]>() {
+        }.getType();
         return gson.fromJson(payments, type);
+    }
+
+    public String getPaymentToString(List<Map<String, String>> countryLang) {
+        if (countryLang == null) {
+            return (null);
+        }
+        Gson gson = new Gson();
+        Type type = new TypeToken<List<Map<String, String>>>() {
+        }.getType();
+        return gson.toJson(countryLang, type);
+    }
+
+    @TypeConverter
+    public List<Map<String, String>> getPaymentList(String countryLangString) {
+        if (countryLangString == null) {
+            return (null);
+        }
+        Gson gson = new Gson();
+        Type type = new TypeToken<List<Map<String, String>>>() {
+        }.getType();
+        return gson.fromJson(countryLangString, type);
     }
 
 

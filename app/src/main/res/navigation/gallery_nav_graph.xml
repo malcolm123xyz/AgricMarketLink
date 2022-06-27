@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/gallery_fragment1"
-        android:name="mx.mobile.solution.nabia04.main.fragment.gallery.FragmentGallery1"
+        android:name="mx.mobile.solution.nabia04.main.fragments.gallery.FragmentGallery1"
         android:label="EVENTS GALLERY"
         tools:layout="@layout/fragment_gallery1">
         <action
@@ -17,7 +17,7 @@
 
     <fragment
         android:id="@+id/gallery_fragment2"
-        android:name="mx.mobile.solution.nabia04.main.fragment.gallery.FragmentGallery2"
+        android:name="mx.mobile.solution.nabia04.main.fragments.gallery.FragmentGallery2"
         android:label="Gallery Fragment2"
         tools:layout="@layout/fragment_gallery2">
         <action
@@ -27,7 +27,7 @@
 
     <fragment
         android:id="@+id/gallery_fragment3"
-        android:name="mx.mobile.solution.nabia04.main.fragment.gallery.FragmentGallery3"
+        android:name="mx.mobile.solution.nabia04.main.fragments.gallery.FragmentGallery3"
         android:label="Gallery Fragment3"
         tools:layout="@layout/fragment_gallery3" >
         <action

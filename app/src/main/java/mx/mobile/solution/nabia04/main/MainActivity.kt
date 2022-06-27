@@ -23,17 +23,23 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.api.client.extensions.android.http.AndroidHttp
+import com.google.api.client.extensions.android.json.AndroidJsonFactory
 import com.smarttoolfactory.tutorial7_2bnv_viewpager2_complexarchitecture.viewmodel.MainAppbarViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.databinding.ActivityMainBinding
-import mx.mobile.solution.nabia04.main.fragment.host_fragments.NoticeBoardHostFragment
-import mx.mobile.solution.nabia04.main.fragment.welfare.ExcelHelper
+import mx.mobile.solution.nabia04.main.fragments.host_fragments.NoticeBoardHostFragment
+import mx.mobile.solution.nabia04.main.fragments.welfare.ExcelHelper
 import mx.mobile.solution.nabia04.main.util.Event
-import mx.mobile.solution.nabia04.room_database.view_models.*
-import mx.mobile.solution.nabia04.utilities.BackgroundTasks
+import mx.mobile.solution.nabia04.room_database.view_models.AnnLoadingStatusViewModel
+import mx.mobile.solution.nabia04.room_database.view_models.AnnViewModel
+import mx.mobile.solution.nabia04.room_database.view_models.DBLoadingStatusViewModel
+import mx.mobile.solution.nabia04.room_database.view_models.DatabaseListViewModel
 import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.SessionManager
 import pub.devrel.easypermissions.EasyPermissions
+import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 
 
 /*
@@ -73,6 +79,7 @@ import pub.devrel.easypermissions.EasyPermissions
  * and [BottomNavigationView.setupWithNavController]
  * in the NavigationExtensions code for setting BottomNavigationView back stack
  */
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private val RC_APP_PERM = 1244
     private val appbarViewModel by viewModels<MainAppbarViewModel>()
@@ -81,7 +88,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     companion object {
         lateinit var excelHelper: ExcelHelper
-        lateinit var excelHelperViewModel: ExcelHelperViewModel
         lateinit var annloadingStatus: AnnLoadingStatusViewModel
         lateinit var databaseLoadingStatus: DBLoadingStatusViewModel
         lateinit var annViewModel: AnnViewModel
@@ -89,11 +95,25 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         lateinit var userFolioNumber: String
         lateinit var clearance: String
         lateinit var sharedP: SharedPreferences
+
+        val endpoint: MainEndpoint?
+            get() {
+                val builder = MainEndpoint.Builder(
+                    AndroidHttp.newCompatibleTransport(),
+                    AndroidJsonFactory(), null
+                ).setRootUrl(Cons.ROOT_URL)
+                return builder.build()
+            }
+
+        fun excelHelperIsInitialized(): Boolean {
+            return this::excelHelper.isInitialized
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+
         dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -107,7 +127,6 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         databaseLoadingStatus = ViewModelProvider(this).get(DBLoadingStatusViewModel::class.java)
         annViewModel = ViewModelProvider(this).get(AnnViewModel::class.java)
         databaseViewModel = ViewModelProvider(this).get(DatabaseListViewModel::class.java)
-        excelHelperViewModel = ViewModelProvider(this).get(ExcelHelperViewModel::class.java)
 
         if (savedInstanceState == null) {
             setupBottomNavigationBar()
@@ -116,21 +135,9 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     }
 
     private fun initializeExcelHelper(context: Context) {
-        object : BackgroundTasks() {
-            override fun onPreExecute() {
-
-            }
-
-            override fun doInBackground() {
-                excelHelper = ExcelHelper.getInstance(context)!!
-                Log.i("TAG", "excelHelper innitialized")
-            }
-
-            override fun onPostExecute() {
-                excelHelperViewModel.setValue(excelHelper)
-            }
-
-        }.execute()
+        Thread {
+            excelHelper = ExcelHelper.getInstance(context)!!
+        }.start()
     }
 
     private fun requestPermissions() {

@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.cloud.tools.endpoints-framework-client'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdk 32
@@ -76,6 +77,13 @@ dependencies {
     implementation 'com.google.http-client:google-http-client-android:1.30.0'
     implementation 'com.github.clans:fab:1.6.4'
     implementation 'com.squareup.retrofit:retrofit:1.9.0'
+    implementation 'javax.inject:javax.inject:1'
+
+    implementation 'com.google.dagger:hilt-android:2.42'
+    kapt 'com.google.dagger:hilt-android-compiler:2.42'
+
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.18'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
 
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation "androidx.viewpager2:viewpager2:1.1.0-beta01"
@@ -89,5 +97,8 @@ dependencies {
     implementation 'com.fasterxml:aalto-xml:1.2.2'
 
     implementation 'pub.devrel:easypermissions:3.0.0'
+}
 
+kapt {
+    correctErrorTypes = true
 }

@@ -5,10 +5,17 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 public class DBLoadingStatusViewModel extends ViewModel {
-    private final MutableLiveData<LoadingStatus> loadingStatus;
-    public DBLoadingStatusViewModel() {loadingStatus = new MutableLiveData<>();}
-    public void setValue(LoadingStatus value){
+    private final MutableLiveData<State> loadingStatus;
+
+    public DBLoadingStatusViewModel() {
+        loadingStatus = new MutableLiveData<>();
+    }
+
+    public void setValue(State value) {
         loadingStatus.setValue(value);
     }
-    public LiveData<LoadingStatus> getValue() {return loadingStatus;}
+
+    public LiveData<State> getValue() {
+        return loadingStatus;
+    }
 }

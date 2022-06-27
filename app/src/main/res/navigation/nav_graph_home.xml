@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/homeFragment1"
-        android:name="mx.mobile.solution.nabia04.main.fragment.database.FragmentCurrentMembers"
+        android:name="mx.mobile.solution.nabia04.main.fragments.database.FragmentCurrentMembers"
         android:label="HomeFragment1"
         tools:layout="@layout/fragment_home1">
         <action
@@ -18,7 +18,7 @@
 
     <fragment
         android:id="@+id/homeFragment2"
-        android:name="mx.mobile.solution.nabia04.main.fragment.database.FragmentDepartedMembers"
+        android:name="mx.mobile.solution.nabia04.main.fragments.database.FragmentDepartedMembers"
         android:label="HomeFragment2"
         tools:layout="@layout/fragment_departed_members">
         <action
@@ -28,7 +28,7 @@
 
     <fragment
         android:id="@+id/homeFragment3"
-        android:name="mx.mobile.solution.nabia04.main.fragment.blankfragment.HomeFragment3"
+        android:name="mx.mobile.solution.nabia04.main.fragments.blankfragment.HomeFragment3"
         android:label="HomeFragment3"
         tools:layout="@layout/fragment_home3" >
         <action

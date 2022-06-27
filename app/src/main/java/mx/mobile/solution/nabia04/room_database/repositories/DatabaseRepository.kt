@@ -15,7 +15,7 @@ import mx.mobile.solution.nabia04.main.MainActivity.Companion.userFolioNumber
 import mx.mobile.solution.nabia04.room_database.MainDataBase
 import mx.mobile.solution.nabia04.room_database.UserDataDao
 import mx.mobile.solution.nabia04.room_database.entities.EntityUserData
-import mx.mobile.solution.nabia04.room_database.view_models.LoadingStatus
+import mx.mobile.solution.nabia04.room_database.view_models.State
 import mx.mobile.solution.nabia04.utilities.BackgroundTasks
 import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.SessionManager
@@ -146,7 +146,11 @@ class DatabaseRepository(private val context: Context) {
             var errCode = 1
             var errMsg = ""
             override fun onPreExecute() {
-                MainActivity.databaseLoadingStatus.setValue(LoadingStatus(true))
+                MainActivity.databaseLoadingStatus.setValue(
+                    State(
+                        true
+                    )
+                )
             }
 
             override fun doInBackground() {
@@ -187,7 +191,11 @@ class DatabaseRepository(private val context: Context) {
             }
 
             override fun onPostExecute() {
-                MainActivity.databaseLoadingStatus.setValue(LoadingStatus(false))
+                MainActivity.databaseLoadingStatus.setValue(
+                    State(
+                        false
+                    )
+                )
                 if (errCode == 1) {
                     databaseViewModel.setData(allUserData)
                 } else if (errCode == Cons.NOT_LOGGED_IN) {

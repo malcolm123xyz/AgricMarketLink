@@ -14,7 +14,7 @@ import mx.mobile.solution.nabia04.room_database.entities.EntityUserData;
 import mx.mobile.solution.nabia04.room_database.entities.EntityYearlyDues;
 
 
-@Database(entities = {EntityAnnouncement.class, EntityUserData.class, EntityYearlyDues.class}, version = 41, exportSchema = false)
+@Database(entities = {EntityAnnouncement.class, EntityUserData.class, EntityYearlyDues.class}, version = 42, exportSchema = false)
 @TypeConverters({DataConverter.class})
 public abstract class MainDataBase extends RoomDatabase {
 
@@ -30,15 +30,8 @@ public abstract class MainDataBase extends RoomDatabase {
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
     public static MainDataBase getDatabase(final Context context) {
-        if (INSTANCE == null) {
-            synchronized (MainDataBase.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            MainDataBase.class, "main_database").fallbackToDestructiveMigration()
-                            .build();
-                }
-            }
-        }
-        return INSTANCE;
+        return Room.databaseBuilder(context.getApplicationContext(),
+                        MainDataBase.class, "main_database").fallbackToDestructiveMigration()
+                .build();
     }
 }
