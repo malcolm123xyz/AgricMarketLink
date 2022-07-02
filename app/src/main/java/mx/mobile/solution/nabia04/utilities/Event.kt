@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package mx.mobile.solution.nabia04.utilities
+package mx.mobile.solution.nabia04.util
 
 import androidx.lifecycle.Observer
 

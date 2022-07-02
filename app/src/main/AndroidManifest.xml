@@ -2,8 +2,22 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.STORAGE" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
-        android:name=".main.App"
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -27,20 +41,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".main.ui.activities.MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:exported="true"
             android:label="Main" />
         <activity
-            android:name=".main.ui.activities.ActivitySendAnnouncement"
+            android:name=".ui.activities.ActivitySendAnnouncement"
             android:exported="true"
             android:label="New Announcement" />
         <activity
-            android:name=".main.ui.activities.ActivityUpdateUserData"
+            android:name=".ui.activities.ActivityUpdateUserData"
             android:exported="true"
             android:label="Database Update" />
 
         <activity
-            android:name=".main.ui.activities.ActivityTreasurer"
+            android:name=".ui.activities.ActivityTreasurer"
             android:exported="true"
             android:label="Treasurer" />
 
@@ -54,18 +68,5 @@
             </intent-filter>
         </receiver>
     </application>
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.STORAGE" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
-
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>

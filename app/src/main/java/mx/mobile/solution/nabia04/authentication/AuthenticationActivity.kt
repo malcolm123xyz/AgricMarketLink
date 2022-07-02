@@ -9,7 +9,7 @@ import androidx.navigation.ui.NavigationUI.setupWithNavController
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.authentication.RegisterFragment.Listener
 import mx.mobile.solution.nabia04.databinding.ActivityAuthenticationBinding
-import mx.mobile.solution.nabia04.main.ui.activities.MainActivity
+import mx.mobile.solution.nabia04.ui.activities.MainActivity
 import mx.mobile.solution.nabia04.utilities.SessionManager
 
 class AuthenticationActivity : AppCompatActivity(), LoginFragment.Listener, Listener {

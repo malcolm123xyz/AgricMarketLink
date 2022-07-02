@@ -12,8 +12,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import mx.mobile.solution.nabia04.R
-import mx.mobile.solution.nabia04.main.data.MainDataBase
-import mx.mobile.solution.nabia04.main.ui.activities.MainActivity
+import mx.mobile.solution.nabia04.ui.activities.MainActivity
 import mx.mobile.solution.nabia04.utilities.BackgroundTasks
 import mx.mobile.solution.nabia04.utilities.Cons
 
@@ -42,8 +41,10 @@ class AlarmReceiver : BroadcastReceiver() {
             }
 
             override fun doInBackground() {
-                val eventDoa = MainDataBase.getDatabase(context).annDao()
-                val birthDayDoa = MainDataBase.getDatabase(context).userDataDao()
+                val eventDoa =
+                    mx.mobile.solution.nabia04.data.MainDataBase.getDatabase(context).annDao()
+                val birthDayDoa =
+                    mx.mobile.solution.nabia04.data.MainDataBase.getDatabase(context).userDataDao()
                 val myAlarmManager = MyAlarmManager(context)
                 myAlarmManager.scheduleEventNotification(eventDoa.annList)
                 myAlarmManager.scheduleBirthdayNotification(birthDayDoa.usersDataList)

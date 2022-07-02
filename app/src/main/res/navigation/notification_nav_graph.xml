@@ -8,7 +8,7 @@
     <!-- ViewPagerContainerFragment-->
     <fragment
         android:id="@+id/payment_details_view"
-        android:name="mx.mobile.solution.nabia04.main.ui.host_fragments.NoticeBoardHostFragment"
+        android:name="mx.mobile.solution.nabia04.ui.host_fragments.NoticeBoardHostFragment"
         android:label="NOTICE BOARD"
         tools:layout="@layout/fragment_viewpager_container">
 
@@ -21,7 +21,7 @@
     <!-- Login -->
     <fragment
         android:id="@+id/detail_fragment"
-        android:name="mx.mobile.solution.nabia04.main.ui.ann_fragments.FragmentDetailView"
+        android:name="mx.mobile.solution.nabia04.ui.ann_fragments.FragmentDetailView"
         android:label="Details"
         tools:layout="@layout/fragment_detail">
         <action

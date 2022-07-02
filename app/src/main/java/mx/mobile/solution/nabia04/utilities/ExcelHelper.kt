@@ -1,20 +1,18 @@
 package mx.mobile.solution.nabia04.utilities
 
-import android.content.Context
 import android.os.Environment
-import mx.mobile.solution.nabia04.main.ui.activities.MainActivity.Companion.userFolioNumber
+import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
 import org.apache.poi.ss.usermodel.*
 import java.io.File
 import java.io.FileInputStream
 import java.util.*
 
+abstract class ExcelHelper() {
 
-class ExcelHelper(val context: Context?) {
-
+    private var isCreated: Boolean = false
     private var formatter = DataFormatter()
     private var workbook: Workbook? = null
     private var totalAmount = 0.00
-    private var selYeartotal = 0.00
     private var userTotalAmount = 0.00
     private var userNumMonths = 0.00
     private var numMonthsOwed = 0.00
@@ -24,35 +22,42 @@ class ExcelHelper(val context: Context?) {
     //private var workbook: Workbook? = null
     private lateinit var totals: MutableList<TotalAmount>
 
+    fun isCreated(): Boolean {
+        return isCreated
+    }
+
     companion object {
         var namesList: ArrayList<String> = ArrayList()
         var folioList: ArrayList<String> = ArrayList()
-
-        @Volatile
-        private var INSTANCE: ExcelHelper? = null
-        fun getInstance(context: Context?): ExcelHelper? {
-            if (INSTANCE == null) {
-                synchronized(ExcelHelper::class.java) {
-                    if (INSTANCE == null) {
-                        INSTANCE = ExcelHelper(context)
-                    }
-                }
-            }
-            return INSTANCE
-        }
     }
 
-    init {
-        createWorkBook()
-        getTotals()
-        totalAmount = getOverallTotal()
-        userTotalAmount = getUserTotal(userFolioNumber)
-        userNumMonths = getUserNumMonths(userFolioNumber)
-        val calendar = Calendar.getInstance()
-        val month = calendar.get(Calendar.MONTH)
-        val currYearMonths = 12 - month
-        totalMonths = ((12 * Cons.DUES_NUM_YEARS) - (7 + currYearMonths)).toDouble()
-        numMonthsOwed = totalMonths - userNumMonths
+    protected abstract fun onExcelReady(excel: ExcelHelper)
+
+    fun create() {
+        val excelHelper = this
+        object : BackgroundTasks() {
+
+            override fun onPreExecute() {}
+
+            override fun doInBackground() {
+                createWorkBook()
+                getTotals()
+                totalAmount = getOverallTotal()
+                userTotalAmount = getUserTotal(userFolioNumber)
+                userNumMonths = getUserNumMonths(userFolioNumber)
+                val calendar = Calendar.getInstance()
+                val month = calendar.get(Calendar.MONTH)
+                val currYearMonths = 12 - month
+                totalMonths = ((12 * Cons.DUES_NUM_YEARS) - (7 + currYearMonths)).toDouble()
+                numMonthsOwed = totalMonths - userNumMonths
+                isCreated = true
+            }
+
+            override fun onPostExecute() {
+                onExcelReady(excelHelper)
+            }
+
+        }.execute()
     }
 
     fun getWorkbook(): Workbook {

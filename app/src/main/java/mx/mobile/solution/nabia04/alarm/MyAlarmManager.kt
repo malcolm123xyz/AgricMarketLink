@@ -11,8 +11,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.widget.DatePicker
-import mx.mobile.solution.nabia04.main.data.entities.EntityAnnouncement
-import mx.mobile.solution.nabia04.main.data.entities.EntityUserData
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -56,9 +54,9 @@ class MyAlarmManager(context: Context) {
         ).show()
     }
 
-    fun scheduleEventNotification(annDataObject: List<EntityAnnouncement>) {
+    fun scheduleEventNotification(annDataObject: List<mx.mobile.solution.nabia04.data.entities.EntityAnnouncement>) {
         var numAlarms = 0
-        for (eventItem: EntityAnnouncement in annDataObject) {
+        for (eventItem: mx.mobile.solution.nabia04.data.entities.EntityAnnouncement in annDataObject) {
             val alarmTime = eventItem.eventDate;
             val currentTime = System.currentTimeMillis()
             if (alarmTime > currentTime) {
@@ -80,7 +78,7 @@ class MyAlarmManager(context: Context) {
                 Log.i(TAG, "Alarm set at: " + fd.format(Date(alarmTime)) + ", Alarm id: " + alarmId)
             }
         }
-        if(numAlarms > 0){
+        if (numAlarms > 0) {
             val receiver = ComponentName(context, AlarmReceiver::class.java)
             context.packageManager.setComponentEnabledSetting(
                 receiver,
@@ -90,14 +88,14 @@ class MyAlarmManager(context: Context) {
         }
     }
 
-    fun scheduleBirthdayNotification(users: List<EntityUserData>) {
-        for (user: EntityUserData in users) {
+    fun scheduleBirthdayNotification(users: List<mx.mobile.solution.nabia04.data.entities.EntityUserData>) {
+        for (user: mx.mobile.solution.nabia04.data.entities.EntityUserData in users) {
             val alarmTime = user.birthDayAlarm;
             val currentTime = System.currentTimeMillis()
             if (alarmTime > currentTime) {
-                Log.i(TAG, "user name: "+user.fullName)
+                Log.i(TAG, "user name: " + user.fullName)
                 val alarmId = user.folioNumber.substring(3).toInt()
-                Log.i(TAG, "user folio: "+user.folioNumber)
+                Log.i(TAG, "user folio: " + user.folioNumber)
                 val intent = Intent(context, AlarmReceiver::class.java)
                 intent.putExtra("itemId", user.folioNumber)
                 intent.putExtra("type", "Birthday")
@@ -117,7 +115,7 @@ class MyAlarmManager(context: Context) {
         return s
     }
 
-    fun cancel(ann: EntityAnnouncement) {
+    fun cancel(ann: mx.mobile.solution.nabia04.data.entities.EntityAnnouncement) {
         val alarmId = ann.id.toString().substring(9).toInt()
         val intent = Intent(context, AlarmReceiver::class.java)
         intent.putExtra("itemId", ann.id)
@@ -127,7 +125,7 @@ class MyAlarmManager(context: Context) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         val pendingIntent = PendingIntent.getService(context, alarmId, intent, flag)
         if (pendingIntent != null && alarmManager != null) {
-            Log.i(TAG, "Alarm canceled for : " +ann.heading)
+            Log.i(TAG, "Alarm canceled for : " + ann.heading)
             alarmManager.cancel(pendingIntent)
         }else{
             Log.i(TAG, "Alarm not found for : " +alarmId)
