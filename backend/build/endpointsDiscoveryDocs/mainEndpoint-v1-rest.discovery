@@ -108,16 +108,6 @@
   "getMembers": {
    "httpMethod": "GET",
    "id": "mainEndpoint.getMembers",
-   "parameterOrder": [
-    "accessToken"
-   ],
-   "parameters": {
-    "accessToken": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    }
-   },
    "path": "getMembers",
    "response": {
     "$ref": "DatabaseResponse"
@@ -267,12 +257,12 @@
     "status"
    ],
    "parameters": {
-    "folio": {
+    "date": {
      "location": "query",
      "required": true,
      "type": "string"
     },
-    "date": {
+    "folio": {
      "location": "query",
      "required": true,
      "type": "string"

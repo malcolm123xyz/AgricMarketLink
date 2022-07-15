@@ -8,15 +8,16 @@ import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_person_details.*
 import kotlinx.android.synthetic.main.fragment_school_info.*
 import mx.mobile.solution.nabia04.R
+import mx.mobile.solution.nabia04.data.entities.EntityUserData
+import mx.mobile.solution.nabia04.data.view_models.DBUpdateViewModel
 import mx.mobile.solution.nabia04.databinding.FragmentSchoolInfoBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
-import mx.mobile.solution.nabia04.ui.activities.DatabaseUpdateViewModel
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DatabaseObject
+import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData.Companion.selectedFolio
 import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -33,31 +34,38 @@ class FragmentSchoolInfo : BaseFragment<FragmentSchoolInfoBinding>() {
 
     override fun getLayoutRes(): Int = R.layout.fragment_school_info
 
-    private var userData: DatabaseObject? = null
-    private var updateMode: DatabaseUpdateViewModel? = null
+    private val updateModel by activityViewModels<DBUpdateViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        updateMode = ViewModelProvider(requireActivity()).get(DatabaseUpdateViewModel::class.java)
-    }
+    private var updateObj: EntityUserData? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        updateMode?.getValue()?.observe(viewLifecycleOwner) { updateModel: DatabaseObject? ->
-            userData = updateModel
+        updateModel.getDataToObserve(selectedFolio)
+            .observe(viewLifecycleOwner) { userData: EntityUserData? ->
 
-            val selIndex =
+                if (userData != null) {
+                    updateObj = userData
 
-            clsass_spinner.setSelection((clsass_spinner.adapter as ArrayAdapter<String>)
-                .getPosition(userData?.className ?: ""))
-            course_spinner.setSelection((course_spinner.adapter as ArrayAdapter<String>)
-                .getPosition(userData?.courseStudied ?: ""))
-            house_held_spinner.setSelection((house_held_spinner.adapter as ArrayAdapter<String>)
-                .getPosition(userData?.house ?: ""))
-            position_held_spinner.setSelection((position_held_spinner.adapter as ArrayAdapter<String>)
-                .getPosition(userData?.positionHeld ?: ""))
-        }
+                    clsass_spinner.setSelection(
+                        (clsass_spinner.adapter as ArrayAdapter<String>)
+                            .getPosition(updateObj?.className ?: "")
+                    )
+                    course_spinner.setSelection(
+                        (course_spinner.adapter as ArrayAdapter<String>)
+                            .getPosition(updateObj?.courseStudied ?: "")
+                    )
+                    house_held_spinner.setSelection(
+                        (house_held_spinner.adapter as ArrayAdapter<String>)
+                            .getPosition(updateObj?.house ?: "")
+                    )
+                    position_held_spinner.setSelection(
+                        (position_held_spinner.adapter as ArrayAdapter<String>)
+                            .getPosition(updateObj?.positionHeld ?: "")
+                    )
+                }
+
+            }
 
         nextButtonSchoolD.setOnClickListener {
             onNext()
@@ -80,16 +88,16 @@ class FragmentSchoolInfo : BaseFragment<FragmentSchoolInfoBinding>() {
         }
     }
 
-    fun onNext(){
+    fun onNext() {
 
-        userData?.className = clsass_spinner.selectedItem.toString()
-        userData?.courseStudied = course_spinner.selectedItem.toString()
-        userData?.house = house_held_spinner.selectedItem.toString()
-        userData?.positionHeld = position_held_spinner.selectedItem.toString()
+        updateObj?.className = clsass_spinner.selectedItem.toString()
+        updateObj?.courseStudied = course_spinner.selectedItem.toString()
+        updateObj?.house = house_held_spinner.selectedItem.toString()
+        updateObj?.positionHeld = position_held_spinner.selectedItem.toString()
 
-        val errorStr = validateDataModel(userData)
+        val errorStr = validateDataModel(updateObj)
         if (errorStr.isEmpty()) {
-            updateMode?.setValue(userData!!)
+            updateObj?.let { updateModel.postData(it) }
             findNavController().navigate(R.id.action_school_info_move_forward)
         } else {
             warnAndSend(errorStr)
@@ -107,7 +115,7 @@ class FragmentSchoolInfo : BaseFragment<FragmentSchoolInfoBinding>() {
         lv.adapter = adapter
         dialog.setPositiveButton("PROCEED") { d, id ->
             d.dismiss()
-            updateMode?.setValue(userData!!)
+            updateObj?.let { updateModel.postData(it) }
             findNavController().navigate(R.id.action_school_info_move_forward)
         }
         dialog.setNegativeButton(
@@ -116,7 +124,7 @@ class FragmentSchoolInfo : BaseFragment<FragmentSchoolInfoBinding>() {
         dialog.show()
     }
 
-    private fun validateDataModel(data: DatabaseObject?): List<String> {
+    private fun validateDataModel(data: EntityUserData?): List<String> {
         val errorList: MutableList<String> = ArrayList()
 
         if (data?.className == null || data.className.lowercase(Locale.getDefault())

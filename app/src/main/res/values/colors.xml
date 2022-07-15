@@ -18,6 +18,10 @@
 
     <color name="grey">#C3BDBD</color>
 
+    <color name="light_grey">#E6E0E0</color>
+
+    <color name="light_grey1">#F8F2F2</color>
+
     <color name="colorAccentButtonStart">#076FC2</color>
     <color name="colorAccentButtonEnd">#07497E</color>
 

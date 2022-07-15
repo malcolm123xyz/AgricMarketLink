@@ -4,145 +4,157 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.amulyakhare.textdrawable.util.ColorGenerator
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.R
-import mx.mobile.solution.nabia04.data.entities.EntityYearlyDues
-import mx.mobile.solution.nabia04.data.repositories.YearlyDuesRepository
+import mx.mobile.solution.nabia04.data.entities.EntityDues
+import mx.mobile.solution.nabia04.data.view_models.DuesViewModel
 import mx.mobile.solution.nabia04.databinding.FragmentYearlyPaymentBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
-import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.excelHelper
-import mx.mobile.solution.nabia04.ui.host_fragments.TreasurerPaymentDetailHost.Companion.SORT
-import mx.mobile.solution.nabia04.utilities.BackgroundTasks
-import java.text.SimpleDateFormat
-import java.util.*
+import mx.mobile.solution.nabia04.ui.treasurer.TreasurerPaymentDetailHost.Companion.SORT
+import mx.mobile.solution.nabia04.utilities.ExcelHelper
+import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Status
+import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 
-
+@AndroidEntryPoint
 class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>() {
 
-    private lateinit var list: List<EntityYearlyDues>
-    private lateinit var dao: mx.mobile.solution.nabia04.data.dao.DuesDetailDao
-    private lateinit var duesData: List<EntityYearlyDues>
-
-    private val generator: ColorGenerator = ColorGenerator.DEFAULT
+    @Inject
+    lateinit var excelHelper: ExcelHelper
 
     private lateinit var adapter: ListAdapter1
 
     override fun getLayoutRes(): Int = R.layout.fragment_yearly_payment
 
-    private lateinit var repository: YearlyDuesRepository
+    private lateinit var viewModel: DuesViewModel
+
+    private lateinit var selectedList: MutableList<EntityDues>
+
+    private var total = ""
 
     companion object {
-        private var selectedYear = ""
+        private var intPosition = 0;
         fun newInstance(pos: Int): FragmentYearlyDues {
-            selectedYear = excelHelper.getWorkbook().getSheetName(pos)
+            intPosition = pos
             return FragmentYearlyDues()
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(DuesViewModel::class.java)
+        adapter = ListAdapter1()
         setHasOptionsMenu(true)
-        repository = YearlyDuesRepository(requireContext())
-        dao = mx.mobile.solution.nabia04.data.MainDataBase.getDatabase(context).duesDetailsDao()
     }
 
+    @OptIn(ExperimentalTime::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vb!!.recyclerView.setHasFixedSize(true)
         vb!!.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
-        adapter = ListAdapter1()
-        vb!!.recyclerView.adapter = adapter
-        getDataForThisYear()
+
+        lifecycleScope.launch {
+            loadExcel()
+            setUpListener()
+            showHeader()
+        }
+
+        vb?.newPayment?.setOnClickListener {
+            findNavController().navigate(R.id.action_move_forward)
+        }
     }
 
-    private fun getDataForThisYear() {
-        Log.i("TAG", "getDataForThisYear()..........")
-        object : BackgroundTasks() {
-            override fun onPreExecute() {
-            }
+    private suspend fun setUpListener() {
+        viewModel.fetchAnn().observe(viewLifecycleOwner) { users: Resource<List<EntityDues>> ->
+            when (users.status) {
+                Status.SUCCESS -> {
+                    selectedList = users.data?.toMutableList() ?: ArrayList()
+                    lifecycleScope.launch {
+                        sortData()
+                        vb!!.recyclerView.adapter = adapter
+                        adapter.submitList(selectedList)
+                        adapter.notifyDataSetChanged()
+                    }
+                    val total = excelHelper.getGrandTotal().toString()
+                    vb!!.total.text = total
 
-            override fun doInBackground() {
-                list = dao.getThisYearDues(selectedYear)
-            }
-
-            override fun onPostExecute() {
-                Log.i("TAG", "List submitted to Adapter = ${list.size}")
-                adapter.submitList(list)
-                showProgress(false)
-                adapter.notifyDataSetChanged()
-            }
-
-        }.execute()
-    }
-
-    private fun sortData() {
-        Log.i("TAG", "sortData()..........")
-        Log.i("TAG", "SORT = $SORT")
-        object : BackgroundTasks() {
-            val sortedList = list.toMutableList()
-            override fun onPreExecute() {}
-            override fun doInBackground() {
-
-                if (sortedList.isEmpty()) {
-                    return
+                    vb?.totalCont?.text = "Total payment: Ghc $total"
+                    vb?.numContributors?.text = "${selectedList.size} Members have paid dues"
                 }
+                Status.LOADING -> {
+                    showProgress(true)
+                }
+                Status.ERROR -> {
+                    Log.i("TAG", "ERROR")
+                    showProgress(false)
+                    Toast.makeText(requireContext(), users.message, Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
 
+    private suspend fun loadExcel() {
+        withContext(Dispatchers.IO) {
+            excelHelper.reload()
+        }
+    }
+
+    private fun showHeader() {
+        val headerItems = excelHelper.getHeader()
+        vb?.y1?.text = headerItems[0]
+        vb?.y2?.text = headerItems[1]
+        vb?.y3?.text = headerItems[2]
+        vb?.y4?.text = headerItems[3]
+        vb?.y5?.text = headerItems[4]
+
+    }
+
+    private suspend fun sortData() {
+        val l = selectedList[0].payments.size - 1
+        Log.i("TAG", "DATA TO SORT: Data size = " + selectedList.size)
+        showProgress(true)
+        withContext(Dispatchers.Default) {
+            if (selectedList.isNotEmpty()) {
                 when (SORT) {
                     1 -> {
-                        sortedList.sortWith(fun(
-                            obj1: EntityYearlyDues,
-                            obj2: EntityYearlyDues
-                        ): Int {
+                        selectedList.sortWith(fun(obj1: EntityDues, obj2: EntityDues): Int {
                             return obj1.name.compareTo(obj2.name)
                         })
                     }
                     2 -> {
-                        val headerItem = sortedList[0]
-                        val totalItem = sortedList[sortedList.size - 1]
-                        sortedList.removeAt(0)
-                        sortedList.removeAt(sortedList.size - 1)
-                        sortedList.sortWith(fun(
-                            obj1: EntityYearlyDues,
-                            obj2: EntityYearlyDues
-                        ): Int {
-                            val amount1 = obj1.payments[12].toDouble()
-                            val amount2 = obj2.payments[12].toDouble()
+                        selectedList.sortWith(fun(obj1: EntityDues, obj2: EntityDues): Int {
+                            val amount1 = obj1.payments[l].toDouble()
+                            val amount2 = obj2.payments[l].toDouble()
                             return amount2.compareTo(amount1)
                         })
-                        sortedList.add(0, headerItem)
-                        sortedList.add(sortedList.size, totalItem)
                     }
                     3 -> {
-                        val headerItem = sortedList[0]
-                        val totalItem = sortedList[sortedList.size - 1]
-                        sortedList.removeAt(0)
-                        sortedList.removeAt(sortedList.size - 1)
-                        sortedList.sortWith(fun(
-                            obj1: EntityYearlyDues,
-                            obj2: EntityYearlyDues
-                        ): Int {
-                            val amount1 = obj1.payments[12].toDouble()
-                            val amount2 = obj2.payments[12].toDouble()
+                        selectedList.sortWith(fun(obj1: EntityDues, obj2: EntityDues): Int {
+                            val amount1 = obj1.payments[l].toDouble()
+                            val amount2 = obj2.payments[l].toDouble()
                             return amount1.compareTo(amount2)
                         })
-                        sortedList.add(0, headerItem)
-                        sortedList.add(sortedList.size, totalItem)
                     }
                 }
+                //Log.i("TAG", "selectedList size : ${selectedList.size}")
             }
-
-            override fun onPostExecute() {
-                Log.i("TAG", "List submitted to Adapter = ${sortedList.size}")
-                adapter.submitList(sortedList)
-                showProgress(false)
-            }
-        }.execute()
+        }
+        showProgress(false)
     }
 
     private fun showProgress(show: Boolean) {
@@ -169,6 +181,11 @@ class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>() {
                 showSortPopup(menuItemView)
                 super.onOptionsItemSelected(item)
             }
+            R.id.new_payment -> {
+                //excelHelper.restoreWorkBook()
+                excelHelper.doSomething()
+                super.onOptionsItemSelected(item)
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
@@ -184,7 +201,11 @@ class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>() {
         popupMenu.setOnMenuItemClickListener { item ->
             if (item.itemId < 5) {
                 SORT = item.itemId
-                sortData()
+                lifecycleScope.launch {
+                    sortData()
+                    adapter.submitList(selectedList)
+                    adapter.notifyDataSetChanged()
+                }
             }
             true
         }
@@ -192,36 +213,63 @@ class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>() {
     }
 
 
-    private class ListAdapter1() :
-        ListAdapter<EntityYearlyDues, ListAdapter1.MyViewHolder>(DiffCallback()) {
-        /* ViewHolder for Flower, takes in the inflated view and the onClick behavior. */
-        private val generator: ColorGenerator = ColorGenerator.DEFAULT
+    private inner class ListAdapter1 :
+        ListAdapter<EntityDues, ListAdapter1.MyViewHolder>(DiffCallback()) {
+        private val colors = arrayOf(R.color.light_grey1, R.color.light_grey)
+        var colorIndex = 0
 
         inner class MyViewHolder(parent: View) : RecyclerView.ViewHolder(parent) {
-            val index: TextView = itemView.findViewById(R.id.index)
             val name: TextView = itemView.findViewById(R.id.name)
-            val folio: TextView = itemView.findViewById(R.id.folio)
             val itemHolder: View = itemView.findViewById(R.id.item_holder)
-            val total: TextView = itemView.findViewById(R.id.total)
-            private var payment: EntityYearlyDues? = null
+            val v2018: TextView = itemView.findViewById(R.id.total1)
+            val v2019: TextView = itemView.findViewById(R.id.total2)
+            val v2020: TextView = itemView.findViewById(R.id.total3)
+            val v2021: TextView = itemView.findViewById(R.id.total4)
+            val v2022: TextView = itemView.findViewById(R.id.total5)
+            val total: TextView = itemView.findViewById(R.id.total6)
 
+            fun bind(dues: EntityDues, i: Int) {
+                val payments = dues.payments
+                name.text = dues.name
+                val size = payments.size
+                total.text = payments[size - 1]
+                v2022.text = payments[size - 2]
+                v2021.text = payments[size - 3]
+                v2020.text = payments[size - 4]
+                v2019.text = payments[size - 5]
+                v2018.text = payments[size - 6]
 
-            /* Bind flower name and image. */
-            fun bind(flower: EntityYearlyDues, i: Int) {
+                val userTotal = excelHelper.getUserTotalByName(dues.name) ?: 0.0
+                val numOfMonthsPaid = (userTotal.toInt()) / 5
+                val percentagePaged = ((numOfMonthsPaid / excelHelper.totalNumMonths) * 100).toInt()
 
-                Log.i("TAG", "bind()..........$i")
-
-                payment = flower
-
-                val amounts = flower.payments
-
-                index.text = i.toString()
-                name.text = flower.name
-                folio.text = flower.folio
-                total.text = amounts[12]
-
-                itemHolder.setBackgroundColor(generator.randomColor)
-
+                if (percentagePaged <= 29) {
+                    colorIndex = if (colorIndex == 0) {
+                        1
+                    } else {
+                        0
+                    }
+                    itemHolder.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            colors[colorIndex]
+                        )
+                    )
+                } else if (percentagePaged in 30..69) {
+                    itemHolder.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.average_standing
+                        )
+                    )
+                } else {
+                    itemHolder.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.good_standing
+                        )
+                    )
+                }
             }
         }
 
@@ -238,96 +286,22 @@ class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>() {
 
         }
 
-        private class DiffCallback : DiffUtil.ItemCallback<EntityYearlyDues>() {
-            override fun areItemsTheSame(
-                oldItem: EntityYearlyDues,
-                newItem: EntityYearlyDues
-            ): Boolean {
-                val araTheSame = oldItem.folio == newItem.folio
-                Log.i("TAG", "Items are the same: " + araTheSame)
-                return araTheSame
-            }
-
-            override fun areContentsTheSame(
-                oldItem: EntityYearlyDues,
-                newItem: EntityYearlyDues
-            ): Boolean {
-                val araTheSame = oldItem.id == newItem.id
-                Log.i("TAG", "Items are the same: " + araTheSame)
-                return araTheSame
-            }
-        }
-
     }
 
-
-    private inner class ListAdapter2() : RecyclerView.Adapter<ListAdapter2.MyViewHolder>() {
-        private var payments: MutableList<EntityYearlyDues> = ArrayList()
-        private val fd = SimpleDateFormat("EEE, d MMM yyyy hh:mm", Locale.US)
-
-        fun upDateList(data: List<EntityYearlyDues>) {
-            val diffCallback = ActorDiffCallback(this.payments, data)
-            val diffResult = DiffUtil.calculateDiff(diffCallback)
-            this.payments.clear()
-            this.payments.addAll(data)
-            diffResult.dispatchUpdatesTo(this)
+    private class DiffCallback : DiffUtil.ItemCallback<EntityDues>() {
+        override fun areItemsTheSame(
+            oldItem: EntityDues,
+            newItem: EntityDues
+        ): Boolean {
+            return oldItem.folio == newItem.folio
         }
 
-        inner class MyViewHolder(val parent: View) :
-            RecyclerView.ViewHolder(parent) {
-            val index: TextView = itemView.findViewById(R.id.index)
-            val name: TextView = itemView.findViewById(R.id.name)
-            val folio: TextView = itemView.findViewById(R.id.folio)
-            val itemHolder: View = itemView.findViewById(R.id.item_holder)
-            val total: TextView = itemView.findViewById(R.id.total)
+        override fun areContentsTheSame(
+            oldItem: EntityDues,
+            newItem: EntityDues
+        ): Boolean {
+            return oldItem.name == newItem.name && oldItem.folio == newItem.folio
         }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.yearly_dues_list_item, parent, false)
-            return MyViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: MyViewHolder, i: Int) {
-
-            val payment = payments[i]
-
-            val amounts = payment.payments
-
-            holder.index.text = i.toString()
-            holder.name.text = payment.name
-            holder.folio.text = payment.folio
-            holder.total.text = amounts[12]
-
-            holder.itemHolder.setBackgroundColor(generator.randomColor)
-
-        }
-
-        private fun getDate(l: Long): String {
-            return fd.format(l)
-        }
-
-        override fun getItemCount(): Int {
-            return payments.size
-        }
-    }
-
-    class ActorDiffCallback(
-        private val oldList: List<EntityYearlyDues>, private val newList: List<EntityYearlyDues>
-    ) : DiffUtil.Callback() {
-
-        override fun getOldListSize() = oldList.size
-
-        override fun getNewListSize() = newList.size
-
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].id == newList[newItemPosition].id
-        }
-
-        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldList[oldItemPosition].name == newList[newItemPosition].name
-        }
-
     }
 
 }

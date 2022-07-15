@@ -5,17 +5,20 @@ import java.util.List;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import mx.mobile.solution.nabia04.data.entities.EntityYearlyDues;
+import mx.mobile.solution.nabia04.data.entities.EntityDues;
 
 public class YearlyDuesViewModel extends ViewModel {
-    private final MutableLiveData<List<EntityYearlyDues>> dues;
+    private final MutableLiveData<List<EntityDues>> dues;
+
     public YearlyDuesViewModel() {
         dues = new MutableLiveData<>();
     }
-    public void setData (List<EntityYearlyDues> data){
+
+    public void setData(List<EntityDues> data) {
         dues.setValue(data);
     }
-    public LiveData<List<EntityYearlyDues>> getData() {
+
+    public LiveData<List<EntityDues>> getData() {
         return dues;
     }
 }

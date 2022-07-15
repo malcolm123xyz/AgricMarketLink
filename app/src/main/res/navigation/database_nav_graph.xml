@@ -8,7 +8,7 @@
 
     <fragment
         android:id="@+id/database_view_pager"
-        android:name="mx.mobile.solution.nabia04.ui.host_fragments.DatabaseHostFragment"
+        android:name="mx.mobile.solution.nabia04.ui.database_fragments.DatabaseHostFragment"
         android:label="DATABASE"
         tools:layout="@layout/database_viewpager_container">
         <action
@@ -23,7 +23,7 @@
             app:exitAnim="@anim/nav_default_exit_anim" />
         <action
             android:id="@+id/action_database_view_pager_to_note_fragment"
-            app:destination="@id/note_fragment"
+            app:destination="@id/fragment1"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
@@ -42,7 +42,7 @@
             app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
         <action
             android:id="@+id/action_fragment_database_detail_to_note_fragment"
-            app:destination="@id/note_fragment"
+            app:destination="@id/fragment1"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
     </fragment>
@@ -62,13 +62,13 @@
     </fragment>
 
     <fragment
-        android:id="@+id/note_fragment"
+        android:id="@+id/fragment1"
         android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentDatabaseUpdateNote"
         android:label="@string/database_update"
         tools:layout="@layout/fragment_database_update_note">
         <action
             android:id="@+id/action_move_forward"
-            app:destination="@id/personal_details_fragment"
+            app:destination="@id/payment_update_fragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
         <action
@@ -88,7 +88,7 @@
     </fragment>
 
     <fragment
-        android:id="@+id/personal_details_fragment"
+        android:id="@+id/payment_update_fragment"
         android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentPersonDetails"
         android:label="@string/lebel_personal_details"
         tools:layout="@layout/fragment_person_details">
@@ -118,7 +118,7 @@
             app:exitAnim="@anim/nav_default_exit_anim" />
         <action
             android:id="@+id/action_school_info_move_back"
-            app:destination="@id/personal_details_fragment"
+            app:destination="@id/payment_update_fragment"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:exitAnim="@anim/nav_default_exit_anim" />
         <action

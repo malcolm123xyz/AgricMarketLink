@@ -12,6 +12,7 @@ import mx.mobile.solution.nabia04.data.entities.EntityUserData;
 @Dao
 public interface UserDataDao {
 
+
     //EntityUserData methods
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertUserData(EntityUserData entityUserData);

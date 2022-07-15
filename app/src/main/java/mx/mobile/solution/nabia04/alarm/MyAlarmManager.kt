@@ -13,19 +13,23 @@ import android.util.Log
 import android.widget.DatePicker
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
-
-class MyAlarmManager(context: Context) {
+@Singleton
+class MyAlarmManager @Inject constructor(context: Context) {
     private var flag1: Int
     private var flag: Int
     private val context: Context
 
-    private val annTypes = arrayListOf("SELECT EVENT", "Funeral","Wedding","Naming ceremony","Birthday","Reminder")
+    private val annTypes =
+        arrayListOf("SELECT EVENT", "Funeral", "Wedding", "Naming ceremony", "Birthday", "Reminder")
 
     fun showDateTimePicker(callback: CallBack) {
         val cal: Calendar = Calendar.getInstance()
-        DatePickerDialog(context, fun(_: DatePicker, y: Int, m: Int, d: Int) {
-            cal[Calendar.MONTH] = m
+        DatePickerDialog(
+            context, fun(_: DatePicker, y: Int, m: Int, d: Int) {
+                cal[Calendar.MONTH] = m
             cal[Calendar.YEAR] = y
             cal[Calendar.DAY_OF_MONTH] = d
             TimePickerDialog(

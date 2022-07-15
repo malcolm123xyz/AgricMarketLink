@@ -1,12 +1,7 @@
-package mx.mobile.solution.nabia04.ui.host_fragments
+package mx.mobile.solution.nabia04.ui.dues_fragments
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -16,7 +11,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.smarttoolfactory.tutorial7_2bnv_viewpager2_complexarchitecture.adapter.WelfareHostStateAdapter
 import mx.mobile.solution.nabia04.R
-import mx.mobile.solution.nabia04.databinding.FragmentWelfareHostBinding
+import mx.mobile.solution.nabia04.databinding.FragmentDuesPaymentViewHostBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.ActivityTreasurer
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
@@ -37,15 +32,9 @@ import mx.mobile.solution.nabia04.utilities.Cons
  * *[MainAppbarViewModel] that has a [NavController] that belong to a NavHostFragment that is to be destroyed
  * also causes memory leak.
  */
-class WelfareHostFragment : BaseFragment<FragmentWelfareHostBinding>() {
+class DuesPaymentViewHost : BaseFragment<FragmentDuesPaymentViewHostBinding>() {
 
-    override fun getLayoutRes(): Int = R.layout.fragment_welfare_host
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
+    override fun getLayoutRes(): Int = R.layout.fragment_dues_payment_view_host
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,7 +42,8 @@ class WelfareHostFragment : BaseFragment<FragmentWelfareHostBinding>() {
         // ViewPager2
         val viewPager = vb!!.viewPager
 
-        viewPager.adapter = WelfareHostStateAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
+        viewPager.adapter =
+            WelfareHostStateAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
 
         // TabLayout
         val tabLayout = vb!!.tabLayout
@@ -61,8 +51,8 @@ class WelfareHostFragment : BaseFragment<FragmentWelfareHostBinding>() {
         // Bind tabs and viewpager
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             when (position) {
-                0 -> tab.text = "Summary"
-                1 -> tab.text = "Contributions"
+                0 -> tab.text = "My Dues"
+                1 -> tab.text = "Current Contributions"
                 2 -> tab.text = "Contribution History"
             }
         }.attach()
@@ -70,38 +60,9 @@ class WelfareHostFragment : BaseFragment<FragmentWelfareHostBinding>() {
         if (clearance == Cons.TREASURER || userFolioNumber == "13786") {
             vb?.treasurerFab?.visibility = View.VISIBLE
             vb?.treasurerFab?.setOnClickListener {
-                Log.i("TAG", "FAB CLICKED")
                 val i = Intent(activity, ActivityTreasurer::class.java)
                 startActivity(i)
             }
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.activity_announcements, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.refresh -> {
-                //repository!!.reloadFromBackend()
-                super.onOptionsItemSelected(item)
-            }
-            R.id.logout -> {
-                AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
-                    .setTitle("WARNING!!!")
-                    .setMessage("You are about to logout")
-                    .setPositiveButton(
-                        "Continue"
-                    ) { dialog, id -> dialog.dismiss()
-                    }
-                    .setNegativeButton(
-                        "Cancel"
-                    ) { dialog, id -> dialog.dismiss() }.show()
-                super.onOptionsItemSelected(item)
-            }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 

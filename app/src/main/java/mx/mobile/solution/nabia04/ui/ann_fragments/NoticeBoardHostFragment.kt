@@ -1,4 +1,4 @@
-package mx.mobile.solution.nabia04.ui.host_fragments
+package mx.mobile.solution.nabia04.ui.ann_fragments
 
 import android.app.AlertDialog
 import android.content.Intent

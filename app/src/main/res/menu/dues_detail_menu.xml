@@ -10,44 +10,9 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/year_2018"
+        android:id="@+id/new_payment"
         android:orderInCategory="100"
-        android:title="2018"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/year_2019"
-        android:orderInCategory="100"
-        android:title="2019"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/year_2020"
-        android:orderInCategory="100"
-        android:title="2020"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/year_2021"
-        android:orderInCategory="100"
-        android:title="2021"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/year_2022"
-        android:orderInCategory="100"
-        android:title="2022"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/year_2023"
-        android:orderInCategory="100"
-        android:title="2023"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/year_2024"
-        android:orderInCategory="100"
-        android:title="2024"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/year_2025"
-        android:orderInCategory="100"
-        android:title="2025"
-        app:showAsAction="never" />
+        android:title="New payment"
+        app:showAsAction="always" />
 
 </menu>

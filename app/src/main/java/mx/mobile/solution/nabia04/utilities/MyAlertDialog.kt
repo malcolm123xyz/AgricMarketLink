@@ -1,7 +1,6 @@
 package mx.mobile.solution.nabia04.utilities
 
 import android.content.Context
-import android.content.DialogInterface
 import android.graphics.Color
 import android.view.Gravity
 import android.view.ViewGroup
@@ -11,10 +10,9 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import kotlinx.android.synthetic.main.fragment_home1.view.*
 import mx.mobile.solution.nabia04.R
 
- open class MyAlertDialog(val context: Context, title: String, txt: String) {
+open class MyAlertDialog(val context: Context, title: String, txt: String) {
 
     private var dialog: AlertDialog
 
@@ -65,7 +63,12 @@ import mx.mobile.solution.nabia04.R
         dialog.dismiss()
     }
 
-    open fun show(){
+    open fun show() {
         dialog.show()
+    }
+
+    open fun setContent(tittle: String, msg: String) {
+        dialog.setTitle(tittle)
+        dialog.setMessage(msg)
     }
 }

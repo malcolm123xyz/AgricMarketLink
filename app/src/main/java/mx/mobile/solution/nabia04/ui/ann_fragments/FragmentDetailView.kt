@@ -17,66 +17,78 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.preference.PreferenceManager
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.google.api.client.extensions.android.json.AndroidJsonFactory
-import com.google.api.client.http.javanet.NetHttpTransport
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import mx.mobile.solution.nabia04.R
+import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement
+import mx.mobile.solution.nabia04.data.view_models.AnnViewModel
 import mx.mobile.solution.nabia04.databinding.FragmentDetailBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
-import mx.mobile.solution.nabia04.utilities.BackgroundTasks
+import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
+import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
 import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.GlideApp
-import mx.mobile.solution.nabia04.utilities.SessionManager
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.ReturnObj
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
     override fun getLayoutRes(): Int = R.layout.fragment_detail
 
-    private var endpoint: MainEndpoint? = null
-    private var announcement: mx.mobile.solution.nabia04.data.entities.EntityAnnouncement? = null
-    private var annId: Long? = null
+    @Inject
+    lateinit var endpoint: MainEndpoint
 
+    private val viewModel by activityViewModels<AnnViewModel>()
+
+    private lateinit var announcement: EntityAnnouncement
+    private var annId: Long = 0
     private val fd = SimpleDateFormat("EEE, d MMM yyyy hh:mm", Locale.US)
-
-    private var clearance: String = ""
-    private var folio: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val sharedP = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        clearance = sharedP.getString(Cons.CLEARANCE, "").toString()
-        folio = sharedP.getString(SessionManager.FOLIO_NUMBER, "13786").toString()
         setHasOptionsMenu(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         annId = arguments?.get("folio") as Long
-        getAnnouncement(annId!!)
+
+        lifecycleScope.launch {
+            announcement = viewModel.getAnn(annId)!!
+            showAnnouncement()
+        }
         vb?.fabShare?.setOnClickListener { v: View? -> doShare() }
-        setViewScrollListener()
     }
 
-    private fun setViewScrollListener(){
-        vb?.scrollView?.setOnScrollChangeListener(
-            NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-                if (scrollY > 0 && vb?.fabShare?.isShown == true) {
-                    vb?.fabShare?.hide();
-                } else if (scrollY < 10) {
-                    vb?.fabShare?.show();
-                }
-        })
+
+    private fun showAnnouncement() {
+        vb?.heading?.text = announcement.heading
+        vb?.annBody?.text = announcement.message
+        vb?.date?.setText(getDate(announcement.id))
+        Linkify.addLinks(vb!!.annBody, Linkify.PHONE_NUMBERS or Linkify.WEB_URLS)
+
+        loadImage(announcement.imageUri ?: "")
+
+        val eventDate = announcement.eventDate
+        if (announcement.type > 0) {
+            val strEventDate = fd.format(eventDate)
+            vb?.eventDate?.text = String.format("DATE: %s", strEventDate)
+            vb?.eventVenue?.text = java.lang.String.format("VENUE: %s", announcement.venue)
+            vb?.eventDate?.visibility = View.VISIBLE
+            vb?.eventVenue?.visibility = View.VISIBLE
+        }
+        lifecycleScope.launch {
+            viewModel.setAnnAsRead(announcement)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -86,7 +98,8 @@ class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
         val serverDeleteItem = menu.findItem(R.id.delete_from_server)
 
         if (clearance == Cons.PRO || clearance == Cons.PRESIDENT ||
-            clearance == Cons.VICE_PRESIDENT || folio == "13786") {
+            clearance == Cons.VICE_PRESIDENT || userFolioNumber == "13786"
+        ) {
             serverDeleteItem.isVisible = true
         }
     }
@@ -114,47 +127,41 @@ class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
         pb.isIndeterminate = true
         pb.setTitle("DELETE")
         pb.setMessage("Deleting...")
-        object : BackgroundTasks() {
-            val returnObj = ReturnObj()
-            override fun onPreExecute() {
-                pb.show()
-            }
-            override fun doInBackground() {
-                if (!fromServer) {
-                    //repository!!.delete(announcement!!)
-                    returnObj.returnCode = 1
-                } else {
-                    endpoint = getEndpointObject()
-                    try {
-                        val rObj: ReturnObj = endpoint!!.deleteFromServer(announcement?.id).execute()
-                        if (rObj.returnCode == 1) {
-                            //repository!!.delete(announcement!!)
-                        }
-                        returnObj.returnCode = rObj.returnCode
-                    } catch (ex: IOException) {
-                        ex.printStackTrace()
-                    }
-                }
-            }
 
-            override fun onPostExecute() {
+        lifecycleScope.launch {
+            pb.show()
+            if (!fromServer) {
+                val n = viewModel.delete(announcement)
                 pb.dismiss()
-                if (returnObj.returnCode == 1) {
+                if (n > 0) {
                     findNavController().navigate(R.id.action_detail_fragment_to_view_pager)
+                    return@launch
                 } else {
-                    Toast.makeText(requireContext(), "Failed to delete. Try again", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed to delete. Try again",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
+            } else {
+                val retCode = viewModel.deleteFrmServer(announcement.id)
+                pb.dismiss()
+                if (retCode == 1) {
+                    viewModel.delete(announcement)
+                    findNavController().navigate(R.id.action_detail_fragment_to_view_pager)
+                    return@launch
+                }
+                Toast.makeText(requireContext(), "Failed to delete. Try again", Toast.LENGTH_SHORT)
+                    .show()
             }
-        }.execute()
+        }
     }
 
     private fun delete(fromServer: Boolean, msg: String) {
         AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
             .setTitle("WARNING")
             .setMessage(msg)
-            .setPositiveButton(
-                "YES"
-            ) { dialog: DialogInterface, id: Int ->
+            .setPositiveButton("YES") { dialog: DialogInterface, id: Int ->
                 dialog.dismiss()
                 doDelete(fromServer)
             }.setNegativeButton(
@@ -165,11 +172,12 @@ class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
 
     @SuppressLint("NewApi")
     private fun copy() {
-        val clipboard = getSystemService(requireContext(), ClipboardManager::class.java) as ClipboardManager
-        val msg = """ANNOUNCEMENT!!!${announcement!!.heading} ${announcement!!.message} 
+        val clipboard =
+            getSystemService(requireContext(), ClipboardManager::class.java) as ClipboardManager
+        val msg = """ANNOUNCEMENT!!!${announcement.heading} ${announcement.message} 
             
             Download the Nabia04 social App at: Http://nabia04.app.com"""
-                    val clip = ClipData.newPlainText("label", msg)
+        val clip = ClipData.newPlainText("label", msg)
                     clipboard.setPrimaryClip(clip)
                     Toast.makeText(requireContext(), "Copied", Toast.LENGTH_SHORT).show()
     }
@@ -179,64 +187,26 @@ class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
         sendIntent.action = Intent.ACTION_SEND
         sendIntent.type = "text/plain"
         sendIntent.putExtra(
-            Intent.EXTRA_TEXT, """ANNOUNCEMENT!!!${announcement!!.heading} ${announcement!!.message} 
-                    Download the Nabia04 social App at: Http://nabia04.app.com""")
+            Intent.EXTRA_TEXT, """ANNOUNCEMENT!!!${announcement.heading} ${announcement.message} 
+                    Download the Nabia04 social App at: Http://nabia04.app.com"""
+        )
                     startActivity(sendIntent)
     }
 
-    fun getEndpointObject(): MainEndpoint {
-        if (endpoint == null) {
-            val builder = MainEndpoint.Builder(NetHttpTransport(), AndroidJsonFactory(), null)
-                .setRootUrl(Cons.ROOT_URL)
-            endpoint = builder.build()
-        }
-        return endpoint!!
-    }
-
-
-    private fun getAnnouncement(id: Long) {
-        object : BackgroundTasks() {
-            override fun onPreExecute() {}
-            override fun doInBackground() {
-                //announcement = repository!!.getAnn(id)
-            }
-            override fun onPostExecute() {
-                showAnnouncement()
-            }
-        }.execute()
-    }
-
-    private fun showAnnouncement() {
-        if (announcement != null) {
-            vb?.heading?.text = announcement!!.heading
-            vb?.annBody?.text = announcement!!.message
-            vb?.date?.setText(getDate(announcement!!.id))
-            Linkify.addLinks(vb!!.annBody, Linkify.PHONE_NUMBERS or Linkify.WEB_URLS)
-
-            loadImage (announcement?.imageUri ?: "")
-
-            val eventDate = announcement!!.eventDate
-            if (announcement!!.type > 0) {
-                val strEventDate = fd.format(eventDate)
-                vb?.eventDate?.text = String.format("DATE: %s", strEventDate)
-                vb?.eventVenue?.text = java.lang.String.format("VENUE: %s", announcement!!.venue)
-                vb?.eventDate?.visibility = View.VISIBLE
-                vb?.eventVenue?.visibility = View.VISIBLE
-            }
-            //repository!!.setAnnAsRead(announcement!!)
-        }
-    }
-
-    fun loadImage(link: String){
+    private fun loadImage(link: String) {
         GlideApp.with(requireContext()).load(link)
             .addListener(object : RequestListener<Drawable?> {
-                override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>,
-                    isFirstResource: Boolean): Boolean {
+                override fun onLoadFailed(
+                    e: GlideException?, model: Any, target: Target<Drawable?>,
+                    isFirstResource: Boolean
+                ): Boolean {
                     Log.i("AnnDetails", "onLoadFailed")
                     vb?.annImage?.visibility = View.GONE
                     return false
                 }
-                override fun onResourceReady(resource: Drawable?, model: Any, target: Target<Drawable?>,
+
+                override fun onResourceReady(
+                    resource: Drawable?, model: Any, target: Target<Drawable?>,
                     dataSource: DataSource,
                     isFirstResource: Boolean
                 ): Boolean {

@@ -3,20 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/note_fragment">
+    app:startDestination="@+id/fragment1">
 
     <fragment
-        android:id="@+id/note_fragment"
+        android:id="@+id/fragment1"
         android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentDatabaseUpdateNote"
         android:label="@string/database_update"
         tools:layout="@layout/fragment_database_update_note">
         <action
             android:id="@+id/action_move_forward"
-            app:destination="@id/personal_details_fragment" />
+            app:destination="@id/payment_update_fragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/personal_details_fragment"
+        android:id="@+id/payment_update_fragment"
         android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentPersonDetails"
         android:label="@string/lebel_personal_details"
         tools:layout="@layout/fragment_person_details">
@@ -35,7 +35,7 @@
             app:destination="@id/fragment_work_info" />
         <action
             android:id="@+id/action_school_info_move_back"
-            app:destination="@id/personal_details_fragment" />
+            app:destination="@id/payment_update_fragment" />
     </fragment>
 
     <fragment

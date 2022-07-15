@@ -160,11 +160,7 @@ public class MainEndpoint {
             name = "getMembers",
             path = "getMembers",
             httpMethod = ApiMethod.HttpMethod.GET)
-    public DatabaseResponse getMembers(@Named("accessToken") String accessToken) {
-
-        if(!hasAccess(accessToken)){
-            return DatabaseResponse.noAccess();
-        }
+    public DatabaseResponse getMembers() {
 
         List<DatabaseObject> userDataModels;
 
@@ -257,9 +253,9 @@ public class MainEndpoint {
             name = "setDeceaseStatus",
             path = "setDeceaseStatus",
             httpMethod = ApiMethod.HttpMethod.POST)
-    public ReturnObj setDeceaseStatus(@Named("folio") String folio, @Named("date") String date,
+    public ReturnObj setDeceaseStatus(@Named("date") String date, @Named("folio") String folio,
                                       @Named("status") int status) throws IOException {
-        logger.info("folio = " + folio + ", Date = " + date);
+        logger.info("folio = " + folio + ", Date = " + date + " Status = " + status);
         ReturnObj retObj = new ReturnObj();
         retObj.setReturnCode(0);
         DatabaseObject dataBaseDataModel = ofy().load().type(DatabaseObject.class).id(folio).now();
@@ -338,7 +334,7 @@ public class MainEndpoint {
             httpMethod = ApiMethod.HttpMethod.POST)
     public DatabaseResponse addNewMember(DatabaseObject memberData) {
         try {
-            DatabaseObject user = ofy().load().type(DatabaseObject.class).id(memberData.getFolioNumber()).safe();
+            ofy().load().type(DatabaseObject.class).id(memberData.getFolioNumber()).safe();
             return DatabaseResponse.AlreadyExist();
         } catch (com.googlecode.objectify.NotFoundException e) {
             ofy().save().entity(memberData).now();

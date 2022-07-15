@@ -1,10 +1,8 @@
-package mx.mobile.solution.nabia04.ui.host_fragments
+package mx.mobile.solution.nabia04.ui.database_fragments
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
@@ -14,7 +12,6 @@ import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.PopupMenu
@@ -23,6 +20,7 @@ import androidx.core.app.ActivityCompat.requireViewById
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -36,20 +34,22 @@ import com.bumptech.glide.request.target.Target
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.smarttoolfactory.tutorial7_2bnv_viewpager2_complexarchitecture.adapter.DatabaseChildFragmentStateAdapter
-import kotlinx.coroutines.Runnable
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.*
 import mx.mobile.solution.nabia04.R
-import mx.mobile.solution.nabia04.data.repositories.DatabaseRepository
+import mx.mobile.solution.nabia04.core.old_package.database.view_models.AppbarViewModel
+import mx.mobile.solution.nabia04.data.entities.EntityUserData
+import mx.mobile.solution.nabia04.data.view_models.DBViewModel
 import mx.mobile.solution.nabia04.databinding.DatabaseViewpagerContainerBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
-import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.databaseViewModel
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
+import mx.mobile.solution.nabia04.ui.adapters.DBcurrentListAdapter
 import mx.mobile.solution.nabia04.util.Event
-import mx.mobile.solution.nabia04.utilities.BackgroundTasks
-import mx.mobile.solution.nabia04.utilities.Cons
-import mx.mobile.solution.nabia04.utilities.GlideApp
+import mx.mobile.solution.nabia04.utilities.*
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 
 /**
@@ -65,37 +65,36 @@ import java.util.concurrent.TimeUnit
  * *[MainAppbarViewModel] that has a [NavController] that belong to a NavHostFragment that is to be destroyed
  * also causes memory leak.
  */
+@AndroidEntryPoint
 class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     SearchView.OnQueryTextListener {
 
+    private val viewModel by activityViewModels<DBViewModel>()
+    private val appbarViewModel by activityViewModels<AppbarViewModel>()
+
+    @Inject
+    lateinit var adapter: DBcurrentListAdapter
+
     private var birthdayDrawable: Drawable? = null
-    private var imageSwitcherTask: BirthdayRunnableTask? = null
-    private val TAG = "DatabaseViewPager"
     private lateinit var navController: NavController
-    private var filterString = "none"
-    private var filterType = 0
-    private val activityTag = "DatabaseNavHost"
-    private var repository: DatabaseRepository? = null
-    private val appbarViewModel by activityViewModels<mx.mobile.solution.nabia04.core.old_package.database.view_models.AppbarViewModel>()
-    private var selSpinnerItem: String? = null
-    private var thisUser: mx.mobile.solution.nabia04.data.entities.EntityUserData? = null
-    private var animationCounter = 1
+    private var thisUser: EntityUserData? = null
     private val generator: ColorGenerator = ColorGenerator.MATERIAL
-    private val labels = arrayOf(
-        "ALL:", "Search results:", "Folio :", "My House members:", "My Classmates:",
-        "MY Course mates:", "My Hometown:", "My District", "My Region:"
-    )
+
+    private val hometownDistrict: MutableList<String> = ArrayList()
+    private val hometownReg: MutableList<String> = ArrayList()
+    private val employmentSector: MutableList<String> = ArrayList()
+    private val specificOrg: MutableList<String> = ArrayList()
+    private val workRegion: MutableList<String> = ArrayList()
+    private val workDistrict: MutableList<String> = ArrayList()
+
+    private var animationJob: Job? = null
 
     override fun getLayoutRes(): Int = R.layout.database_viewpager_container
-
-    private val imageSwitcherHandler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        repository = DatabaseRepository.getInstance(requireActivity())
-        Thread { thisUser = repository?.getUserData(userFolioNumber) }.start()
-        println("${this.javaClass.simpleName} #${this.hashCode()}  onCreate()")
+        getFilterData()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -133,74 +132,65 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
             startActivity(i)
         }
 
-        if (clearance == Cons.PRO ||
-            clearance == Cons.PRESIDENT ||
-            clearance == Cons.VICE_PRESIDENT ||
+        if (clearance == Cons.PRO || clearance == Cons.PRESIDENT || clearance == Cons.VICE_PRESIDENT ||
             clearance == Cons.TREASURER ||
             userFolioNumber == "13786"
         ) {
             vb?.fabAddUser?.visibility = View.VISIBLE
         }
 
-        repository?.refreshDatabase(false)
-
         navController = findNavController()
-
-        observeDataChange()
 
         listenOnBackPressed()
 
-        observeLiveData()
-
-    }
-
-    private fun observeLiveData() {
-        databaseViewModel.data.observe(viewLifecycleOwner) { data: List<mx.mobile.solution.nabia04.data.entities.EntityUserData>? ->
-            if (data != null) {
-                setBirthDayPerson(data)
+        lifecycleScope.launch {
+            val list = viewModel.getList()
+            if (list != null) {
+                upDateStats(list)
+                this.cancel()
+                initiateJob(list)
             }
         }
     }
 
-    fun getDaysLeft(userBirthday: Long): String {
-        val diff = userBirthday - System.currentTimeMillis()
-        val days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)
-        return days.toString()
-    }
+    private fun initiateJob(list: List<EntityUserData>) {
+        animationJob?.cancel() // optional if you want to start afresh
 
-    private fun setBirthDayPerson(list: List<mx.mobile.solution.nabia04.data.entities.EntityUserData>) {
-        val users: MutableList<mx.mobile.solution.nabia04.data.entities.EntityUserData> =
-            ArrayList()
-        object : BackgroundTasks() {
-            override fun onPreExecute() {}
-            override fun doInBackground() {
+        // Create a new Job and assign it to our variable
+        animationJob = lifecycleScope.launch {
+            while (isActive) {
+                val users: MutableList<EntityUserData> = ArrayList()
                 for (event in list) {
                     val daysLeft = getDaysLeft(event.birthDayAlarm)
                     if (daysLeft == "0") {
                         users.add(event)
                     }
                 }
-            }
-            override fun onPostExecute() {
-                imageSwitcherTask = if(users.size > 0){
-                    if(imageSwitcherTask != null){
-                        imageSwitcherHandler.removeCallbacks(imageSwitcherTask!!)
-                    }
+                if (users.size > 0) {
                     getBirthDayImage(users[0].imageUri)
-                    BirthdayRunnableTask(true, users[0].imageUri)
-                }else{
-                    BirthdayRunnableTask(false,"")
+                    animationTask(true, users[0].imageUri)
+                } else {
+                    animationTask(false, "")
                 }
-                imageSwitcherHandler.post(imageSwitcherTask!!)
+                delay(2 * 1000) // Task will be performed after the delay
             }
-        }.execute()
+        }
+    }
+
+
+    private fun getDaysLeft(userBirthday: Long): String {
+        val diff = userBirthday - System.currentTimeMillis()
+        val days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS)
+        return days.toString()
     }
 
     private fun getBirthDayImage(uri: String) {
         GlideApp.with(requireContext()).load(uri)
             .addListener(object : RequestListener<Drawable?> {
-                override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>,
-                                          isFirstResource: Boolean): Boolean {
+                override fun onLoadFailed(
+                    e: GlideException?, model: Any, target: Target<Drawable?>,
+                    isFirstResource: Boolean
+                ): Boolean {
                     birthdayDrawable = null
                     return false
                 }
@@ -214,23 +204,24 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
             }).submit()
     }
 
-    private inner class BirthdayRunnableTask(val isBirthDay: Boolean, val birthdayPersonName: String) : Runnable {
+    private fun animationTask(isBirthDay: Boolean, birthdayPersonName: String) {
         var animationCounter = 1
-        override fun run() {
-            when (animationCounter++) {
-                1 -> vb?.imageswitcher?.setImageDrawable(
-                    getTxtDrawable(isBirthDay, animationCounter,birthdayPersonName,"HAPPY"))
-                2 -> vb?.imageswitcher?.setImageDrawable(
-                    getTxtDrawable(isBirthDay, animationCounter,birthdayPersonName,"BIRTHDAY"))
-                3 -> vb?.imageswitcher?.setImageDrawable(
-                    getTxtDrawable(isBirthDay, animationCounter,birthdayPersonName,"TO"))
-                4 -> vb?.imageswitcher?.setImageDrawable(
-                    getTxtDrawable(isBirthDay, animationCounter,birthdayPersonName,"TO"))
-            }
-            animationCounter %= 5
-            if (animationCounter == 0) animationCounter = 1
-            imageSwitcherHandler.postDelayed(this, 2000)
+
+        when (animationCounter++) {
+            1 -> vb?.imageswitcher?.setImageDrawable(
+                getTxtDrawable(isBirthDay, animationCounter, birthdayPersonName, "HAPPY")
+            )
+            2 -> vb?.imageswitcher?.setImageDrawable(
+                getTxtDrawable(isBirthDay, animationCounter, birthdayPersonName, "BIRTHDAY")
+            )
+            3 -> vb?.imageswitcher?.setImageDrawable(
+                getTxtDrawable(isBirthDay, animationCounter, birthdayPersonName, "TO")
+            )
+            4 -> vb?.imageswitcher?.setImageDrawable(
+                getTxtDrawable(isBirthDay, animationCounter, birthdayPersonName, "TO")
+            )
         }
+        animationCounter %= 5
     }
 
     override fun onResume() {
@@ -247,9 +238,6 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     override fun onPause() {
         super.onPause()
         callback.isEnabled = false
-        if (imageSwitcherTask != null) {
-            imageSwitcherHandler.removeCallbacks(imageSwitcherTask!!)
-        }
         println("🏠 ${this.javaClass.simpleName} #${this.hashCode()}  onPause()")
     }
 
@@ -260,18 +248,10 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     val callback = object : OnBackPressedCallback(false) {
 
         override fun handleOnBackPressed() {
-
-            Toast.makeText(requireContext(), "🏠 handleOnBackPressed() ", Toast.LENGTH_SHORT)
-                .show()
-
             println("🏠 ${this@DatabaseHostFragment.javaClass.simpleName} #${this@DatabaseHostFragment.hashCode()} handleOnBackPressed()")
 
             // Check if it's the root of nested fragments in this navhost
             if (navController.currentDestination?.id == navController.graph.startDestinationId) {
-
-                Toast.makeText(requireContext(), "🏠 AT START DESTINATION ", Toast.LENGTH_SHORT)
-                    .show()
-
                 /*
                     Disable this callback because calls OnBackPressedDispatcher
                      gets invoked  calls this callback  gets stuck in a loop
@@ -285,14 +265,6 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
             }
 
         }
-    }
-
-    private fun observeDataChange() { databaseViewModel.data.observe(viewLifecycleOwner) { data: List<mx.mobile.solution.nabia04.data.entities.EntityUserData>? ->
-        Log.i(activityTag, "DATA CHANGED, Updating statistics")
-        if (data != null) {
-            upDateDataBaseStatistics(data, filterType)
-        }
-    }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -309,7 +281,7 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.refresh -> {
-                repository!!.refreshDatabase(true)
+                viewModel.refreshDB()
                 super.onOptionsItemSelected(item)
             }
             R.id.profile -> {
@@ -341,53 +313,48 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
         val regWorkSubmenu = popupMenu.menu.addSubMenu(8, 4, 9, "Region of work")
         val distWorkSubmenu = popupMenu.menu.addSubMenu(9, 10, 9, "District of Work")
 
-        for(dist in repository!!.workDistrict){
+        for (dist in workDistrict) {
             Log.i("TAG", "DISTRICT: $dist")
             distSubmenu.add(3, Menu.NONE, Menu.NONE, dist)
         }
 
-        for(dist in repository!!.workRegion){
+        for (dist in workRegion) {
             regSubmenu.add(4, Menu.NONE, Menu.NONE, dist)
         }
 
         employmentSubmenu.add(5, Menu.NONE, Menu.NONE, "Employed")
         employmentSubmenu.add(5, Menu.NONE, Menu.NONE, "Unemployed")
 
-        for(dist in repository!!.employmentSector){
+        for (dist in employmentSector) {
             emplSectorSubmenu.add(6, Menu.NONE, Menu.NONE, dist)
         }
 
-        for(dist in repository!!.specificOrg){
+        for (dist in specificOrg) {
             specificOrgSubmenu.add(7, Menu.NONE, Menu.NONE, dist)
         }
 
-        for(dist in repository!!.workRegion){
+        for (dist in workRegion) {
             regWorkSubmenu.add(8, Menu.NONE, Menu.NONE, dist)
         }
 
-        for(dist in repository!!.workDistrict){
+        for (dist in workDistrict) {
             distWorkSubmenu.add(9, Menu.NONE, Menu.NONE, dist)
         }
 
         popupMenu.setOnMenuItemClickListener { item ->
             when(item.itemId){
                 1 -> {
-                    filterString = ""
-                    repository?.filter(filterString)
+                    adapter.filter.filter("")
                 }
                 2 -> {
-                    filterString = thisUser?.house ?: ""
-                    repository?.filter(filterString)
+                    adapter.filter.filter(thisUser?.house ?: "")
                 }
                 3 -> {
-                    filterString = thisUser?.className ?: ""
-                    repository?.filter(filterString)
+                    adapter.filter.filter(thisUser?.className ?: "")
                 }
                 4->{}5->{}6->{}7->{}8->{}9->{}10->{}
                 else ->{
-                    Log.i("TAG", "Else")
-                    filterString = item.title.toString()
-                    repository?.filter(filterString)
+                    adapter.filter.filter(item.title.toString())
                 }
             }
             true
@@ -412,72 +379,45 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
                     .setFontSize(50)
                     .build()
             }
-        }else{
-            return when (index){
+        } else {
+            return when (index) {
                 1 -> AppCompatResources.getDrawable(requireContext(), R.drawable.login_background2)
                 2 -> AppCompatResources.getDrawable(requireContext(), R.drawable.login_background3)
                 3 -> AppCompatResources.getDrawable(requireContext(), R.drawable.login_background4)
-                else -> AppCompatResources.getDrawable(requireContext(), R.drawable.login_background2)
+                else -> AppCompatResources.getDrawable(
+                    requireContext(),
+                    R.drawable.login_background2
+                )
             }
         }
     }
 
-    private fun upDateDataBaseStatistics(
-        filteredData: List<mx.mobile.solution.nabia04.data.entities.EntityUserData>,
-        type: Int
-    ) =
-        object : BackgroundTasks() {
-            var maleCount = 0
-            var femaleCount = 0
-            var noneCount = 0
-            var strM = ""
-            var strF = ""
-            var strNot = ""
-            var tt = 0
-            var strT = ""
-            override fun onPreExecute() {}
-            override fun doInBackground() {
-                val total = filteredData.size
-                for (i in 0 until total) {
-                    val person = filteredData[i]
-                    if (person.sex != null && person.sex == "Male") {
-                        maleCount++
-                    } else if (person.sex != null && person.sex == "Female") {
-                        femaleCount++
-                    } else {
-                        noneCount++
-                    }
-                }
-                strM = "Male(s): $maleCount"
-                strF = "Female(s): $femaleCount"
-                strNot = "$noneCount Cow(s) did not specify their Gender "
-                tt = maleCount + femaleCount + noneCount
-                strT = "$tt Cow(s) Found: "
-            }
+    private fun upDateStats(filteredData: List<EntityUserData>) {
+        val listSize = filteredData.size
+        var maleCount = 0
+        var femaleCount = 0
+        var noneCount = 0
 
-            override fun onPostExecute() {
-                vb?.numMales2?.text = strM
-                vb?.numFemales2?.text = strF
-                vb?.total2?.text = strT
-                if (noneCount > 0) {
-                    vb?.notSpecified?.text = strNot
-                    vb?.notSpecified?.visibility = View.VISIBLE
-                }
-
-                val dispTxt: String = when (type) {
-                    10 -> {
-                        "Working in $selSpinnerItem:"
-                    }
-                    9 -> {
-                        "Colleague $selSpinnerItem(s):"
-                    }
-                    else -> {
-                        labels[type]
-                    }
-                }
-                vb?.filterButton?.text = dispTxt
+        for (i in 0 until listSize) {
+            val person = filteredData[i]
+            if (person.sex != null && person.sex == "Male") {
+                maleCount++
+            } else if (person.sex != null && person.sex == "Female") {
+                femaleCount++
+            } else {
+                noneCount++
             }
-        }.execute()
+        }
+        val tt = maleCount + femaleCount + noneCount
+
+        vb?.numMales2?.text = "Male(s): $maleCount"
+        vb?.numFemales2?.text = "Female(s): $femaleCount"
+        vb?.total2?.text = "$tt Cow(s) Found: "
+        if (noneCount > 0) {
+            vb?.notSpecified?.text = "$noneCount Cow(s) did not specify their Gender "
+            vb?.notSpecified?.visibility = View.VISIBLE
+        }
+    }
 
     override fun onDestroyView() {
 
@@ -496,13 +436,41 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     }
 
     override fun onQueryTextSubmit(query: String): Boolean {
-        repository?.filter(query)
+        adapter.filter.filter(query)
         return true
     }
 
     override fun onQueryTextChange(newText: String): Boolean {
-        repository?.filter(newText)
+        adapter.filter.filter(newText)
         return true
+    }
+
+    private fun getFilterData() {
+        lifecycleScope.launch {
+            val list = viewModel.getFilterData()
+            if (list != null) {
+                for (user in list) {
+                    if (!user.districtOfResidence.isNullOrEmpty() && !hometownDistrict.contains(user.districtOfResidence)) {
+                        hometownDistrict.add(user.districtOfResidence)
+                    }
+                    if (!user.regionOfResidence.isNullOrEmpty() && !hometownReg.contains(user.regionOfResidence)) {
+                        hometownReg.add(user.regionOfResidence)
+                    }
+                    if (!user.employmentSector.isNullOrEmpty() && !employmentSector.contains(user.employmentSector)) {
+                        employmentSector.add(user.employmentSector)
+                    }
+                    if (!user.specificOrg.isNullOrEmpty() && !specificOrg.contains(user.specificOrg)) {
+                        specificOrg.add(user.specificOrg)
+                    }
+                    if (!user.establishmentRegion.isNullOrEmpty() && !workRegion.contains(user.establishmentRegion)) {
+                        workRegion.add(user.establishmentRegion)
+                    }
+                    if (!user.establishmentDist.isNullOrEmpty() && !workDistrict.contains(user.establishmentDist)) {
+                        workDistrict.add(user.establishmentDist)
+                    }
+                }
+            }
+        }
     }
 }
 

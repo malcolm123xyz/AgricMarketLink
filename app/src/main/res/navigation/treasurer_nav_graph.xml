@@ -8,7 +8,7 @@
     <!-- ViewPagerContainerFragment-->
     <fragment
         android:id="@+id/payment_details_view"
-        android:name="mx.mobile.solution.nabia04.ui.host_fragments.TreasurerPaymentDetailHost"
+        android:name="mx.mobile.solution.nabia04.ui.treasurer.TreasurerPaymentDetailHost"
         android:label="Dues Payment Details(2018)"
         tools:layout="@layout/fragment_treasurer_payment_detail_host" />
 

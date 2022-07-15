@@ -9,17 +9,16 @@ import mx.mobile.solution.nabia04.data.converters.DataConverter;
  * The Objectify object model for device registrations we are persisting
  */
 @Entity(tableName = "yearly_dues_table")
-public class EntityYearlyDues {
+public class EntityDues {
 
-    @PrimaryKey (autoGenerate = true)
+    @PrimaryKey(autoGenerate = true)
     private int id;
     private String index;
     private String folio;
     private String name;
-    private String year;
 
     @TypeConverters(DataConverter.class)
-    private String[] payments = new String[13];
+    private String[] payments = new String[]{};
 
     public int getId() {
         return id;
@@ -51,14 +50,6 @@ public class EntityYearlyDues {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getYear() {
-        return year;
-    }
-
-    public void setYear(String year) {
-        this.year = year;
     }
 
     @TypeConverters(DataConverter.class)

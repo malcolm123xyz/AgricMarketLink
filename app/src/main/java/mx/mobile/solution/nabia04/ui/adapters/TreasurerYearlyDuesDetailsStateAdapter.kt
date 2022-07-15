@@ -7,8 +7,6 @@ import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter.FragmentTransactionCallback.OnPostEventListener
-import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.excelHelper
-import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.excelHelperIsInitialized
 import mx.mobile.solution.nabia04.ui.dues_fragments.FragmentYearlyDues
 
 
@@ -22,11 +20,15 @@ import mx.mobile.solution.nabia04.ui.dues_fragments.FragmentYearlyDues
  */
 class TreasurerYearlyDuesDetailsStateAdapter(
     fragmentManager: FragmentManager,
-    lifecycle: Lifecycle
+    lifecycle: Lifecycle,
+    sheets: Int
 ) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
 
+    private var numSheets = 0
+
     init {
+        numSheets = sheets
         // Add a FragmentTransactionCallback to handle changing
         // the primary navigation fragment
         registerFragmentTransactionCallback(object : FragmentTransactionCallback() {
@@ -51,9 +53,7 @@ class TreasurerYearlyDuesDetailsStateAdapter(
     }
 
     override fun getItemCount(): Int {
-        return if (!excelHelperIsInitialized()) {
-            0
-        } else excelHelper.getWorkbook().numberOfSheets
+        return numSheets
     }
 
     override fun createFragment(position: Int): Fragment {

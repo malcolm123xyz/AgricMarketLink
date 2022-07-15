@@ -2,43 +2,44 @@ package mx.mobile.solution.nabia04.ui.database_fragments
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.EditText
-import android.widget.ListView
+import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
-import com.google.api.client.extensions.android.http.AndroidHttp
-import com.google.api.client.extensions.android.json.AndroidJsonFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_person_details.*
 import kotlinx.android.synthetic.main.fragment_work_info.*
 import kotlinx.android.synthetic.main.fragment_work_info.district_spinner
 import kotlinx.android.synthetic.main.fragment_work_info.region_spinner
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
 import mx.mobile.solution.nabia04.R
+import mx.mobile.solution.nabia04.data.entities.EntityUserData
+import mx.mobile.solution.nabia04.data.view_models.DBUpdateViewModel
 import mx.mobile.solution.nabia04.databinding.FragmentWorkInfoBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
-import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData
 import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData.Companion.newImageUri
-import mx.mobile.solution.nabia04.ui.activities.DatabaseUpdateViewModel
-import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.sharedP
-import mx.mobile.solution.nabia04.utilities.BackgroundTasks
-import mx.mobile.solution.nabia04.utilities.Cons
-import mx.mobile.solution.nabia04.utilities.MyAlertDialog
-import mx.mobile.solution.nabia04.utilities.SessionManager
+import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData.Companion.selectedFolio
+import mx.mobile.solution.nabia04.utilities.*
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DatabaseObject
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DatabaseResponse
 import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.util.*
+import javax.inject.Inject
+import javax.net.ssl.SSLHandshakeException
 
 
 /**
@@ -46,13 +47,20 @@ import java.util.*
  * Use the [FragmentDone.newInstance] factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
 
     override fun getLayoutRes(): Int = R.layout.fragment_work_info
 
-    private var endpoint: MainEndpoint? = null
-    private var userData: DatabaseObject? = null
-    private var updateMode: DatabaseUpdateViewModel? = null
+    private val updateModel by activityViewModels<DBUpdateViewModel>()
+
+    @Inject
+    lateinit var sharedP: SharedPreferences
+
+    @Inject
+    lateinit var endpoint: MainEndpoint
+
+    private var userData: EntityUserData? = null
     private val regionsId = intArrayOf(
         0,
         R.array.ahafo,
@@ -75,51 +83,62 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
 
     private val TAG: String = "FragmentWorkInfo"
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        updateMode = ViewModelProvider(requireActivity()).get(DatabaseUpdateViewModel::class.java)
-        endpoint = getEndpointObject()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         nextButtonSend.setOnClickListener { onNext() }
-        backButtonWork.setOnClickListener {findNavController().navigate(R.id.action_work_info_move_back) }
+        backButtonWork.setOnClickListener { findNavController().navigate(R.id.action_work_info_move_back) }
 
-        updateMode?.getValue()?.observe(viewLifecycleOwner) { updateModel: DatabaseObject? ->
-            userData = updateModel
-            specific_organisation.setText(userData?.specificOrg)
-            name_of_establishment.setText(userData?.nameOfEstablishment)
-            job_description.setText(userData?.jobDescription)
+        updateModel.getDataToObserve(selectedFolio)
+            .observe(viewLifecycleOwner) { user: EntityUserData? ->
 
-            employment_status_spinner.setSelection((employment_status_spinner.adapter as ArrayAdapter<String>)
-                .getPosition(userData?.employmentStatus ?: ""))
-            employment_sector_spinner.setSelection((employment_sector_spinner.adapter as ArrayAdapter<String>)
-                .getPosition(userData?.employmentSector ?: ""))
+                if (user != null) {
+                    userData = user
+                    specific_organisation.setText(userData?.specificOrg)
+                    name_of_establishment.setText(userData?.nameOfEstablishment)
+                    job_description.setText(userData?.jobDescription)
 
-            Log.i(TAG, "Region selected index = "+userData?.regionOfResidence);
+                    employment_status_spinner.setSelection(
+                        (employment_status_spinner.adapter as ArrayAdapter<String>)
+                            .getPosition(userData?.employmentStatus ?: "")
+                    )
+                    employment_sector_spinner.setSelection(
+                        (employment_sector_spinner.adapter as ArrayAdapter<String>)
+                            .getPosition(userData?.employmentSector ?: "")
+                    )
 
-            region_spinner.setSelection((region_spinner.adapter as ArrayAdapter<String>)
-                .getPosition(userData?.establishmentRegion ?: ""))
+                    Log.i(TAG, "Region selected index = " + userData?.regionOfResidence)
 
-            val selRegIndex = region_spinner.selectedItemPosition
+                    region_spinner.setSelection(
+                        (region_spinner.adapter as ArrayAdapter<String>)
+                            .getPosition(userData?.establishmentRegion ?: "")
+                    )
 
-            if(selRegIndex  > 0){
-                val selectedArray: Array<String> = resources.getStringArray(regionsId[selRegIndex])
-                val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, selectedArray)
-                district_spinner.adapter = adapter
-                val selDistrict = userData?.districtOfResidence ?: "SELECT DISTRICT"
-                Log.i("FragPersonalDetails", "District_1 = $selDistrict")
-                district_spinner.setSelection((district_spinner.adapter as ArrayAdapter<String>)
-                    .getPosition(userData?.establishmentDist ?: ""))
+                    val selRegIndex = region_spinner.selectedItemPosition
+
+                    if (selRegIndex > 0) {
+                        val selectedArray: Array<String> =
+                            resources.getStringArray(regionsId[selRegIndex])
+                        val adapter = ArrayAdapter(
+                            requireContext(),
+                            R.layout.simple_spinner_item,
+                            selectedArray
+                        )
+                        district_spinner.adapter = adapter
+                        val selDistrict = userData?.districtOfResidence ?: "SELECT DISTRICT"
+                        Log.i("FragPersonalDetails", "District_1 = $selDistrict")
+                        district_spinner.setSelection(
+                            (district_spinner.adapter as ArrayAdapter<String>)
+                                .getPosition(userData?.establishmentDist ?: "")
+                        )
+                    }
+
+                    specific_organisation.setText(userData?.specificOrg)
+                    name_of_establishment.setText(userData?.nameOfEstablishment)
+                    job_description.setText(userData?.jobDescription)
+                    region_spinner.onItemSelectedListener = OnRegionSpinnerAdapterClick()
+                }
             }
-
-            specific_organisation.setText(userData?.specificOrg)
-            name_of_establishment.setText(userData?.nameOfEstablishment)
-            job_description.setText(userData?.jobDescription)
-            region_spinner.onItemSelectedListener = OnRegionSpinnerAdapterClick()
-        }
     }
 
     val callback = object : OnBackPressedCallback(false) {
@@ -130,7 +149,8 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
                     dialog.dismiss()
                     requireActivity().finish()
                 }.setNegativeButton("NO") { dialog: DialogInterface, id: Int ->
-                    dialog.dismiss() }.show()
+                    dialog.dismiss()
+                }.show()
 
         }
     }
@@ -140,7 +160,8 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
             if (i != 0) {
                 Log.i(TAG, "ADAPTER SELECTED INDEX = $i")
                 val selectedArray: Array<String> = resources.getStringArray(regionsId[i])
-                val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, selectedArray)
+                val adapter =
+                    ArrayAdapter(requireContext(), R.layout.simple_spinner_item, selectedArray)
                 district_spinner.adapter = adapter
             }
         }
@@ -148,20 +169,12 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
         override fun onNothingSelected(adapterView: AdapterView<*>?) {}
     }
 
-    inner class OnDistSpinnerSelect : AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
-
-        }
-
-        override fun onNothingSelected(adapterView: AdapterView<*>?) {}
-    }
-
-    fun onNext(){
+    fun onNext() {
 
         userData?.employmentStatus = employment_status_spinner.selectedItem.toString()
         userData?.employmentSector = employment_sector_spinner.selectedItem.toString()
         userData?.establishmentRegion = region_spinner.selectedItem.toString()
-        if(district_spinner.selectedItem != null){
+        if (district_spinner.selectedItem != null) {
             userData?.establishmentDist = district_spinner.selectedItem.toString()
         }
         userData?.specificOrg = specific_organisation.text.toString()
@@ -170,14 +183,14 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
 
         val errorStr = validateDataModel(userData)
         if (errorStr.isEmpty()) {
-            updateMode?.setValue(userData!!)
-              send(userData!!)
+            updateModel.postData(userData!!)
+            send()
         } else {
             warnAndSend(errorStr)
         }
     }
 
-    private fun send(data: DatabaseObject) {
+    private fun send() {
 
         AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
             .setTitle("WARNING")
@@ -202,7 +215,7 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
                 val p = passEdit.text.toString()
                 if (p == sharedP.getString(SessionManager.PASSWORK, "")) {
                     dialog.dismiss()
-                    sendPicture()
+                    sending()
                 } else {
                     showAlertDialog("ERROR", "Wrong password")
                 }
@@ -210,78 +223,108 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
             .show()
     }
 
-    private fun sendPicture() {
-        if (newImageUri.isNotEmpty()) {
-            val pDialog = MyAlertDialog(requireContext(),"UPDATING USER DATA", "Uploading picture... Please wait")
-            val id = System.currentTimeMillis().toString()
-            MediaManager.get().upload(newImageUri)
-                .option("resource_type", "auto")
-                .unsigned("my_preset")
-                .option("public_id", "Nabia04/database/$id")
-                .option("cloud_name", "callmanager")
-                .callback(object : UploadCallback {
-                    override fun onStart(requestId: String) {
-                        pDialog.show()
-                    }
-
-                    override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {}
-                    override fun onSuccess(requestId: String, resultData: Map<*, *>) {
-                        pDialog.dismiss()
-                        val url = resultData["secure_url"] as String?
-                        userData?.imageUri = url
-                        doUpdate(ActivityUpdateUserData.userFolio)
-                    }
-
-                    override fun onError(requestId: String, error: ErrorInfo) {
-                        pDialog.dismiss()
-                        showAlertDialog("FAILED", "Failed to upload picture. Please try again")
-                    }
-
-                    override fun onReschedule(requestId: String, error: ErrorInfo) {}
-                }).dispatch()
-        } else {
-            doUpdate(ActivityUpdateUserData.userFolio)
+    private fun sending() {
+        val pDial = MyAlertDialog(requireContext(), "USER DATA UPDATE", "Updating...")
+        pDial.show()
+        lifecycleScope.launch {
+            sendPicture(pDial)
         }
     }
 
-    private fun doUpdate(id: String){
-        object: BackgroundTasks(){
-            val pDialog = MyAlertDialog(requireContext(),"UPDATING USER DATA","Sending Data... Please wait")
-            var response: DatabaseResponse? = null
-            override fun onPreExecute() {
-                pDialog.show()
-            }
 
-            override fun doInBackground() {
-                val token = sharedP?.getString(SessionManager.LOGIN_TOKEN, "")
-                try {
-                    if (ActivityUpdateUserData.selectedFolio.isEmpty()) {
-                        response = endpoint?.addNewMember(userData)?.execute()
-                    } else {
-                        response = endpoint?.insertDataModel(userData)?.execute()
+    private suspend fun sendPicture(pDial: MyAlertDialog) {
+        if (newImageUri.isEmpty()) {
+            withContext(IO) {
+                doDataUpdate(pDial, "")
+            }
+            return
+        }
+
+        val id = System.currentTimeMillis().toString()
+        MediaManager.get().upload(newImageUri)
+            .option("resource_type", "auto")
+            .unsigned("my_preset")
+            .option("public_id", "Nabia04/database/$id")
+            .option("cloud_name", "callmanager")
+            .callback(object : UploadCallback {
+                override fun onStart(requestId: String) {
+                    Log.i("TAG", "Sending image started...")
+                }
+
+                override fun onProgress(requestId: String, bytes: Long, totalBytes: Long) {}
+                override fun onSuccess(requestId: String, resultData: Map<*, *>) {
+                    Log.i("TAG", "onSuccess called")
+                    val imageUri = resultData["secure_url"].toString()
+                    lifecycleScope.launch {
+                        withContext(IO) {
+                            doDataUpdate(pDial, imageUri)
+                        }
                     }
-                } catch (e: IOException) {
-                    e.printStackTrace()
+                }
+
+                override fun onError(requestId: String, error: ErrorInfo) {
+                    pDial.dismiss()
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed to upload picture. Please try again",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                override fun onReschedule(requestId: String, error: ErrorInfo) {}
+            }).dispatch()
+    }
+
+//    private suspend fun upDateDate(pDialog: MyAlertDialog): Resource<EntityUserData> {
+//        return withContext(Dispatchers.IO){
+//            doDataUpdate(pDialog)
+//        }
+//
+//    }
+
+    private fun doDataUpdate(pDial: MyAlertDialog, imageUri: String) {
+        var erMsg = ""
+        val response: DatabaseResponse?
+        userData?.imageUri = imageUri
+        try {
+            response = if (selectedFolio.isEmpty()) {
+                endpoint.addNewMember(getBackendModel(userData)).execute()
+            } else {
+                endpoint.insertDataModel(getBackendModel(userData)).execute()
+            }
+            pDial.dismiss()
+            if (response != null) {
+                lifecycleScope.launch {
+                    when (response.returnCode) {
+                        Cons.OK -> {
+                            lifecycleScope.launch {
+                                Toast.makeText(requireContext(), "DONE", Toast.LENGTH_SHORT).show()
+                            }
+                            requireActivity().finish()
+                        }
+                        Cons.ALREADY_EXIST -> {
+                            showAlertDialog("ERROR", response.response)
+                        }
+                        else -> {
+                            showAlertDialog("ERROR", "Unknown error. Please try again")
+                        }
+                    }
                 }
             }
-
-            override fun onPostExecute() {
-                pDialog.dismiss()
-                if (response?.returnCode == Cons.OK) {
-                    AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
-                        .setTitle("SUCCESS")
-                        .setCancelable(false)
-                        .setMessage("Task was successful")
-                        .setPositiveButton(
-                            "OK"
-                        ) { dialog, id -> dialog.dismiss()
-                            requireActivity().finish()}.show()
+        } catch (ex: IOException) {
+            pDial.dismiss()
+            lifecycleScope.launch {
+                erMsg = if (ex is SocketTimeoutException || ex is SSLHandshakeException ||
+                    ex is UnknownHostException
+                ) {
+                    "Cause: NO INTERNET CONNECTION"
                 } else {
-                    showAlertDialog("ERROR", "An error occurred. Please try again")
+                    ex.localizedMessage ?: ""
                 }
+                showAlertDialog("ERROR", erMsg)
+                ex.printStackTrace()
             }
-
-        }.execute()
+        }
     }
 
     private fun warnAndSend(errors: List<String>) {
@@ -295,8 +338,8 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
         lv.adapter = adapter
         dialog.setPositiveButton("PROCEED") { d, id ->
             d.dismiss()
-            updateMode?.setValue(userData!!)
-            send(userData!!)
+            updateModel.postData(userData!!)
+            send()
         }
         dialog.setNegativeButton(
             "BACK"
@@ -304,29 +347,34 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
         dialog.show()
     }
 
-    private fun validateDataModel(data: DatabaseObject?): List<String> {
+    private fun validateDataModel(data: EntityUserData?): List<String> {
         val errorList: MutableList<String> = ArrayList()
 
         if (data?.employmentStatus == null || data.employmentStatus.lowercase(Locale.getDefault())
-                .contains("select")) {
+                .contains("select")
+        ) {
             errorList.add("Invalid Employment status")
         }
         if (data?.employmentSector == null || data.employmentSector.lowercase(Locale.getDefault())
-                .contains("select")) {
+                .contains("select")
+        ) {
             errorList.add("Invalid Employment Sector")
         }
 
         if (data?.establishmentRegion == null || data.establishmentRegion.lowercase(Locale.getDefault())
-                .contains("select")) {
+                .contains("select")
+        ) {
             errorList.add("Invalid Establishment region")
         }
         if (data?.establishmentDist == null || data.establishmentDist.lowercase(Locale.getDefault())
-                .contains("select")) {
+                .contains("select")
+        ) {
             errorList.add("Invalid establishment district")
         }
 
         if (data?.nameOfEstablishment == null || data.nameOfEstablishment.isEmpty()) {
-            errorList.add("Invalid Establishment name") }
+            errorList.add("Invalid Establishment name")
+        }
         if (data?.jobDescription == null || data.jobDescription.isEmpty()) {
             errorList.add("Invalid Jog Description")
         }
@@ -346,15 +394,37 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
             ) { dialog, id -> dialog.dismiss() }.show()
     }
 
-    private fun getEndpointObject(): MainEndpoint? {
-        if (endpoint == null) {
-            val builder = MainEndpoint.Builder(
-                AndroidHttp.newCompatibleTransport(),
-                AndroidJsonFactory(),
-                null
-            ).setRootUrl(Cons.ROOT_URL)
-            endpoint = builder.build()
+    private fun getBackendModel(obj: EntityUserData?): DatabaseObject {
+        val u = DatabaseObject()
+        if (obj != null) {
+            u.birthDayAlarm = obj.birthDayAlarm
+            u.className = obj.className
+            u.contact = obj.contact
+            u.courseStudied = obj.courseStudied
+            u.districtOfResidence = obj.districtOfResidence
+            u.email = obj.email
+            u.folioNumber = obj.folioNumber
+            u.homeTown = obj.homeTown
+            u.house = obj.house
+            u.imageId = obj.imageId
+            u.imageUri = obj.imageUri
+            u.nickName = obj.nickName
+            u.jobDescription = obj.jobDescription
+            u.specificOrg = obj.specificOrg
+            u.employmentStatus = obj.employmentStatus
+            u.employmentSector = obj.employmentSector
+            u.nameOfEstablishment = obj.nameOfEstablishment
+            u.establishmentRegion = obj.establishmentRegion
+            u.establishmentDist = obj.establishmentDist
+            u.positionHeld = obj.positionHeld
+            u.regionOfResidence = obj.regionOfResidence
+            u.sex = obj.sex
+            u.fullName = obj.fullName
+            u.survivingStatus = obj.survivingStatus
+            u.dateDeparted = obj.dateDeparted
+            u.biography = obj.biography
+            u.tributes = obj.tribute
         }
-        return endpoint
+        return u
     }
 }

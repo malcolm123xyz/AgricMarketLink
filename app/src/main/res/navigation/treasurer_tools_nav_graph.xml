@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/fragment1">
+
+    <fragment
+        android:id="@+id/fragment1"
+        android:name="mx.mobile.solution.nabia04.ui.dues_fragments.FragmentYearlyDues"
+        android:label="DUES (ALL)"
+        tools:layout="@layout/fragment_yearly_payment">
+        <action
+            android:id="@+id/action_move_forward"
+            app:destination="@id/payment_update_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/payment_update_fragment"
+        android:name="mx.mobile.solution.nabia04.ui.dues_fragments.FragmentPaymentUpdate"
+        android:label="Payment Update"
+        tools:layout="@layout/fragment_payment_update">
+        <action
+            android:id="@+id/action_move_back"
+            app:destination="@id/fragment1"
+            app:popUpTo="@id/fragment1"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+</navigation>

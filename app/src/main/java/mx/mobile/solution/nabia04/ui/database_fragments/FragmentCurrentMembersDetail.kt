@@ -2,7 +2,6 @@ package mx.mobile.solution.nabia04.ui.database_fragments
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.util.Linkify
 import android.util.Log
@@ -13,34 +12,44 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
-import androidx.preference.PreferenceManager
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
-import com.google.api.client.extensions.android.http.AndroidHttp
-import com.google.api.client.extensions.android.json.AndroidJsonFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_database_detail.*
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager
+import mx.mobile.solution.nabia04.data.entities.EntityUserData
+import mx.mobile.solution.nabia04.data.view_models.DBViewModel
 import mx.mobile.solution.nabia04.databinding.FragmentDatabaseDetailBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData
-import mx.mobile.solution.nabia04.utilities.*
+import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
+import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
+import mx.mobile.solution.nabia04.utilities.Cons
+import mx.mobile.solution.nabia04.utilities.GlideApp
+import mx.mobile.solution.nabia04.utilities.MyAlertDialog
+import mx.mobile.solution.nabia04.utilities.Status
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Response
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.ReturnObj
-import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>() {
 
-    private var userData: mx.mobile.solution.nabia04.data.entities.EntityUserData? = null
+    @Inject
+    lateinit var endpoint: MainEndpoint
+
+    private var userData: EntityUserData? = null
+
+    private val viewModel by activityViewModels<DBViewModel>()
+
     private var deceasedDate: Long = 0
-    private var endpoint: MainEndpoint? = null
-    private var clearance: String? = null
-    private var userFolio: String? = null
-    private var shared: SharedPreferences? = null
-    private var selectedFolio: String? = null
+    private lateinit var selectedFolio: String
     private val fd = SimpleDateFormat("EEE, d MMM yyyy hh:mm", Locale.US)
 
     override fun getLayoutRes(): Int = R.layout.fragment_database_detail
@@ -48,16 +57,12 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        shared = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        endpoint = getEndpointObject()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        selectedFolio = arguments?.getString("folio")
-        userFolio = shared?.getString(SessionManager.FOLIO_NUMBER, "")
-        clearance = shared?.getString(Cons.CLEARANCE, "NONE")
+        selectedFolio = arguments?.getString("folio") ?: ""
 
         fabEdit.setOnClickListener {
             val i = Intent(requireContext(), ActivityUpdateUserData::class.java)
@@ -65,13 +70,17 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
             startActivity(i)
         }
 
-        if (selectedFolio == userFolio ||
+        if (selectedFolio == userFolioNumber ||
             clearance == Cons.PRO ||
-            userFolio == "13786") {
+            userFolioNumber == "13786"
+        ) {
             fabEdit.visibility = View.VISIBLE
         }
 
-        getUserData(selectedFolio)
+        lifecycleScope.launch {
+            val user = viewModel.getUser(selectedFolio)
+            user?.let { showDetails(it) }
+        }
 
     }
 
@@ -81,7 +90,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
         val clearanceMenu = menu.findItem(R.id.set_clearance)
         val setaliveMen = menu.findItem(R.id.living_status)
         val delete = menu.findItem(R.id.delete)
-        if (clearance == Cons.PRO || userFolio == "13786") {
+        if (clearance == Cons.PRO || userFolioNumber == "13786") {
             clearanceMenu.isVisible = true
             setaliveMen.isVisible = true
             delete.isVisible = true
@@ -104,17 +113,20 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     }
 
     private fun showClearanceSettingDial() {
-        if (clearance == Cons.PRO || userFolio == "13786") {
+        if (clearance == Cons.PRO || userFolioNumber == "13786") {
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("WARNING!!!").setMessage(getString(R.string.warning_1))
                 .setPositiveButton("Continue") { dialog, id ->
                     dialog.dismiss()
                     val v: View = layoutInflater.inflate(R.layout.set_clearance, null)
-                    val alert = AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
-                        .setView(v)
-                        .show()
-                    v.findViewById<View>(R.id.none).setOnClickListener( OnClearanceItemClick(Cons.POSITION_NONE, alert))
-                    v.findViewById<View>(R.id.president).setOnClickListener(OnClearanceItemClick(Cons.POSITION_PRESIDENT, alert))
+                    val alert =
+                        AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+                            .setView(v)
+                            .show()
+                    v.findViewById<View>(R.id.none)
+                        .setOnClickListener(OnClearanceItemClick(Cons.POSITION_NONE, alert))
+                    v.findViewById<View>(R.id.president)
+                        .setOnClickListener(OnClearanceItemClick(Cons.POSITION_PRESIDENT, alert))
                     v.findViewById<View>(R.id.vice_president).setOnClickListener(OnClearanceItemClick(Cons.POSITION_VICE_PRES,alert))
                     v.findViewById<View>(R.id.treasurer).setOnClickListener(OnClearanceItemClick(Cons.POSITION_TREASURER, alert))
                     v.findViewById<View>(R.id.secretary).setOnClickListener(OnClearanceItemClick(Cons.POSITION_SEC, alert))
@@ -135,47 +147,31 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
         View.OnClickListener {
         override fun onClick(view: View) {
             alert.dismiss()
-            setClearance(selectedFolio!!, position)
+            setClearance(selectedFolio, position)
         }
     }
 
-    private fun setClearance (folio:String, Clearance:String){
-        object : BackgroundTasks(){
-            var pDialog = MyAlertDialog(requireContext(), "WORKING", "Assigning position... Please wait")
-            var exception: IOException? = null
-            var response: Response? = Response()
-            override fun onPreExecute() {
-                pDialog.show()
-            }
-
-            override fun doInBackground() {
-                endpoint = getEndpointObject()
-                try {
-                    response = endpoint?.setUserClearance(folio, Clearance)?.execute()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    exception = e
+    private fun setClearance (folio:String, Clearance:String) {
+        val pDialog =
+            MyAlertDialog(requireContext(), "WORKING", "Assigning position... Please wait")
+        pDialog.show()
+        lifecycleScope.launch {
+            val retValue = viewModel.setUserClearance(folio, Clearance)
+            pDialog.dismiss()
+            when (retValue.status) {
+                Status.SUCCESS ->
+                    Toast.makeText(requireContext(), "DONE", Toast.LENGTH_SHORT).show()
+                Status.ERROR -> {
+                    showAlertDialog("ERROR", retValue.message.toString())
                 }
+                else -> {}
             }
-
-            override fun onPostExecute() {
-                pDialog.dismiss()
-                if (exception != null) {
-                    showAlertDialog("ERROR", "Unknown error. Try again")
-                } else {
-                    if(response?.returnCode == Cons.OK) {
-                        Toast.makeText(requireContext(), "DONE", Toast.LENGTH_SHORT).show()
-                    }else {
-                        showAlertDialog("", response!!.response)
-                    }
-                }
-            }
-
-        }.execute()
+            this.cancel()
+        }
     }
 
     private fun showSetDeceasedDial() {
-        if (!clearance.equals(Cons.PRO) && !userFolio.equals("13786")) {
+        if (clearance != Cons.PRO && userFolioNumber != "13786") {
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("LIE LIE!!!")
                 .setMessage("Masa only the PRO can do this ooo. Hahahahahah")
@@ -205,12 +201,12 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
                         deceasedDate = alarmTime
                         val date = fd.format(Date(deceasedDate))
                         dialog?.dismiss()
-                        setDeceased(selectedFolio!!, date, 1)
+                        setDeceased(selectedFolio, date, 1)
                     }
                 })
             }else {
                 dialog?.dismiss()
-                setDeceased(selectedFolio!!, "date", 0)
+                setDeceased(selectedFolio, "date", 0)
             }
         }
 
@@ -224,121 +220,63 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
         dialog.show()
     }
 
-    private fun setDeceased (folio:String, date: String, status: Int){
-        object : BackgroundTasks(){
-            var exception : IOException? = null
-            val pDialog = MyAlertDialog(requireContext(), "WORKING", "Setting deceased status...")
-            override fun onPreExecute() {
-                pDialog.show()
-            }
-
-            override fun doInBackground() {
-                val retobj: ReturnObj
-                try {
-                    endpoint?.setDeceaseStatus(date, folio, status)?.execute()
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    exception = e
-                }
-            }
-
-            override fun onPostExecute() {
-                pDialog.dismiss()
-                if (exception == null) {
+    private fun setDeceased (folio:String, date: String, status: Int) {
+        val pDialog = MyAlertDialog(requireContext(), "WORKING", "Setting deceased status...")
+        pDialog.show()
+        lifecycleScope.launch {
+            val retValue = viewModel.setDeceaseStatus(date, folio, status)
+            pDialog.dismiss()
+            when (retValue.status) {
+                Status.SUCCESS ->
                     Toast.makeText(requireContext(), "DONE", Toast.LENGTH_SHORT).show()
-                } else {
-                    showAlertDialog("ERROR", "Unknown error. Please try again")
+                Status.ERROR -> {
+                    showAlertDialog("ERROR", retValue.message.toString())
                 }
+                else -> {}
             }
-
-        }.execute()
+            this.cancel()
+        }
     }
 
     private fun showDeleteConfirmDial() {
-        if (!clearance.equals(Cons.PRO) && !userFolio.equals("13786")) {
+        if (clearance != Cons.PRO && userFolioNumber != "13786") {
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("LIE LIE!!!")
                 .setMessage("Masa only the PRO can do this ooo. Hahahahahah")
                 .show()
             return
         }
-            AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
-                .setTitle("Warning")
-                .setMessage("Are you sure you want to Delete this person from the database?")
-                .setCancelable(false)
-                .setPositiveButton("Yes") { dialogInterface, i ->
-                    dialogInterface.dismiss()
-                    deleteUser(selectedFolio!!)
-                }.setNegativeButton(
-                    "No"
-                ) { dialogInterface, i -> dialogInterface.dismiss() }.show()
+        AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+            .setTitle("Warning")
+            .setMessage("Are you sure you want to Delete this person from the database?")
+            .setCancelable(false)
+            .setPositiveButton("Yes") { dialogInterface, i ->
+                dialogInterface.dismiss()
+                deleteUser(selectedFolio)
+            }.setNegativeButton(
+                "No"
+            ) { dialogInterface, i -> dialogInterface.dismiss() }.show()
     }
 
-    private fun deleteUser(folio : String){
-        object : BackgroundTasks(){
-            var exception : IOException? = null
-            var returnInt = 0
-            var pDialog = MyAlertDialog(requireContext(), "DELETE", "Deleting...")
-
-            override fun onPreExecute() {
-                pDialog.show()
-            }
-
-            override fun doInBackground() {
-                try {
-                    val returnCode: Int? = endpoint?.deleteUser(folio)?.execute()?.returnCode
-                    if (returnCode == 1) {
-                        mx.mobile.solution.nabia04.data.MainDataBase.getDatabase(requireContext())
-                            .userDataDao().deleteThisUser(folio)
-                        returnInt = 1
-                    } else if (returnCode == 3) {
-                        mx.mobile.solution.nabia04.data.MainDataBase.getDatabase(requireContext())
-                            .userDataDao().deleteThisUser(folio)
-                        returnInt = 1
-                    }
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                    exception = e
-                }
-            }
-
-            override fun onPostExecute() {
-                pDialog.dismiss()
-                if (exception == null) {
+    private fun deleteUser(folio: String) {
+        val pDialog = MyAlertDialog(requireContext(), "DELETE", "Deleting...")
+        pDialog.show()
+        lifecycleScope.launch {
+            val retValue = viewModel.deleteUser(folio)
+            pDialog.dismiss()
+            when (retValue.status) {
+                Status.SUCCESS ->
                     Toast.makeText(requireContext(), "DONE", Toast.LENGTH_SHORT).show()
-                } else {
-                    showAlertDialog("ERROR", "Unknown error. Try again")
+                Status.ERROR -> {
+                    showAlertDialog("ERROR", retValue.message.toString())
                 }
+                else -> {}
             }
-
-        }.execute()
+            this.cancel()
+        }
     }
 
-    private fun getUserData(folio: String?){
-        Log.i("DatabaseDetail", "getUserData, foliw = $folio")
-        object: BackgroundTasks() {
-            override fun onPreExecute() {
-            }
-
-            override fun doInBackground() {
-                val dao: mx.mobile.solution.nabia04.data.dao.UserDataDao =
-                    mx.mobile.solution.nabia04.data.MainDataBase.getDatabase(requireContext())
-                        .userDataDao()
-                userData = dao.getUser(folio)
-                if(userData != null){
-                    Log.i("DatabaseDetail", "User data is not null")
-                }else {
-                    Log.i("DatabaseDetail", "User data is null")
-                }
-            }
-
-            override fun onPostExecute() {
-                userData?.let { showDetails(it) }
-            }
-        }.execute()
-    }
-
-    private fun showDetails(data: mx.mobile.solution.nabia04.data.entities.EntityUserData) {
+    private fun showDetails(data: EntityUserData) {
         var nickName = ""
         if (data.nickName != null) {
             nickName = " (" + data.nickName.toString() + ")"
@@ -347,8 +285,6 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
         fullNameTv_Nickname.text = name
         folio_number_Tv.text = data.folioNumber
 
-        val sex = data.sex ?: ""
-
         if (data.sex != null) {
             sexTV.text = data.sex
         }
@@ -356,7 +292,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
             hometownTV.text = data.homeTown
         }
         if (data.districtOfResidence != null) {
-           dis_residence_tv.text = data.districtOfResidence
+            dis_residence_tv.text = data.districtOfResidence
         }
         if (data.regionOfResidence != null) {
             region_residence.text = data.regionOfResidence
@@ -365,7 +301,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
             contact1TV.text = data.contact
         }
         if (data.email != null) {
-           emailTV.text = data.email
+            emailTV.text = data.email
         }
         if (data.birthDayAlarm  != 0L) {
             dateOfBirth.text = fd.format(Date(data.birthDayAlarm))
@@ -380,7 +316,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
             houseTV.text = data.house
         }
         if (data.positionHeld != null) {
-           position1TV.text = data.positionHeld
+            position1TV.text = data.positionHeld
         }
         if (data.employmentStatus != null) {
             employmentStatus.text = data.employmentStatus
@@ -410,25 +346,14 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
         val imageUri: String = data.imageUri ?: ""
         val imageId: String = data.imageId ?: ""
 
+        Log.i("TAG", "imageUri = $imageUri, imageId = $imageId")
+
         GlideApp.with(requireContext())
             .load(imageUri)
             .placeholder(R.drawable.listitem_image_holder)
             .signature(ObjectKey(imageId))
             .apply(RequestOptions.circleCropTransform())
             .into(imageView)
-    }
-
-    fun getEndpointObject(): MainEndpoint? {
-        if (endpoint == null) {
-            val builder = MainEndpoint.Builder(
-                AndroidHttp.newCompatibleTransport(),
-                AndroidJsonFactory(),
-                null
-            )
-                .setRootUrl(Cons.ROOT_URL)
-            endpoint = builder.build()
-        }
-        return endpoint
     }
 
     private fun showAlertDialog(t: String, s: String) {

@@ -1,17 +1,15 @@
 package mx.mobile.solution.nabia04.data.repositories
 
-import android.util.Log
-import androidx.lifecycle.LiveData
+import android.content.SharedPreferences
 import androidx.lifecycle.MutableLiveData
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.data.dao.AnnDao
 import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement
-import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.endpoint
-import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.sharedP
-import mx.mobile.solution.nabia04.utilities.BackgroundTasks
 import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.Resource
+import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Announcement
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.AnnouncementResponse
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -20,119 +18,123 @@ import javax.inject.Singleton
 import javax.net.ssl.SSLHandshakeException
 
 @Singleton
-class AnnRepository @Inject constructor(var dao: AnnDao) {
+class AnnRepository @Inject constructor(
+    var dao: AnnDao,
+    var endpoint: MainEndpoint,
+    var sharedP: SharedPreferences
+) {
 
     val result = MutableLiveData<Resource<List<EntityAnnouncement>>>()
 
-    fun loadAnn(): LiveData<Resource<List<EntityAnnouncement>>> {
-
-        result.postValue(Resource.loading(null))
-
-        object : BackgroundTasks() {
-            var response = AnnouncementResponse()
-            lateinit var allAnnouncements: List<EntityAnnouncement>
-            override fun onPreExecute() {}
-
-            override fun doInBackground() {
-                response.response = ""
-                response.returnCode = 1
-                try {
-
-                    val annList = dao.annList
-                    if (annList.size > 0) {
-                        allAnnouncements = annList
-                        return
-                    }
-
-                    response = endpoint!!.noticeBoardData.execute()
-                    if (response.announcements != null) {
-                        allAnnouncements = getAnnDataObjects(response.announcements).toList()
-                        dao.insertAnnouncement(allAnnouncements)
-                        sharedP.edit()?.putBoolean(Cons.ANN_REFRESH, false)?.apply()
-                        sharedP.edit()
-                            ?.putLong(Cons.ANN_REFRESH_TIME_STAMP, System.currentTimeMillis())
-                            ?.apply()
-                        //alarmManager.scheduleEventNotification(allAnnouncements)
-                    }
-                } catch (ex: IOException) {
-                    response.returnCode = Cons.UNKNOWN_ERROR_CODE
-                    if (ex is SocketTimeoutException || ex is SSLHandshakeException || ex is UnknownHostException) {
-                        response.response = "Cause: NO INTERNET CONNECTION"
-                    } else {
-                        response.response = ex.localizedMessage
-                    }
-                    ex.printStackTrace()
-                }
-            }
-
-            override fun onPostExecute() {
-                when (response.returnCode) {
-                    1 -> {
-                        result.postValue(Resource.success(allAnnouncements))
-                    }
-                    else -> {
-                        result.postValue(Resource.error(response.response, null))
-                    }
-                }
-            }
-        }.execute()
-
-        return result
+    suspend fun refreshDB(): Resource<List<EntityAnnouncement>> {
+        return withContext(Dispatchers.IO) {
+            refresh()
+        }
     }
 
-    fun refreshDB(): LiveData<Resource<List<EntityAnnouncement>>> {
-
-        Log.i("TAG", "Repository Refresh...")
-
-        result.postValue(Resource.loading(null))
-
-        object : BackgroundTasks() {
-            var response = AnnouncementResponse()
-            lateinit var allAnnouncements: List<EntityAnnouncement>
-            override fun onPreExecute() {}
-
-            override fun doInBackground() {
-                response.response = ""
-                response.returnCode = 1
-                try {
-                    response = endpoint!!.noticeBoardData.execute()
-                    if (response.announcements != null) {
-                        allAnnouncements = getAnnDataObjects(response.announcements).toList()
-                        dao.insertAnnouncement(allAnnouncements)
-                        sharedP.edit()?.putBoolean(Cons.ANN_REFRESH, false)?.apply()
-                        sharedP.edit()
-                            ?.putLong(Cons.ANN_REFRESH_TIME_STAMP, System.currentTimeMillis())
-                            ?.apply()
-                        //alarmManager.scheduleEventNotification(allAnnouncements)
-                    }
-                } catch (ex: IOException) {
-                    response.returnCode = Cons.UNKNOWN_ERROR_CODE
-                    if (ex is SocketTimeoutException || ex is SSLHandshakeException || ex is UnknownHostException) {
-                        response.response = "Cause: NO INTERNET CONNECTION"
-                    } else {
-                        response.response = ex.localizedMessage
-                    }
-                    ex.printStackTrace()
-                }
-            }
-
-            override fun onPostExecute() {
-                Log.i("TAG", "Returned Refresh...")
-                when (response.returnCode) {
-                    1 -> {
-                        result.postValue(Resource.success(allAnnouncements))
-                    }
-                    else -> {
-                        result.postValue(Resource.error(response.response, null))
-                    }
-                }
-            }
-        }.execute()
-
-        return result
+    suspend fun fetchAnn(): Resource<List<EntityAnnouncement>> {
+        return withContext(Dispatchers.IO) {
+            fetch()
+        }
     }
 
-    fun getAnnDataObjects(list: List<Announcement>): MutableList<EntityAnnouncement> {
+    suspend fun refreshDB1(): Resource<List<EntityAnnouncement>> {
+        return withContext(Dispatchers.IO) {
+            refresh()
+        }
+    }
+
+    suspend fun deleteFrmServer(id: Long): Int {
+        return withContext(Dispatchers.IO) {
+            doDeleteFrmServer(id)
+        }
+    }
+
+    suspend fun getAnn(id: Long): EntityAnnouncement? {
+        return dao.getAnnouncement(id)
+    }
+
+    private fun doDeleteFrmServer(id: Long): Int {
+
+        try {
+            val ret = endpoint.deleteFromServer(id).execute()
+            if (ret != null) {
+                return 1
+            }
+            return -1
+        } catch (ex: IOException) {
+            ex.printStackTrace()
+            return 0
+        }
+    }
+
+    private fun refresh(): Resource<List<EntityAnnouncement>> {
+        var erMsg = ""
+        try {
+            val backendResponse = endpoint.noticeBoardData.execute()
+            if (backendResponse.returnCode == 1) {
+                if (backendResponse.announcements != null) {
+                    val allAnnouncements = getAnnDataObjects(backendResponse.announcements).toList()
+                    dao.insertAnnouncement(allAnnouncements)
+                    sharedP.edit()?.putBoolean(Cons.ANN_REFRESH, false)?.apply()
+                    sharedP.edit()
+                        ?.putLong(Cons.ANN_REFRESH_TIME_STAMP, System.currentTimeMillis())
+                        ?.apply()
+                    //alarmManager.scheduleEventNotification(allAnnouncements)
+                    return Resource.success(allAnnouncements)
+                }
+            }
+
+        } catch (ex: IOException) {
+            erMsg = if (ex is SocketTimeoutException ||
+                ex is SSLHandshakeException ||
+                ex is UnknownHostException
+            ) {
+                "Cause: NO INTERNET CONNECTION"
+            } else {
+                ex.localizedMessage ?: ""
+            }
+            ex.printStackTrace()
+        }
+        return Resource.error(erMsg, null)
+    }
+
+    private fun fetch(): Resource<List<EntityAnnouncement>> {
+        var erMsg = ""
+        val annList = dao.annList
+        if (annList.isNotEmpty()) {
+            return Resource.success(annList)
+        }
+        try {
+            val backendResponse = endpoint.noticeBoardData.execute()
+            if (backendResponse.returnCode == 1) {
+                if (backendResponse.announcements != null) {
+                    val allAnnouncements = getAnnDataObjects(backendResponse.announcements).toList()
+                    dao.insertAnnouncement(allAnnouncements)
+                    sharedP.edit()?.putBoolean(Cons.ANN_REFRESH, false)?.apply()
+                    sharedP.edit()
+                        ?.putLong(Cons.ANN_REFRESH_TIME_STAMP, System.currentTimeMillis())
+                        ?.apply()
+                    //alarmManager.scheduleEventNotification(allAnnouncements)
+                    return Resource.success(allAnnouncements)
+                }
+            }
+
+        } catch (ex: IOException) {
+            erMsg = if (ex is SocketTimeoutException ||
+                ex is SSLHandshakeException ||
+                ex is UnknownHostException
+            ) {
+                "Cause: NO INTERNET CONNECTION"
+            } else {
+                ex.localizedMessage ?: ""
+            }
+            ex.printStackTrace()
+        }
+        return Resource.error(erMsg, null)
+    }
+
+    private fun getAnnDataObjects(list: List<Announcement>): MutableList<EntityAnnouncement> {
         val entityAnn: MutableList<EntityAnnouncement> = ArrayList()
         for (ann in list) {
             val entity =
@@ -151,6 +153,14 @@ class AnnRepository @Inject constructor(var dao: AnnDao) {
             entityAnn.add(entity)
         }
         return entityAnn
+    }
+
+    suspend fun setAnnRead(ann: EntityAnnouncement) {
+        dao.updateAnnouncement(ann)
+    }
+
+    suspend fun delete(announcement: EntityAnnouncement): Int {
+        return dao.delete(announcement)
     }
 
 }

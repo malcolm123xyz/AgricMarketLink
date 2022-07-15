@@ -17,13 +17,20 @@
 package mx.mobile.solution.nabia04.utilities.di
 
 import android.content.Context
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.data.MainDataBase
 import mx.mobile.solution.nabia04.data.dao.AnnDao
+import mx.mobile.solution.nabia04.data.dao.DBdao
+import mx.mobile.solution.nabia04.data.dao.DuesDao
+import mx.mobile.solution.nabia04.ui.activities.endpoint
+import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -36,7 +43,34 @@ object DatabaseModule {
     }
 
     @Provides
-    fun provideDao(database: MainDataBase): AnnDao {
+    fun provideAnnDao(database: MainDataBase): AnnDao {
         return database.annDao()
     }
+
+    @Provides
+    fun provideUserDBDao(database: MainDataBase): DBdao {
+        return database.dbDao()
+    }
+
+    @Provides
+    fun provideUserDuesDao(database: MainDataBase): DuesDao {
+        return database.duesDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEndpoint(): MainEndpoint {
+        return endpoint
+    }
+
+    @Provides
+    @Singleton
+    fun provideSharedPref(@ApplicationContext appContext: Context): SharedPreferences {
+        return PreferenceManager.getDefaultSharedPreferences(appContext)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAlarmManager(@ApplicationContext appContext: Context):
+            MyAlarmManager = MyAlarmManager(appContext)
 }

@@ -10,12 +10,14 @@ import androidx.navigation.NavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import dagger.hilt.android.AndroidEntryPoint
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.view_models.TreasurerAppbarViewModel
 import mx.mobile.solution.nabia04.databinding.ActivityTreasurerBinding
 import mx.mobile.solution.nabia04.main.setupWithNavController
 import mx.mobile.solution.nabia04.util.Event
 
+@AndroidEntryPoint
 class ActivityTreasurer : AppCompatActivity() {
 
     private val appbarViewModel by viewModels<TreasurerAppbarViewModel>()

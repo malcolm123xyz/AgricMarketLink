@@ -1,6 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/copy"
         android:title="@string/copy_txt"
@@ -20,4 +19,11 @@
         app:showAsAction="never"
         android:visible="false"
         android:icon="@drawable/ic_delete_forever_white_24dp" />
+
+    <item
+        android:id="@+id/actionProgress"
+        android:orderInCategory="100"
+        android:visible="false"
+        app:actionLayout="@layout/appbar_progress_bar"
+        app:showAsAction="always" />
 </menu>

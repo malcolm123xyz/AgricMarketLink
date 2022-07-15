@@ -3,6 +3,7 @@ package mx.mobile.solution.nabia04.ui.database_fragments
 import android.Manifest
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -17,11 +18,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_database_detail.*
 import kotlinx.android.synthetic.main.fragment_done.*
 import kotlinx.android.synthetic.main.fragment_person_details.*
@@ -32,34 +34,38 @@ import kotlinx.android.synthetic.main.fragment_work_info.*
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager.CallBack
+import mx.mobile.solution.nabia04.data.entities.EntityUserData
+import mx.mobile.solution.nabia04.data.view_models.DBUpdateViewModel
 import mx.mobile.solution.nabia04.databinding.FragmentPersonDetailsBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData.Companion.newImageUri
 import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData.Companion.selectedFolio
-import mx.mobile.solution.nabia04.ui.activities.DatabaseUpdateViewModel
-import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.sharedP
 import mx.mobile.solution.nabia04.utilities.GlideApp
 import mx.mobile.solution.nabia04.utilities.Utils
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DatabaseObject
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 
 /**
  * A simple [Fragment] subclass.
  * Use the [FragmentDone.newInstance] factory method to
  * create an instance of this fragment.
  */
+@AndroidEntryPoint
 class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
 
     override fun getLayoutRes(): Int = R.layout.fragment_person_details
 
-    private val MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE: Int = 8574
+    private val updateModel by activityViewModels<DBUpdateViewModel>()
+
+    @Inject
+    lateinit var sharedP: SharedPreferences
+
+    private val storagPermission: Int = 8574
     private var birthDayValue: Long? = null
-    private var userData: DatabaseObject? = null
-    private var updateMode: DatabaseUpdateViewModel? = null
     private var strFutureDate: String = ""
     private val TAG: String = "FragmentPersonDetails"
     private val regionsId = intArrayOf(
@@ -86,73 +92,34 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
 
     private var contentLauncher: ActivityResultLauncher<String>? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        updateMode = ViewModelProvider(requireActivity()).get(DatabaseUpdateViewModel::class.java)
-        Log.i(TAG, "onCreate()")
-    }
+    private var updateObj: EntityUserData? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-            folio_edit_view.setText(selectedFolio)
+        folio_edit_view.setText(selectedFolio)
 
-            folio_edit_view.isEnabled = selectedFolio.isEmpty()
+        folio_edit_view.isEnabled = selectedFolio.isEmpty()
 
-            updateMode?.getValue()?.observe(viewLifecycleOwner) { updataObject: DatabaseObject? ->
-                userData = updataObject
-                val nn = userData?.nickName ?: ""
-                var name: String = userData?.fullName ?: ""
+        region_spinner.onItemSelectedListener = OnRegionSpinnerAdapterClick()
 
-                if(nn.isEmpty()){
-                    name = "$name ($nn)"
+        Log.i("TAG", "onViewCreated()")
+
+        updateModel.getDataToObserve(selectedFolio)
+            .observe(viewLifecycleOwner) { userData: EntityUserData? ->
+                if (userData != null) {
+                    updateObj = userData
+                    show()
                 }
-
-                folio_edit_view.setText(userData?.folioNumber ?: "")
-                fullNameTv.text = name
-                fullnameEditView.setText(userData?.fullName ?: "")
-                val selSex = userData?.sex ?: "SELECT SEX"
-                sex_spinner.setSelection((sex_spinner.adapter as ArrayAdapter<String>).getPosition(selSex))
-                contact.setText(userData?.contact ?: "")
-                email.setText(userData?.email ?: "")
-                nickName_edit_view.setText(nn)
-                homeTown_edit_view.setText(userData?.homeTown ?: "")
-
-                birthDayValue = userData?.birthDayAlarm ?: 0
-
-                birthDayButton.text = fd.format(Date(birthDayValue!!))
-
-                val selRegion = userData?.regionOfResidence ?: "SELECT REGION"
-                region_spinner.setSelection((region_spinner.adapter as ArrayAdapter<String>).getPosition(selRegion))
-
-                region_spinner.onItemSelectedListener = OnRegionSpinnerAdapterClick()
-
-                val selRegIndex = region_spinner.selectedItemPosition
-
-                if(selRegIndex  > 0){
-                    val selectedArray: Array<String> = resources.getStringArray(regionsId[selRegIndex])
-                    val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, selectedArray)
-                    district_spinner.adapter = adapter
-                    val selDistrict = userData?.districtOfResidence ?: "SELECT DISTRICT"
-                    district_spinner.setSelection(adapter.getPosition(selDistrict))
-                    adapter.notifyDataSetChanged()
-                }
-
-                GlideApp.with(requireContext())
-                    .load(userData?.imageUri ?: "")
-                    .placeholder(R.drawable.use_icon)
-                    .apply(RequestOptions.circleCropTransform())
-                    .signature(ObjectKey(userData?.getImageId() ?: ""))
-                    .into(profilePicture)
             }
 
-            birthDayButton.setOnClickListener {
-                MyAlarmManager(requireContext()).showDayMonthPicker(object : CallBack {
-                    override fun done(alarmTime: Long) {
-                        birthDayValue = alarmTime
-                        val myFormat = SimpleDateFormat("dd MM yyyy")
-                        strFutureDate = myFormat.format(alarmTime)
-                        birthDayButton.text = strFutureDate
+        birthDayButton.setOnClickListener {
+            MyAlarmManager(requireContext()).showDayMonthPicker(object : CallBack {
+                override fun done(alarmTime: Long) {
+                    birthDayValue = alarmTime
+                    val myFormat = SimpleDateFormat("dd MM yyyy")
+                    strFutureDate = myFormat.format(alarmTime)
+                    birthDayButton.text = strFutureDate
                         Log.i("MyAlarmManager", "Future  date: $strFutureDate")
                     }
                 })}
@@ -160,19 +127,72 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
         changePicture.setOnClickListener {
             if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(requireActivity(), arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE), MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE)
+                ActivityCompat.requestPermissions(
+                    requireActivity(), arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ), storagPermission
+                )
             } else {
                 contentLauncher!!.launch("image/*")
             }
         }
 
-        buttonCancel.setOnClickListener{ requireActivity().finish() }
+        buttonCancel.setOnClickListener { requireActivity().finish() }
 
-        nextButtonPersonalD.setOnClickListener{ onNext() }
+        nextButtonPersonalD.setOnClickListener { onNext() }
 
         registerPicturePickerActivityResults()
+    }
+
+    private fun show() {
+        Log.i("TAG", "showing views....()")
+        val nn = updateObj?.nickName ?: ""
+        var name: String = updateObj?.fullName ?: ""
+
+        if (nn.isEmpty()) {
+            name = "$name ($nn)"
+        }
+
+        folio_edit_view.setText(updateObj?.folioNumber ?: "")
+        fullNameTv.text = name
+        fullnameEditView.setText(updateObj?.fullName ?: "")
+        val selSex = updateObj?.sex ?: "SELECT SEX"
+        sex_spinner.setSelection((sex_spinner.adapter as ArrayAdapter<String>).getPosition(selSex))
+        contact.setText(updateObj?.contact ?: "")
+        email.setText(updateObj?.email ?: "")
+        nickName_edit_view.setText(nn)
+        homeTown_edit_view.setText(updateObj?.homeTown ?: "")
+
+        birthDayValue = updateObj?.birthDayAlarm ?: 0
+
+        birthDayButton.text = fd.format(Date(birthDayValue!!))
+
+        val selRegion = updateObj?.regionOfResidence ?: "SELECT REGION"
+        region_spinner.setSelection(
+            (region_spinner.adapter as ArrayAdapter<String>).getPosition(
+                selRegion
+            )
+        )
+        val selRegIndex = region_spinner.selectedItemPosition
+
+        if (selRegIndex > 0) {
+            val selectedArray: Array<String> = resources.getStringArray(regionsId[selRegIndex])
+            val adapter =
+                ArrayAdapter(requireContext(), R.layout.simple_spinner_item, selectedArray)
+            district_spinner.adapter = adapter
+            adapter.notifyDataSetChanged()
+            val selDistrict = updateObj?.districtOfResidence ?: "SELECT DISTRICT"
+            val selPos = (district_spinner.adapter as ArrayAdapter<String>).getPosition(selDistrict)
+            district_spinner.setSelection(selPos)
+        }
+
+        GlideApp.with(requireContext())
+            .load(updateObj?.imageUri ?: "")
+            .placeholder(R.drawable.use_icon)
+            .apply(RequestOptions.circleCropTransform())
+            .signature(ObjectKey(updateObj?.getImageId() ?: ""))
+            .into(profilePicture)
     }
 
     private fun registerPicturePickerActivityResults() {
@@ -194,7 +214,6 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
             val selImgUri = file.absolutePath ?: ""
             if(selImgUri.isNotEmpty()){
                 newImageUri = file.absolutePath ?: ""
-                userData?.imageUri = newImageUri
             }
             GlideApp.with(requireContext())
                 .load(file)
@@ -205,28 +224,38 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
         }
     }
 
-    fun onNext(){
-        userData?.folioNumber = folio_edit_view.text.toString()
-        userData?.fullName = fullnameEditView.text.toString()
-        userData?.contact = contact.text.toString()
-        userData?.email = email.text.toString()
-        userData?.nickName = nickName_edit_view.text.toString()
+    fun onNext() {
+        if (updateObj == null) {
+            updateObj = EntityUserData()
+        }
+        updateObj?.folioNumber = folio_edit_view.text.toString()
+        updateObj?.fullName = fullnameEditView.text.toString()
+        updateObj?.contact = contact.text.toString()
+        updateObj?.email = email.text.toString()
+        updateObj?.nickName = nickName_edit_view.text.toString()
         sharedP.edit()?.putString("nickName", nickName_edit_view.text.toString())?.apply()
-        userData?.sex =  sex_spinner.selectedItem.toString()
-        userData?.birthDayAlarm = birthDayValue ?: 0
-        userData?.homeTown = homeTown_edit_view.text.toString()
-        userData?.regionOfResidence = region_spinner.selectedItem.toString()
+        updateObj?.sex = sex_spinner.selectedItem.toString()
+        updateObj?.birthDayAlarm = birthDayValue ?: 0
+        updateObj?.homeTown = homeTown_edit_view.text.toString()
+        updateObj?.regionOfResidence = region_spinner.selectedItem.toString()
 
-        userData?.districtOfResidence = ""
+        updateObj?.districtOfResidence = ""
 
-        if(district_spinner.selectedItem != null){
-            userData?.districtOfResidence = district_spinner.selectedItem.toString()
-            Log.i("FragPerson", "District spinner selected item: "+district_spinner.selectedItem.toString())
-        }else{
+
+        if (district_spinner.selectedItem != null) {
+            updateObj?.districtOfResidence = district_spinner.selectedItem.toString()
+            Log.i(
+                "FragPerson",
+                "District spinner selected item: " + district_spinner.selectedItem.toString()
+            )
+        } else {
             Log.i("FragPerson", "district_spinner.selectedItem")
         }
 
-        if(userData?.folioNumber.isNullOrBlank() || userData?.fullName.isNullOrEmpty()){
+        val folio = folio_edit_view.text.toString()
+        val name = fullnameEditView.text.toString()
+
+        if (folio.isBlank() || name.isBlank()) {
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("ERROR")
                 .setMessage("FOLIO NUMBER or NAME not set. The Database cannot be updated without this two parameters")
@@ -236,62 +265,17 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
             return
         }
 
-        val errorStr = validateDataModel(userData)
+        val errorStr = validateDataModel(updateObj)
 
         if (errorStr.isEmpty()) {
-            updateMode?.setValue(userData!!)
+            updateObj?.let { updateModel.postData(it) }
             findNavController().navigate(R.id.action_personal_data_move_forward)
         } else {
             warnAndSend(errorStr)
         }
     }
 
-    val callback = object : OnBackPressedCallback(false) {
-        override fun handleOnBackPressed() {
-            AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
-                .setTitle("WARNING").setMessage("Do you want to cancel the update?")
-                .setPositiveButton("YES") { dialog: DialogInterface, id: Int ->
-                    dialog.dismiss()
-                    requireActivity().finish()
-                }.setNegativeButton("NO") { dialog: DialogInterface, id: Int ->
-                    dialog.dismiss() }.show()
-
-        }
-    }
-
-    inner class OnRegionSpinnerAdapterClick : AdapterView.OnItemSelectedListener {
-        override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, i: Int, l: Long) {
-            if (i != 0) {
-                val selectedArray: Array<String> = resources.getStringArray(regionsId[i])
-                val adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, selectedArray)
-                district_spinner.adapter = adapter
-            }
-        }
-
-        override fun onNothingSelected(adapterView: AdapterView<*>?) {}
-    }
-
-    private fun warnAndSend(errors: List<String>) {
-        val v = layoutInflater.inflate(R.layout.dialog_view1, null)
-        val dialog = AlertDialog.Builder(requireContext())
-        dialog.setTitle("INVALID ENTRIES")
-        dialog.setView(v)
-        val lv = v.findViewById<ListView>(R.id.list)
-        val adapter: ArrayAdapter<String> =
-            ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1, errors)
-        lv.adapter = adapter
-        dialog.setPositiveButton("PROCEED") { d, id ->
-            d.dismiss()
-            updateMode?.setValue(userData!!)
-            findNavController().navigate(R.id.action_personal_data_move_forward)
-        }
-        dialog.setNegativeButton(
-            "BACK"
-        ) { d, id -> d.dismiss() }
-        dialog.show()
-    }
-
-    private fun validateDataModel(data: DatabaseObject?): List<String> {
+    private fun validateDataModel(data: EntityUserData?): List<String> {
         val errorList: MutableList<String> = ArrayList()
         if (data?.folioNumber == null || data.folioNumber.isEmpty()) {
             errorList.add("Folio number not set")
@@ -321,12 +305,64 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
         if (data?.email == null || data.email.isEmpty()) {
             errorList.add("Invalid Email Address")
         }
-        if (data?.birthDayAlarm!! <  1) {
+        if (data?.birthDayAlarm == null) {
             errorList.add("Invalid Date of birth")
         }
-        if (data.imageUri.isNullOrEmpty()) {
+        if (newImageUri.isEmpty() && data?.imageUri.isNullOrEmpty()) {
             errorList.add("No profile picture set")
         }
         return errorList
     }
+
+    val callback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+                .setTitle("WARNING").setMessage("Do you want to cancel the update?")
+                .setPositiveButton("YES") { dialog: DialogInterface, id: Int ->
+                    dialog.dismiss()
+                    requireActivity().finish()
+                }.setNegativeButton("NO") { dialog: DialogInterface, id: Int ->
+                    dialog.dismiss()
+                }.show()
+
+        }
+    }
+
+    inner class OnRegionSpinnerAdapterClick : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, i: Int, l: Long) {
+            if (i != 0) {
+                val selectedArray: Array<String> = resources.getStringArray(regionsId[i])
+                val adapter =
+                    ArrayAdapter(requireContext(), R.layout.simple_spinner_item, selectedArray)
+                district_spinner.adapter = adapter
+                val selDistrict = updateObj?.districtOfResidence ?: "SELECT DISTRICT"
+                val selPos =
+                    (district_spinner.adapter as ArrayAdapter<String>).getPosition(selDistrict)
+                district_spinner.setSelection(selPos)
+            }
+        }
+
+        override fun onNothingSelected(adapterView: AdapterView<*>?) {}
+    }
+
+    private fun warnAndSend(errors: List<String>) {
+        val v = layoutInflater.inflate(R.layout.dialog_view1, null)
+        val dialog = AlertDialog.Builder(requireContext())
+        dialog.setTitle("INVALID ENTRIES")
+        dialog.setView(v)
+        val lv = v.findViewById<ListView>(R.id.list)
+        val adapter: ArrayAdapter<String> =
+            ArrayAdapter<String>(requireContext(), android.R.layout.simple_list_item_1, errors)
+        lv.adapter = adapter
+        dialog.setPositiveButton("PROCEED") { d, id ->
+            d.dismiss()
+            updateObj?.let { updateModel.postData(it) }
+            findNavController().navigate(R.id.action_personal_data_move_forward)
+        }
+        dialog.setNegativeButton(
+            "BACK"
+        ) { d, id -> d.dismiss() }
+        dialog.show()
+    }
+
 }

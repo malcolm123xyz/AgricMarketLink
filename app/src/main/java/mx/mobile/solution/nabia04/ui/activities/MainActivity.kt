@@ -14,16 +14,16 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import androidx.preference.PreferenceManager
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.api.client.extensions.android.http.AndroidHttp
-import com.google.api.client.extensions.android.json.AndroidJsonFactory
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.view_models.*
 import mx.mobile.solution.nabia04.databinding.ActivityMainBinding
@@ -33,7 +33,7 @@ import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.ExcelHelper
 import mx.mobile.solution.nabia04.utilities.SessionManager
 import pub.devrel.easypermissions.EasyPermissions
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
+import javax.inject.Inject
 
 
 /*
@@ -80,27 +80,15 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     private lateinit var dataBinding: ActivityMainBinding
 
-    companion object {
-        lateinit var excelHelper: ExcelHelper
-        lateinit var databaseLoadingStatus: DBLoadingStatusViewModel
-        lateinit var databaseViewModel: DatabaseListViewModel
+    @Inject
+    lateinit var excelHelper: ExcelHelper
 
+    @Inject
+    lateinit var sharedP: SharedPreferences
+
+    companion object {
         lateinit var userFolioNumber: String
         lateinit var clearance: String
-        lateinit var sharedP: SharedPreferences
-
-        val endpoint: MainEndpoint?
-            get() {
-                val builder = MainEndpoint.Builder(
-                    AndroidHttp.newCompatibleTransport(),
-                    AndroidJsonFactory(), null
-                ).setRootUrl(Cons.ROOT_URL)
-                return builder.build()
-            }
-
-        fun excelHelperIsInitialized(): Boolean {
-            return this::excelHelper.isInitialized
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -112,18 +100,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        sharedP = PreferenceManager.getDefaultSharedPreferences(this)
         userFolioNumber = sharedP.getString(SessionManager.FOLIO_NUMBER, "") ?: ""
         clearance = sharedP.getString(Cons.CLEARANCE, "") ?: ""
-
-        databaseLoadingStatus = ViewModelProvider(this).get(DBLoadingStatusViewModel::class.java)
-        databaseViewModel = ViewModelProvider(this).get(DatabaseListViewModel::class.java)
-
-        object : ExcelHelper() {
-            override fun onExcelReady(excel: ExcelHelper) {
-                excelHelper = excel
-            }
-        }.create()
 
         if (savedInstanceState == null) {
             setupBottomNavigationBar()
@@ -135,10 +113,18 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         Log.i("TAG", "Checking Permission b4 Initializing excelHelper")
         if (sharedP.getBoolean(Cons.HAS_STORAGE_MANAGEMENT_PERM, false)) {
             Log.i("TAG", "Has permission... Initializing excelHelper...")
-            //initializeExcelHelper(this)
+            lifecycleScope.launch {
+                initializeExcel()
+            }
         } else {
             Log.i("TAG", "No permissions... Requesting...")
             requestStoragePermission()
+        }
+    }
+
+    private suspend fun initializeExcel() {
+        withContext(Dispatchers.IO) {
+            excelHelper.createExcel()
         }
     }
 
@@ -229,12 +215,12 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         )
 
         // Whenever the selected controller changes, setup the action bar.
-        controller.observe(this, { navController ->
+        controller.observe(this) { navController ->
             val appBarConfig = AppBarConfiguration(navController.graph)
             dataBinding.toolbar.setupWithNavController(navController, appBarConfig)
-        })
+        }
 
-        appbarViewModel.currentNavController.observe(this, {
+        appbarViewModel.currentNavController.observe(this) {
 
             it?.let { event: Event<NavController> ->
                 event.getContentIfNotHandled()?.let { navController ->
@@ -242,7 +228,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                     dataBinding.toolbar.setupWithNavController(navController, appBarConfig)
                 }
             }
-        })
+        }
     }
 
 }

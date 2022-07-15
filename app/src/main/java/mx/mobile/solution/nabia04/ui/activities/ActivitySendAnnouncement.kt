@@ -3,6 +3,7 @@ package mx.mobile.solution.nabia04.ui.activities
 import android.Manifest
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -26,12 +27,12 @@ import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
 import com.google.api.client.extensions.android.json.AndroidJsonFactory
 import com.google.api.client.http.javanet.NetHttpTransport
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_send_ann.*
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager.CallBack
 import mx.mobile.solution.nabia04.databinding.ActivitySendAnnBinding
-import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.sharedP
 import mx.mobile.solution.nabia04.utilities.*
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Announcement
@@ -41,7 +42,9 @@ import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
 import java.text.SimpleDateFormat
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ActivitySendAnnouncement : AppCompatActivity() {
     private var file: File? = null
     private var annType = 0
@@ -51,6 +54,9 @@ class ActivitySendAnnouncement : AppCompatActivity() {
     private var priority = 0
     private var contentLauncher: ActivityResultLauncher<String>? = null
     private lateinit var vbinding: ActivitySendAnnBinding
+
+    @Inject
+    lateinit var sharedP: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
