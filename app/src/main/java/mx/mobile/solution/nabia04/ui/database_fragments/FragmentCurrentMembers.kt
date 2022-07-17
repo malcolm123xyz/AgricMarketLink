@@ -40,19 +40,18 @@ class FragmentCurrentMembers : BaseFragment<ListFragmentBinding>() {
 
     private fun setupObserver() {
 
-        viewModel.fetchUserDataList().observe(
-            viewLifecycleOwner,
-        ) { users: Resource<List<EntityUserData>> ->
-            when (users.status) {
-                Status.SUCCESS -> {
-                    showLoading(false)
-                    showError(false, null)
-                    users.data?.let { renderList(it) }
-                }
-                Status.LOADING -> {
-                    showLoading(true)
-                    showError(false, null)
-                }
+        viewModel.fetchUserDataList()
+            .observe(viewLifecycleOwner) { users: Resource<List<EntityUserData>> ->
+                when (users.status) {
+                    Status.SUCCESS -> {
+                        showLoading(false)
+                        showError(false, null)
+                        users.data?.let { renderList(it) }
+                    }
+                    Status.LOADING -> {
+                        showLoading(true)
+                        showError(false, null)
+                    }
                 Status.ERROR -> {
                     showLoading(false)
                     showError(true, users.message)

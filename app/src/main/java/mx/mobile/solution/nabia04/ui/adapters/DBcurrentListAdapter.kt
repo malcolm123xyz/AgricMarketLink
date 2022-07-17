@@ -100,10 +100,6 @@ class DBcurrentListAdapter @Inject constructor(private val context: Context) :
 
     }
 
-    private fun getDate(l: Long): String {
-        return fd.format(l)
-    }
-
     override fun getFilter(): Filter {
         return customFilter
     }

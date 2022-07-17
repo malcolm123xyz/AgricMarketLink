@@ -87,14 +87,6 @@
 
                 </LinearLayout>
 
-                <com.google.android.material.appbar.MaterialToolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    android:gravity="top"
-                    app:layout_collapseMode="pin"
-                    app:titleMarginTop="13dp" />
-
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

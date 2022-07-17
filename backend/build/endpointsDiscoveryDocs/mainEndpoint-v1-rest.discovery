@@ -248,6 +248,21 @@
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
+  "setContRequest": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.setContRequest",
+   "path": "setContRequest",
+   "request": {
+    "$ref": "ContributionData",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "ReturnObj"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
   "setDeceaseStatus": {
    "httpMethod": "POST",
    "id": "mainEndpoint.setDeceaseStatus",
@@ -491,11 +506,7 @@
      },
      "type": "array"
     },
-    "date": {
-     "type": "string"
-    },
     "deadline": {
-     "format": "int64",
      "type": "string"
     },
     "folio": {
@@ -510,10 +521,13 @@
     "imageUri": {
      "type": "string"
     },
+    "message": {
+     "type": "string"
+    },
     "name": {
      "type": "string"
     },
-    "title": {
+    "type": {
      "type": "string"
     }
    },

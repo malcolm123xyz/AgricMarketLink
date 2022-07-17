@@ -3,9 +3,12 @@ package mx.mobile.solution.nabia04.ui.dues_fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
+import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -28,11 +31,13 @@ import mx.mobile.solution.nabia04.ui.treasurer.TreasurerPaymentDetailHost.Compan
 import mx.mobile.solution.nabia04.utilities.ExcelHelper
 import mx.mobile.solution.nabia04.utilities.Resource
 import mx.mobile.solution.nabia04.utilities.Status
+import java.util.*
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
 @AndroidEntryPoint
-class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>() {
+class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>(),
+    SearchView.OnQueryTextListener {
 
     @Inject
     lateinit var excelHelper: ExcelHelper
@@ -171,6 +176,10 @@ class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>() {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.dues_detail_menu, menu)
 
+        val searchItem: MenuItem = menu.findItem(R.id.search)
+        val searchView = searchItem.actionView as SearchView
+
+        searchView.setOnQueryTextListener(this)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -181,9 +190,8 @@ class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>() {
                 showSortPopup(menuItemView)
                 super.onOptionsItemSelected(item)
             }
-            R.id.new_payment -> {
-                //excelHelper.restoreWorkBook()
-                excelHelper.doSomething()
+            R.id.support_request -> {
+                findNavController().navigate(R.id.action_move_cont_request)
                 super.onOptionsItemSelected(item)
             }
             else -> super.onOptionsItemSelected(item)
@@ -214,7 +222,7 @@ class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>() {
 
 
     private inner class ListAdapter1 :
-        ListAdapter<EntityDues, ListAdapter1.MyViewHolder>(DiffCallback()) {
+        ListAdapter<EntityDues, ListAdapter1.MyViewHolder>(DiffCallback()), Filterable {
         private val colors = arrayOf(R.color.light_grey1, R.color.light_grey)
         var colorIndex = 0
 
@@ -286,6 +294,45 @@ class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>() {
 
         }
 
+        override fun getFilter(): Filter {
+            return customFilter
+        }
+
+        private val customFilter = object : Filter() {
+            override fun performFiltering(query: CharSequence?): FilterResults {
+                val queryValue = query.toString().lowercase(Locale.getDefault())
+                val filteredList = mutableListOf<EntityDues>()
+                if (queryValue.isEmpty()) {
+                    filteredList.addAll(selectedList)
+                } else {
+                    Log.i("TAG", "Query word: $queryValue")
+                    for (item in selectedList) {
+                        try {
+                            val nameSearch =
+                                item.name.lowercase(Locale.getDefault())
+                                    .contains(queryValue) ||
+                                        item.folio.lowercase(Locale.getDefault())
+                                            .contains(queryValue)
+                            if (nameSearch) {
+                                filteredList.add(item)
+                            }
+                        } catch (e: NullPointerException) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+                val results = FilterResults()
+                results.values = filteredList
+                return results
+            }
+
+            override fun publishResults(constraint: CharSequence?, filterResults: FilterResults?) {
+                submitList(filterResults?.values as MutableList<EntityDues>?)
+                //notifyDataSetChanged()
+            }
+
+        }
+
     }
 
     private class DiffCallback : DiffUtil.ItemCallback<EntityDues>() {
@@ -302,6 +349,18 @@ class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>() {
         ): Boolean {
             return oldItem.name == newItem.name && oldItem.folio == newItem.folio
         }
+    }
+
+    override fun onQueryTextSubmit(query: String): Boolean {
+        Log.i("TAG", "oN Query1: $query")
+        adapter.filter.filter(query)
+        return true
+    }
+
+    override fun onQueryTextChange(newText: String): Boolean {
+        Log.i("TAG", "oN Query2: $newText")
+        adapter.filter.filter(newText)
+        return true
     }
 
 }

@@ -15,27 +15,27 @@ public class ContributionData {
     private String id;
     private String folio;
     private String name;
-    private String title;
+    private String message;
+    private String type;
     private String imageUri;
     private String imageId;
-    private long deadline;
-    private String date;
+    private String deadline;
     private List<Map<String, String>> contribution;
 
-    public long getDeadline() {
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getDeadline() {
         return deadline;
     }
 
-    public void setDeadline(long deadline) {
+    public void setDeadline(String deadline) {
         this.deadline = deadline;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public List<Map<String, String>> getContribution() {
@@ -74,12 +74,12 @@ public class ContributionData {
         this.name = name;
     }
 
-    public String getTitle() {
-        return title;
+    public String getMessage() {
+        return message;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getImageUri() {

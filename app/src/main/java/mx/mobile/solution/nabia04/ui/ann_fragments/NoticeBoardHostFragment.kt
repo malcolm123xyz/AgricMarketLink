@@ -1,6 +1,5 @@
 package mx.mobile.solution.nabia04.ui.ann_fragments
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -25,6 +24,8 @@ import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
 import mx.mobile.solution.nabia04.ui.adapters.NoticeBoardChildFragmentStateAdapter
 import mx.mobile.solution.nabia04.utilities.Cons
+import mx.mobile.solution.nabia04.utilities.ExcelHelper
+import javax.inject.Inject
 
 
 /**
@@ -46,6 +47,9 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
     override fun getLayoutRes(): Int = R.layout.fragment_viewpager_container
 
     private val viewModel by activityViewModels<AnnViewModel>()
+
+    @Inject
+    lateinit var excelHelper: ExcelHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,16 +106,16 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
                 super.onOptionsItemSelected(item)
             }
             R.id.logout -> {
-                AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
-                    .setTitle("WARNING!!!")
-                    .setMessage("You are about to logout")
-                    .setPositiveButton(
-                        "Continue"
-                    ) { dialog, id -> dialog.dismiss()
-                    }
-                    .setNegativeButton(
-                        "Cancel"
-                    ) { dialog, id -> dialog.dismiss() }.show()
+//                AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+//                    .setTitle("WARNING!!!")
+//                    .setMessage("You are about to logout")
+//                    .setPositiveButton(
+//                        "Continue"
+//                    ) { dialog, id -> dialog.dismiss()
+//                    }
+//                    .setNegativeButton(
+//                        "Cancel"
+//                    ) { dialog, id -> dialog.dismiss() }.show()
                 super.onOptionsItemSelected(item)
             }
             else -> super.onOptionsItemSelected(item)

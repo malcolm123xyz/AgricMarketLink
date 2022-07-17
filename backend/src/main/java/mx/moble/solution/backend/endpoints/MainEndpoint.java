@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import javax.inject.Named;
 
 import mx.moble.solution.backend.dataModel.Announcement;
+import mx.moble.solution.backend.dataModel.ContributionData;
 import mx.moble.solution.backend.dataModel.DatabaseObject;
 import mx.moble.solution.backend.dataModel.LoginData;
 import mx.moble.solution.backend.dataModel.RegistrationToken;
@@ -361,6 +362,21 @@ public class MainEndpoint {
         }
         return DatabaseResponse.OK();
 
+    }
+
+    @ApiMethod(
+            name = "setContRequest",
+            path = "setContRequest",
+            httpMethod = ApiMethod.HttpMethod.POST)
+    public ReturnObj setContRequest(ContributionData contribution) throws IOException {
+        ReturnObj returnObj = new ReturnObj();
+        ofy().save().entity(contribution).now();
+
+        notifyAction(ReturnObj.NOTIFY_NEW_CONTRIBUTION, getRegistrationTokens(""), contribution.getMessage(), "");
+
+        returnObj.setReturnCode(1);
+        returnObj.setReturnMsg(contribution.getId());
+        return returnObj;
     }
 
     private boolean alreadyInDB(String folio) {

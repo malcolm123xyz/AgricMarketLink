@@ -6,10 +6,10 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import mx.moble.solution.backend.dataModel.Announcement;
+import mx.moble.solution.backend.dataModel.ContributionData;
 import mx.moble.solution.backend.dataModel.DatabaseObject;
 import mx.moble.solution.backend.dataModel.LoginData;
 import mx.moble.solution.backend.dataModel.RegistrationToken;
-import mx.moble.solution.backend.responses.ResponseCodes;
 
 public class Bootstrapper implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {
@@ -18,6 +18,7 @@ public class Bootstrapper implements ServletContextListener {
         ObjectifyService.register(DatabaseObject.class);
         ObjectifyService.register(RegistrationToken.class);
         ObjectifyService.register(Announcement.class);
+        ObjectifyService.register(ContributionData.class);
     }
 
     @Override

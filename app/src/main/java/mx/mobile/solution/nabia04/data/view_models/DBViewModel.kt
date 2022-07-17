@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.data.repositories.DBRepository
 import mx.mobile.solution.nabia04.utilities.Resource
@@ -54,18 +53,6 @@ class DBViewModel @Inject constructor(var repository: DBRepository) : ViewModel(
             }
         }
         return data
-    }
-
-    suspend fun setAnnAsRead(announcement: EntityAnnouncement) {
-        repository.setAnnRead(announcement)
-    }
-
-    suspend fun delete(announcement: EntityAnnouncement): Int {
-        return repository.delete(announcement)
-    }
-
-    suspend fun deleteFrmServer(id: Long): Int {
-        return repository.deleteFrmServer(id)
     }
 
     suspend fun getFilterData(): List<EntityUserData>? {

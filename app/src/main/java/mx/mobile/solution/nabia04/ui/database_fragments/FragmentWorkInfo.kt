@@ -191,7 +191,6 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
     }
 
     private fun send() {
-
         AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
             .setTitle("WARNING")
             .setMessage("You are about to update the Database. Do you want to continue?")

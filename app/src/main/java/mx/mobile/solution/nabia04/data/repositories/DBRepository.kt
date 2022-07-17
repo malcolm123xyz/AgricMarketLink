@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.data.dao.DBdao
-import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.Resource
@@ -88,14 +87,6 @@ class DBRepository @Inject constructor(
             entityUserDataList.add(u)
         }
         return entityUserDataList
-    }
-
-    suspend fun setAnnRead(ann: EntityAnnouncement) {
-        dao.updateAnnouncement(ann)
-    }
-
-    suspend fun delete(announcement: EntityAnnouncement): Int {
-        return dao.delete(announcement)
     }
 
     suspend fun setUserClearance(folio: String, clearance: String): Resource<List<EntityUserData>> {
@@ -322,6 +313,10 @@ class DBRepository @Inject constructor(
         return withContext(Dispatchers.IO) {
             doSendTribute(selectedFolio, tribute)
         }
+    }
+
+    suspend fun getNamesOnly(): List<DBdao.Names> {
+        return dao.getNamesOnly()
     }
 
 }

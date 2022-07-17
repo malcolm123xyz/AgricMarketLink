@@ -6,13 +6,18 @@
         android:id="@+id/sort"
         android:orderInCategory="100"
         android:title="Sort by"
-        android:icon="@drawable/ic_menu_sort_by_size"
+        android:icon="@drawable/sort_white"
         app:showAsAction="always" />
-
     <item
-        android:id="@+id/new_payment"
+        android:id="@+id/support_request"
         android:orderInCategory="100"
-        android:title="New payment"
-        app:showAsAction="always" />
+        android:title="Request support"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/search"
+        android:title="@string/search"
+        android:icon="@mipmap/search_white"
+        app:showAsAction="always"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
 
 </menu>

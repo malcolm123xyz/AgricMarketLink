@@ -81,7 +81,6 @@ class ExcelHelper @Inject constructor() {
                 return row
             }
         }
-
         return null
     }
 
@@ -126,108 +125,43 @@ class ExcelHelper @Inject constructor() {
         return formatter.formatCellValue(cell)
     }
 
-    private fun upDatePayment1(amnt: Double, folio: String): Resource<String> {
-        val errMsg: String
-        val amount = amnt
-        val sheet = workbook.getSheetAt(0)
-        val row = getUserRowFolio(folio, sheet)
-            ?: return Resource.error("Could not find the a member with folio number: $folio", "")
-        val currYearNum = getCurrentYearNum(sheet)
-        val startCell = row.getCell(currYearNum)
-        var spillOver = (getCellvalue(startCell).toDouble() + amount) - 60.0
-        Log.i("TAG", "Spill over: $spillOver")
-        if (spillOver > 0) {
-            startCell.setCellValue(60.0)
-            Log.i("TAG", "Moving to next cell, cell: ${startCell.columnIndex + 1}")
-            val nextCell = row.getCell(startCell.columnIndex + 1)
-            val nextCellIndex = nextCell.columnIndex
-            val numCol = ceil(spillOver / 60).toInt()
-            val numAvailableCell = numCol - (row.lastCellNum - startCell.columnIndex + 1)
-
-
-            if (numAvailableCell > 0) {
-                Log.i("TAG", "Next cell contains formular. Inserting new columns")
-
-                Log.i("TAG", "Number of columns to add = $numCol")
-                addYear(nextCellIndex, numCol)
-                Log.i("TAG", "Inserting spilled amounts into created cells")
-                for (i in 0 until nextCellIndex + numCol) {
-                    Log.i("TAG", "Cell $i initial value = ${row.getCell(i)}")
-                    var amountToAdd = 60.0
-                    if (spillOver < 60.0) {
-                        amountToAdd = spillOver
-                    }
-                    row.getCell(i).setCellValue(amountToAdd)
-                    spillOver -= 60.0
-                    Log.i("TAG", "Ammount added = $amountToAdd")
-                }
-            } else {
-
-            }
-
-        }
-        return null
-    }
-
-
-    private fun upDatePayment(amnt: Int, folio: String): Resource<String> {
+    private fun upDatePayment(amnt: Double, folio: String): Resource<String> {
         val errMsg: String
         var amount = amnt
         val sheet = workbook.getSheetAt(0)
         val row = getUserRowFolio(folio, sheet)
             ?: return Resource.error("Could not find the a member with folio number: $folio", "")
-        val currYearNum = getCurrentYearNum(sheet)
-        var entryCell = row.getCell(currYearNum)
+        val emptyCellIndex = getEmptyCellIndex(sheet, folio)
+        val startCell = row.getCell(emptyCellIndex - 1)
+        var spillOver = (getCellvalue(startCell).toDouble() + amount) - 60.0
+        Log.i("TAG", "Spill over: $spillOver")
 
         try {
-            while (amount > 0) {
-                Log.i("TAG", "Amount = $amount")
-                val entryCellValue = getCellvalue(entryCell).toDouble()
-                Log.i("TAG", "Initial cell value: $entryCellValue")
-                if (entryCellValue == 60.0) {
-                    Log.i("TAG", "Cell amount is greater than 60")
+            if (spillOver > 0) {
+                if ((row.lastCellNum - 1) - emptyCellIndex == 0) {
+                    Log.i("TAG", "Moving to next cell, cell: ${startCell.columnIndex + 1}")
+                    val numCol = ceil(spillOver / 60).toInt()
+                    val numNewColumns = numCol - (row.lastCellNum - (emptyCellIndex + 1))
 
-                    val nextCell = row.getCell(row.lastCellNum - 2)
-                    val col = CellReference.convertNumToColString(nextCell.columnIndex)
-                    Log.i("TAG", "Next cell is: ($col:${row.rowNum})")
-
-                    val col1 = CellReference.convertNumToColString(entryCell.columnIndex)
-                    Log.i("TAG", "Entry cell is: ($col1:${row.rowNum})")
-
-                    Log.i("TAG", "Next cell: $nextCell")
-                    var addColumn = false
-
-                    if (nextCell.cellTypeEnum == CellType.FORMULA) {
-                        addColumn = true
-                    } else if (getCellvalue(nextCell).isNotEmpty()) {
-                        addColumn = true
-                        if (getCellvalue(nextCell).toInt() < 60) {
-                            addColumn = false
-                        }
-                    }
-
-
-                    Log.i("TAG", "entryCell = ${getCellvalue(entryCell).toInt()}")
-
-                    Log.i("TAG", "addColumn = $addColumn")
-
-                    if (addColumn) {
-                        Log.i("TAG", "Next cell is not empty, Additional cell is required")
-                        addYear(row.lastCellNum - 1, 1)
-                    }
-
-                    entryCell = row.getCell(row.lastCellNum - 2)
-                    val colName = CellReference.convertNumToColString(entryCell.columnIndex)
-                    Log.i("TAG", "New cell is: ($colName:${row.rowNum})")
-                    if (getCellvalue(entryCell).isEmpty()) {
-                        entryCell.setCellValue(0.0)
+                    if (numNewColumns > 0) {
+                        Log.i("TAG", "Number of columns to add = $numNewColumns")
+                        addColumns(row.lastCellNum - 1, numNewColumns)
                     }
                 }
+            }
 
-                val currVal = getCellvalue(entryCell).toDouble() + 5.0
-                entryCell.setCellValue(currVal)
-                Log.i("TAG", "Cell value after: ${getCellvalue(entryCell)}")
-                amount -= 5
+            Log.i("TAG", "Inserting amounts into cells")
+            for (i in emptyCellIndex - 1 until row.lastCellNum - 1) {
+                val cell = row.getCell(i)
+                val cValue = getCellvalue(cell).toDouble()
+                var amountToAdd = 60.0 - cValue
+                Log.i("TAG", "Cell $i initial value = ${cell}")
+                if (amount < amountToAdd) {
+                    amountToAdd = amount
+                }
+                row.getCell(i).setCellValue(amountToAdd + cValue)
+                amount -= amountToAdd
+                Log.i("TAG", "Ammount added = $amountToAdd")
             }
 
             workbook.creationHelper.createFormulaEvaluator().evaluateAll()
@@ -241,50 +175,37 @@ class ExcelHelper @Inject constructor() {
             errMsg =
                 e.localizedMessage ?: "An Unknown Error occurred while Doing the payment update."
         }
+
         return Resource.error(errMsg, "")
     }
 
-    private fun getCurrentYearNum(sheet: Sheet): Int {
+    private fun getEmptyCellIndex(sheet: Sheet, folio: String): Int {
         val year = Calendar.getInstance().get(Calendar.YEAR)
-        val row = sheet.getRow(0)
-        for (c in row) {
-            val celVal = formatter.formatCellValue(c)
-            if (celVal.toString() == year.toString()) {
-                val celIndex = c.columnIndex
-                var emptyCellIndex = 0
-                for (i in celIndex until row.lastCellNum) {
-                    if (row.getCell(i).cellTypeEnum == CellType.BLANK) {
-                        emptyCellIndex = i
-                        break
+        val row = getUserRowFolio(folio, sheet)
+        var lastCellNum = 0
+        if (row != null) {
+            val headerRow = sheet.getRow(0)
+            for (index in 0..row.lastCellNum) {
+                val celVal = formatter.formatCellValue(headerRow.getCell(index))
+                if (celVal.toString() == year.toString()) {
+                    for (i in index until row.lastCellNum) {
+                        val cell = row.getCell(i)
+                        Log.i("TAG", "Cell $i value: ${getCellvalue(row.getCell(i))}")
+                        if (cell.cellTypeEnum == CellType.FORMULA || getCellvalue(cell).toDouble() == 0.0) {
+                            Log.i("TAG", "Empty cell index: $i")
+                            return i
+                        }
                     }
-
+                    break
                 }
-                return c.columnIndex
             }
+            lastCellNum = row.lastCellNum - 1
         }
-        return 7
+        Log.i("TAG", "Empty cell index: $lastCellNum")
+        return lastCellNum
     }
 
-    fun doSomething() {
-
-        val carryon = 190.0
-        val yearPayment = 60.0
-        val total = 3.00
-
-        Log.i("TAG", "TOTAL = ${ceil(190.0 / 60.0)}")
-
-
-//
-//         if(total % 1 == 0){
-//             Log.i("TAG", "TOTAL IS GREATER THAN 3")
-//         }else if (total == 3.0){
-//             Log.i("TAG", "TOTAL IS EQUAL TO 3")
-//         }else if(total < 3.0){
-//             Log.i("TAG", "TOTAL IS LESS THAN 3")
-//         }
-    }
-
-    private fun addYear(colIndex: Int, numCol: Int) {
+    private fun addColumns(colIndex: Int, numCol: Int) {
         var columnIndex = colIndex
         val evaluator = workbook.creationHelper
             .createFormulaEvaluator()
@@ -331,18 +252,17 @@ class ExcelHelper @Inject constructor() {
                 }
                 // delete old column
                 val currentEmptyWeekCell = r.getCell(columnIndex)
-
                 if (r.rowNum == 0) {
                     val cYear = formatter.formatCellValue(r.getCell(columnIndex - 1)).toInt() + 1
                     currentEmptyWeekCell.setCellValue(cYear.toDouble())
                 } else if (r.rowNum < sheet.lastRowNum) {
                     r.removeCell(currentEmptyWeekCell)
-                    r.createCell(columnIndex)
+                    r.createCell(columnIndex).setCellValue(0.0)
                 }
 
             }
             columnIndex++
-            Log.i("TAG", "Column added $i Created")
+            Log.i("TAG", "Column inserted")
         }
 
     }
@@ -356,12 +276,11 @@ class ExcelHelper @Inject constructor() {
 
         return withContext(Dispatchers.Default) {
             if (pos > 0) {
-                return@withContext upDatePayment(amount, folio)
+                return@withContext upDatePayment(amount.toDouble(), folio)
             }
-
             val response = createNewPaymentRow(name, folio)
             if (response.status == Status.SUCCESS) {
-                upDatePayment(amount, folio)
+                upDatePayment(amount.toDouble(), folio)
             } else {
                 Resource.error(response.message.toString(), "")
             }
@@ -377,8 +296,8 @@ class ExcelHelper @Inject constructor() {
         row.createCell(1).setCellValue(name)
         row.createCell(2).setCellValue(folio.toDouble())
 
-        for (n in 3..lastCellNum) {
-            row.createCell(n)
+        for (n in 3 until lastCellNum) {
+            row.createCell(n).setCellValue(0.0)
         }
 
         val lastColName = CellReference.convertNumToColString(lastCellNum - 2)
@@ -482,10 +401,21 @@ class ExcelHelper @Inject constructor() {
         var totalAmount = amount
     }
 
-    fun updateFormula(cellFormula: String, columnIndex: Int): String {
+    private fun updateFormula(cellFormula: String, columnIndex: Int): String {
         val existingColName = CellReference.convertNumToColString(columnIndex)
         val newColName = CellReference.convertNumToColString(columnIndex + 1)
-        val newCellFormula = cellFormula.replace(existingColName, newColName)
+        var newCellFormula = cellFormula.replace(existingColName, newColName)
+
+        if (existingColName.equals("S")) {
+            newCellFormula = newCellFormula.replaceBefore("(", "SUM")
+        }
+        if (existingColName.equals("U")) {
+            newCellFormula = newCellFormula.replaceBefore("(", "SUM")
+        }
+        if (existingColName.equals("M")) {
+            newCellFormula = newCellFormula.replaceBefore("(", "SUM")
+        }
+
         println(
             "Replacing : " + existingColName + " with : " + newColName + " in "
                     + cellFormula + ", result: " + newCellFormula
@@ -556,3 +486,4 @@ class ExcelHelper @Inject constructor() {
         }
     }
 }
+

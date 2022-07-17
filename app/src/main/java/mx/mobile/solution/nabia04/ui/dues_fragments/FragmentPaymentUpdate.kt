@@ -28,45 +28,58 @@ class FragmentPaymentUpdate : BaseFragment<FragmentPaymentUpdateBinding>() {
     @Inject
     lateinit var excelHelper: ExcelHelper
 
+    private var folio = ""
+    private var name = ""
+    private var amount = ""
+    private var spinnerPos = -1
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter =
+        excelHelper.names[0] = "New Payment"
+        vb?.spinner?.adapter =
             ArrayAdapter(requireContext(), R.layout.simple_spinner_item, excelHelper.names)
-        vb?.spinner?.adapter = adapter
         vb?.spinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
-                val member = excelHelper.members[i]
-                vb?.folioEdit?.setText(member.folio)
-                vb?.nameEdit?.setText(member.name)
-                vb?.folioEdit?.isEnabled = spinner.selectedItemPosition == 0
-                vb?.nameEdit?.isEnabled = spinner.selectedItemPosition == 0
+            override fun onItemSelected(
+                adapterView: AdapterView<*>?,
+                view: View?,
+                i: Int,
+                l: Long
+            ) {
+                spinnerPos = i
+                if (i > 0) {
+                    val member = excelHelper.members[i]
+                    folio = member.folio
+                    Log.i("TAG", "FOLIO: $folio")
+                    name = member.name
+                    vb?.holder?.visibility = View.GONE
+                } else {
+                    vb?.holder?.visibility = View.VISIBLE
+                }
             }
-
 
             override fun onNothingSelected(adapterView: AdapterView<*>?) {}
         }
         vb?.update?.setOnClickListener {
-            Log.i("TAG", "ON_cLICK")
-            val folio = vb?.folioEdit?.text.toString()
-            val name = vb?.nameEdit?.text.toString()
-            val amount = vb?.amountEdit?.text.toString()
+            amount = vb?.amountEdit?.text.toString()
+            if (spinnerPos < 1) {
+                folio = vb?.folioEdit?.text.toString()
+                name = vb?.nameEdit?.text.toString()
+            }
 
             if (folio.isEmpty()) {
                 showDialog("WARNING", "Folio cannot be empty")
                 return@setOnClickListener
             }
             if (name.isEmpty()) {
-                showDialog("WARNING", "Folio cannot be empty")
+                showDialog("WARNING", "Name cannot be empty")
                 return@setOnClickListener
             }
             if (amount.isEmpty()) {
-                showDialog("WARNING", "Folio cannot be empty")
+                showDialog("WARNING", "Amount cannot be empty")
                 return@setOnClickListener
             }
-            lifecycleScope.launch {
-                doUpdate(amount, name, folio)
-            }
+            showWarningDialog(amount, name, folio)
         }
     }
 
@@ -85,6 +98,20 @@ class FragmentPaymentUpdate : BaseFragment<FragmentPaymentUpdateBinding>() {
             showDialog("PAYMENT UPDATE", response.message.toString())
         }
 
+    }
+
+    private fun showWarningDialog(amount: String, name: String, folio: String) {
+        AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+            .setTitle("WARNING")
+            .setMessage("You are about to make changes to the payment sheet. Are you sure about this?")
+            .setPositiveButton("YES") { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+                lifecycleScope.launch {
+                    doUpdate(amount, name, folio)
+                }
+            }.setNegativeButton("NO") { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+            }.show()
     }
 
     private fun showSuccessDialog(t: String, s: String) {
