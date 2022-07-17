@@ -6,9 +6,8 @@ import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter.FragmentTransactionCallback.OnPostEventListener
-import mx.mobile.solution.nabia04.ui.cont_fragments.FragmentContHistory
-import mx.mobile.solution.nabia04.ui.cont_fragments.FragmentContribution
-import mx.mobile.solution.nabia04.ui.dues_fragments.FragmentDuesSummary
+import mx.mobile.solution.nabia04.ui.welfare_fragments.FragmentUserContribution
+import mx.mobile.solution.nabia04.ui.welfare_fragments.FragmentUserDuesSummary
 
 
 /**
@@ -19,7 +18,7 @@ import mx.mobile.solution.nabia04.ui.dues_fragments.FragmentDuesSummary
  *
  * * https://stackoverflow.com/questions/61779776/leak-canary-detects-memory-leaks-for-tablayout-with-viewpager2
  */
-class WelfareHostStateAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
+class UserWelfareHostStateAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
 
     init {
@@ -52,9 +51,8 @@ class WelfareHostStateAdapter(fragmentManager: FragmentManager, lifecycle: Lifec
     override fun createFragment(position: Int): Fragment {
 
         return when (position) {
-            0 -> FragmentDuesSummary()
-            1 -> FragmentContribution()
-            else -> FragmentContHistory()
+            0 -> FragmentUserDuesSummary()
+            else -> FragmentUserContribution()
         }
     }
 

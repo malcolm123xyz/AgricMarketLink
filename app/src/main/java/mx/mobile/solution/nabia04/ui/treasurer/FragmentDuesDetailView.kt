@@ -1,4 +1,4 @@
-package mx.mobile.solution.nabia04.ui.dues_fragments
+package mx.mobile.solution.nabia04.ui.treasurer
 
 import android.os.Bundle
 import android.util.Log
@@ -36,7 +36,7 @@ import javax.inject.Inject
 import kotlin.time.ExperimentalTime
 
 @AndroidEntryPoint
-class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>(),
+class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
     SearchView.OnQueryTextListener {
 
     @Inject
@@ -54,9 +54,9 @@ class FragmentYearlyDues() : BaseFragment<FragmentYearlyPaymentBinding>(),
 
     companion object {
         private var intPosition = 0;
-        fun newInstance(pos: Int): FragmentYearlyDues {
+        fun newInstance(pos: Int): FragmentDuesDetailView {
             intPosition = pos
-            return FragmentYearlyDues()
+            return FragmentDuesDetailView()
         }
     }
 

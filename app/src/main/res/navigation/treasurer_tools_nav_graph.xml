@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/fragment1"
-        android:name="mx.mobile.solution.nabia04.ui.dues_fragments.FragmentYearlyDues"
+        android:name="mx.mobile.solution.nabia04.ui.treasurer.FragmentDuesDetailView"
         android:label="DUES (ALL)"
         tools:layout="@layout/fragment_yearly_payment">
         <action
@@ -21,7 +21,7 @@
 
     <fragment
         android:id="@+id/payment_update_fragment"
-        android:name="mx.mobile.solution.nabia04.ui.dues_fragments.FragmentPaymentUpdate"
+        android:name="mx.mobile.solution.nabia04.ui.treasurer.FragmentPaymentUpdate"
         android:label="Payment Update"
         tools:layout="@layout/fragment_payment_update">
         <action
@@ -33,7 +33,7 @@
 
     <fragment
         android:id="@+id/cont_request_fragment"
-        android:name="mx.mobile.solution.nabia04.ui.dues_fragments.FragmentContributionRequest"
+        android:name="mx.mobile.solution.nabia04.ui.treasurer.FragmentContributionRequest"
         android:label="Payment Update"
         tools:layout="@layout/fragment_cont_request">
 

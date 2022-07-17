@@ -1,4 +1,4 @@
-package mx.mobile.solution.nabia04.ui.dues_fragments
+package mx.mobile.solution.nabia04.ui.welfare_fragments
 
 import android.os.Bundle
 import android.view.View
@@ -24,7 +24,7 @@ import mx.mobile.solution.nabia04.utilities.GlideApp
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FragmentDuesSummary : BaseFragment<FragmentWelfareSummaryBinding>() {
+class FragmentUserDuesSummary : BaseFragment<FragmentWelfareSummaryBinding>() {
 
     @Inject
     lateinit var excelHelper: ExcelHelper

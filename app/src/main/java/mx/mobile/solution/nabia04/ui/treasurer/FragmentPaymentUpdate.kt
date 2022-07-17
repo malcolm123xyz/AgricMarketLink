@@ -1,4 +1,4 @@
-package mx.mobile.solution.nabia04.ui.dues_fragments
+package mx.mobile.solution.nabia04.ui.treasurer
 
 import android.app.AlertDialog
 import android.app.ProgressDialog

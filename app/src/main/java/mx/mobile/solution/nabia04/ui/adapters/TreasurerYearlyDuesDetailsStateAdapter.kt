@@ -7,7 +7,7 @@ import androidx.fragment.app.commitNow
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter.FragmentTransactionCallback.OnPostEventListener
-import mx.mobile.solution.nabia04.ui.dues_fragments.FragmentYearlyDues
+import mx.mobile.solution.nabia04.ui.treasurer.FragmentDuesDetailView
 
 
 /**
@@ -58,7 +58,7 @@ class TreasurerYearlyDuesDetailsStateAdapter(
 
     override fun createFragment(position: Int): Fragment {
         Log.i("TAG", "Creating fragment at Position = $position")
-        return FragmentYearlyDues.newInstance(position)
+        return FragmentDuesDetailView.newInstance(position)
     }
 
 }

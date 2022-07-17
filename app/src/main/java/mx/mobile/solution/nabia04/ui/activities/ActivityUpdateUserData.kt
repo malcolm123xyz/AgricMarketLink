@@ -22,7 +22,7 @@ class ActivityUpdateUserData : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_treasurer_tools)
+        setContentView(R.layout.activity_user_data_edit1)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
