@@ -63,9 +63,9 @@
 
     <string-array name="cont_type">
         <item>SELECT</item>
-        <item>Funeral</item>
-        <item>Wedding</item>
-        <item>Naming ceremony</item>
+        <item>Funeral Contribution</item>
+        <item>Wedding Contribution</item>
+        <item>Naming ceremony </item>
         <item>Others</item>
     </string-array>
 

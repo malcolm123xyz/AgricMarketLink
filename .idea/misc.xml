@@ -39,6 +39,7 @@
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/content_main.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/content_user_data_edit.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/content_user_data_edit1.xml" value="0.16666666666666666" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/contribution_list_item.xml" value="0.16354166666666667" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/data_placeholder_layout.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/database_list_item.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/database_list_item_department.xml" value="0.17552083333333332" />
@@ -51,7 +52,7 @@
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_announcements.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_blank.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_cont_history.xml" value="0.17552083333333332" />
-        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_cont_request.xml" value="0.22" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_cont_request.xml" value="0.15658362989323843" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_contributions.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_current_members-not.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_current_members.xml" value="0.17552083333333332" />

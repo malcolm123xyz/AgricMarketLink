@@ -72,6 +72,7 @@ class FragmentContributionRequest : BaseFragment<FragmentContRequestBinding>() {
     private lateinit var reqTypeSpinner: Spinner
     private lateinit var btnDeadline: Button
     private lateinit var tvDeadline: TextView
+    private lateinit var msgEdit: EditText
     private lateinit var profilePic: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,11 +85,16 @@ class FragmentContributionRequest : BaseFragment<FragmentContRequestBinding>() {
 
         contData = ContributionData()
 
+        msgEdit = vb?.messageEdit!!
+        msgEdit.setText("Contribution towards...")
+
         userSpinner = vb?.nameSpinner!!
         reqTypeSpinner = vb?.reqTypeSpinner!!
         btnDeadline = vb?.btnDeadline!!
         tvDeadline = vb?.tvDeadline!!
         profilePic = vb?.profilePic!!
+
+
 
         setSinners()
 
@@ -182,7 +188,7 @@ class FragmentContributionRequest : BaseFragment<FragmentContRequestBinding>() {
 
 
     private fun checkDataBeforeSend() {
-        val message: String = vb?.title?.getText().toString()
+        val message: String = msgEdit.getText().toString()
         if (message.isEmpty()) {
             showDialog("ERROR", "Message cannot be empty")
         } else if (contData.deadline.isEmpty()) {

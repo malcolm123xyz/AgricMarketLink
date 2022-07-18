@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 class AnnListAdapter @Inject constructor(private val context: Context) :
     ListAdapter<EntityAnnouncement,
-            AnnListAdapter.MyViewHolder>(DiffCallback) {
+            AnnListAdapter.MyViewHolder>(DiffCallback()) {
     private val fd = SimpleDateFormat("EEE, d MMM yyyy hh:mm", Locale.US)
 
     inner class MyViewHolder(val parent: View) : RecyclerView.ViewHolder(parent) {
@@ -36,8 +36,6 @@ class AnnListAdapter @Inject constructor(private val context: Context) :
 
         private var ann: EntityAnnouncement? = null
 
-
-        /* Bind flower name and image. */
         fun bind(annItem: EntityAnnouncement, i: Int) {
             ann = annItem
             val topicc = annItem.heading
@@ -56,8 +54,7 @@ class AnnListAdapter @Inject constructor(private val context: Context) :
                 .placeholder(R.drawable.photo_galary)
                 .addListener(object : RequestListener<Drawable?> {
                     override fun onLoadFailed(
-                        e: GlideException?,
-                        model: Any,
+                        e: GlideException?, model: Any,
                         target: Target<Drawable?>,
                         isFirstResource: Boolean
                     ): Boolean {
@@ -101,22 +98,22 @@ class AnnListAdapter @Inject constructor(private val context: Context) :
         return fd.format(l)
     }
 
-}
+    private class DiffCallback : DiffUtil.ItemCallback<EntityAnnouncement>() {
+        override fun areItemsTheSame(
+            oldItem: EntityAnnouncement,
+            newItem: EntityAnnouncement
+        ): Boolean {
+            val araTheSame = oldItem.id == newItem.id
+            return araTheSame
+        }
 
-object DiffCallback : DiffUtil.ItemCallback<EntityAnnouncement>() {
-    override fun areItemsTheSame(
-        oldItem: EntityAnnouncement,
-        newItem: EntityAnnouncement
-    ): Boolean {
-        val araTheSame = oldItem.id == newItem.id
-        return araTheSame
+        override fun areContentsTheSame(
+            oldItem: EntityAnnouncement,
+            newItem: EntityAnnouncement
+        ): Boolean {
+            val araTheSame = oldItem.heading == newItem.heading
+            return araTheSame
+        }
     }
 
-    override fun areContentsTheSame(
-        oldItem: EntityAnnouncement,
-        newItem: EntityAnnouncement
-    ): Boolean {
-        val araTheSame = oldItem.heading == newItem.heading
-        return araTheSame
-    }
 }

@@ -105,6 +105,17 @@
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
+  "getContributions": {
+   "httpMethod": "GET",
+   "id": "mainEndpoint.getContributions",
+   "path": "getContributions",
+   "response": {
+    "$ref": "Resource_ContributionData"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
   "getMembers": {
    "httpMethod": "GET",
    "id": "mainEndpoint.getMembers",
@@ -819,6 +830,21 @@
    },
    "type": "object"
   },
+  "Resource_ContributionData": {
+   "id": "Resource_ContributionData",
+   "properties": {
+    "data": {
+     "$ref": "ContributionData"
+    },
+    "message": {
+     "type": "string"
+    },
+    "status": {
+     "$ref": "Status"
+    }
+   },
+   "type": "object"
+  },
   "Response": {
    "id": "Response",
    "properties": {
@@ -900,6 +926,20 @@
     }
    },
    "type": "object"
+  },
+  "Status": {
+   "enum": [
+    "SUCCESS",
+    "ERROR",
+    "LOADING"
+   ],
+   "enumDescriptions": [
+    "",
+    "",
+    ""
+   ],
+   "id": "Status",
+   "type": "string"
   }
  },
  "servicePath": "mainEndpoint/v1/",
