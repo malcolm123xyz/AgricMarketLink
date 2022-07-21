@@ -22,7 +22,11 @@ class DBViewModel @Inject constructor(var repository: DBRepository) : ViewModel(
             val response = repository.fetchUserData()
             when (response.status) {
                 Status.SUCCESS -> {
-                    data.postValue(Resource.success(response.data))
+                    val list = response.data?.toMutableList()
+                    list?.sortWith { obj1: EntityUserData, obj2: EntityUserData ->
+                        obj1.fullName.compareTo(obj2.fullName)
+                    }
+                    data.postValue(Resource.success(list))
                 }
                 else -> {
                     val e = response.message ?: ""
@@ -32,7 +36,6 @@ class DBViewModel @Inject constructor(var repository: DBRepository) : ViewModel(
         }
         return data
     }
-
 
     suspend fun getUser(folio: String): EntityUserData? {
         return repository.getUser(folio)
@@ -55,12 +58,12 @@ class DBViewModel @Inject constructor(var repository: DBRepository) : ViewModel(
         return data
     }
 
-    suspend fun getFilterData(): List<EntityUserData>? {
+    suspend fun getList(): List<EntityUserData>? {
         return repository.fetchUserData().data
     }
 
-    suspend fun getList(): List<EntityUserData>? {
-        return repository.fetchUserData().data
+    suspend fun getUserNames(): List<EntityUserData>? {
+        return repository.fetchUserNames()
     }
 
     suspend fun setUserClearance(folio: String, clearance: String): Resource<List<EntityUserData>> {

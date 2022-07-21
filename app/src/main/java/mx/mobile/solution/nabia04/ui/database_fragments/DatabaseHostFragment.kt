@@ -1,9 +1,10 @@
+@file:Suppress("KDocUnresolvedReference")
+
 package mx.mobile.solution.nabia04.ui.database_fragments
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -70,6 +71,8 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     SearchView.OnQueryTextListener {
 
     private val viewModel by activityViewModels<DBViewModel>()
+
+
     private val appbarViewModel by activityViewModels<AppbarViewModel>()
 
     @Inject
@@ -94,7 +97,6 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        getFilterData()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -144,9 +146,11 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
         listenOnBackPressed()
 
         lifecycleScope.launch {
+            thisUser = viewModel.getUser(userFolioNumber)
             val list = viewModel.getList()
             if (list != null) {
                 upDateStats(list)
+                getFilterData(list)
                 this.cancel()
                 initiateJob(list)
             }
@@ -194,9 +198,11 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
                     birthdayDrawable = null
                     return false
                 }
-                override fun onResourceReady(resource: Drawable?, model: Any, target: Target<Drawable?>,
-                                             dataSource: DataSource,
-                                             isFirstResource: Boolean
+
+                override fun onResourceReady(
+                    resource: Drawable?, model: Any, target: Target<Drawable?>,
+                    dataSource: DataSource,
+                    isFirstResource: Boolean
                 ): Boolean {
                     birthdayDrawable = resource
                     return false
@@ -252,10 +258,7 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
 
             // Check if it's the root of nested fragments in this navhost
             if (navController.currentDestination?.id == navController.graph.startDestinationId) {
-                /*
-                    Disable this callback because calls OnBackPressedDispatcher
-                     gets invoked  calls this callback  gets stuck in a loop
-                 */
+
                 isEnabled = false
                 requireActivity().onBackPressed()
                 isEnabled = true
@@ -286,11 +289,14 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
             }
             R.id.profile -> {
                 val bundle = bundleOf("folio" to userFolioNumber)
-                findNavController().navigate(R.id.action_database_viewpager_to_current_members_detail, bundle)
+                findNavController().navigate(
+                    R.id.action_database_viewpager_to_current_members_detail,
+                    bundle
+                )
                 super.onOptionsItemSelected(item)
             }
             R.id.filter -> {
-                val menuItemView:  View = requireViewById(requireActivity(),R.id.filter)
+                val menuItemView: View = requireViewById(requireActivity(), R.id.filter)
                 showFilterPopup(menuItemView)
                 super.onOptionsItemSelected(item)
             }
@@ -314,7 +320,6 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
         val distWorkSubmenu = popupMenu.menu.addSubMenu(9, 10, 9, "District of Work")
 
         for (dist in workDistrict) {
-            Log.i("TAG", "DISTRICT: $dist")
             distSubmenu.add(3, Menu.NONE, Menu.NONE, dist)
         }
 
@@ -342,7 +347,7 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
         }
 
         popupMenu.setOnMenuItemClickListener { item ->
-            when(item.itemId){
+            when (item.itemId) {
                 1 -> {
                     adapter.filter.filter("")
                 }
@@ -352,8 +357,14 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
                 3 -> {
                     adapter.filter.filter(thisUser?.className ?: "")
                 }
-                4->{}5->{}6->{}7->{}8->{}9->{}10->{}
-                else ->{
+                4 -> {}
+                5 -> {}
+                6 -> {}
+                7 -> {}
+                8 -> {}
+                9 -> {}
+                10 -> {}
+                else -> {
                     adapter.filter.filter(item.title.toString())
                 }
             }
@@ -362,8 +373,13 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
         popupMenu.show()
     }
 
-    private fun getTxtDrawable(isBirthDay: Boolean, index: Int, birthdayPersonName: String, txt: String): Drawable? {
-        if(isBirthDay) {
+    private fun getTxtDrawable(
+        isBirthDay: Boolean,
+        index: Int,
+        birthdayPersonName: String,
+        txt: String
+    ): Drawable? {
+        if (isBirthDay) {
             return if (index == 5) {
                 birthdayDrawable ?: TextDrawable.Builder()
                     .setColor(generator.randomColor)
@@ -445,32 +461,41 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
         return true
     }
 
-    private fun getFilterData() {
-        lifecycleScope.launch {
-            val list = viewModel.getFilterData()
-            if (list != null) {
-                for (user in list) {
-                    if (!user.districtOfResidence.isNullOrEmpty() && !hometownDistrict.contains(user.districtOfResidence)) {
-                        hometownDistrict.add(user.districtOfResidence)
-                    }
-                    if (!user.regionOfResidence.isNullOrEmpty() && !hometownReg.contains(user.regionOfResidence)) {
-                        hometownReg.add(user.regionOfResidence)
-                    }
-                    if (!user.employmentSector.isNullOrEmpty() && !employmentSector.contains(user.employmentSector)) {
-                        employmentSector.add(user.employmentSector)
-                    }
-                    if (!user.specificOrg.isNullOrEmpty() && !specificOrg.contains(user.specificOrg)) {
-                        specificOrg.add(user.specificOrg)
-                    }
-                    if (!user.establishmentRegion.isNullOrEmpty() && !workRegion.contains(user.establishmentRegion)) {
-                        workRegion.add(user.establishmentRegion)
-                    }
-                    if (!user.establishmentDist.isNullOrEmpty() && !workDistrict.contains(user.establishmentDist)) {
-                        workDistrict.add(user.establishmentDist)
-                    }
-                }
+    private fun getFilterData(list: List<EntityUserData>) {
+        for (user in list) {
+            if (!user.districtOfResidence.equals("SELECT DISTRICT") &&
+                !user.districtOfResidence.isNullOrEmpty() &&
+                !hometownDistrict.contains(user.districtOfResidence)
+            ) {
+                hometownDistrict.add(user.districtOfResidence)
+            }
+            if (!user.regionOfResidence.equals("SELECT REGION") &&
+                !user.regionOfResidence.isNullOrEmpty() &&
+                !hometownReg.contains(user.regionOfResidence)
+            ) {
+                hometownReg.add(user.regionOfResidence)
+            }
+            if (!user.employmentSector.isNullOrEmpty() &&
+                !employmentSector.contains(user.employmentSector)
+            ) {
+                employmentSector.add(user.employmentSector)
+            }
+            if (!user.specificOrg.isNullOrEmpty() && !specificOrg.contains(user.specificOrg)) {
+                specificOrg.add(user.specificOrg)
+            }
+            if (!user.establishmentRegion.equals("SELECT REGION") &&
+                !user.establishmentRegion.isNullOrEmpty() &&
+                !workRegion.contains(user.establishmentRegion)
+            ) {
+                workRegion.add(user.establishmentRegion)
+            }
+            if (!user.districtOfResidence.equals("SELECT DISTRICT") &&
+                !user.establishmentDist.isNullOrEmpty() && !workDistrict.contains(user.establishmentDist)
+            ) {
+                workDistrict.add(user.establishmentDist)
             }
         }
+
     }
 }
 

@@ -56,7 +56,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="50dp"
-                android:entries="@array/event_type"
                 android:gravity="bottom"
                 android:padding="6dp"
                 android:spinnerMode="dropdown"

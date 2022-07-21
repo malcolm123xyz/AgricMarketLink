@@ -73,13 +73,13 @@ class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
     private fun showAnnouncement() {
         vb?.heading?.text = announcement.heading
         vb?.annBody?.text = announcement.message
-        vb?.date?.setText(getDate(announcement.id))
+        vb?.date?.text = getDate(announcement.id)
         Linkify.addLinks(vb!!.annBody, Linkify.PHONE_NUMBERS or Linkify.WEB_URLS)
 
         loadImage(announcement.imageUri ?: "")
 
         val eventDate = announcement.eventDate
-        if (announcement.type > 0) {
+        if (announcement.annType > 0) {
             val strEventDate = fd.format(eventDate)
             vb?.eventDate?.text = String.format("DATE: %s", strEventDate)
             vb?.eventVenue?.text = java.lang.String.format("VENUE: %s", announcement.venue)

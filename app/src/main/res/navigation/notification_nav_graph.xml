@@ -12,10 +12,11 @@
         android:label="NOTICE BOARD"
         tools:layout="@layout/fragment_viewpager_container">
 
-        <!-- Login -->
         <action
             android:id="@+id/action_gen_not_to_events_not"
-            app:destination="@id/detail_fragment" />
+            app:destination="@id/detail_fragment"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
     </fragment>
 
     <!-- Login -->
@@ -28,7 +29,9 @@
             android:id="@+id/action_detail_fragment_to_view_pager"
             app:destination="@id/payment_details_view"
             app:popUpTo="@id/payment_details_view"
-            app:popUpToInclusive="true"/>
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
     </fragment>
 
 </navigation>

@@ -1,13 +1,13 @@
 package mx.mobile.solution.nabia04.data.repositories
 
 import android.content.SharedPreferences
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.data.dao.AnnDao
 import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement
 import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Status
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Announcement
 import java.io.IOException
@@ -19,12 +19,9 @@ import javax.net.ssl.SSLHandshakeException
 
 @Singleton
 class AnnRepository @Inject constructor(
-    var dao: AnnDao,
-    var endpoint: MainEndpoint,
+    var dao: AnnDao, var endpoint: MainEndpoint,
     var sharedP: SharedPreferences
 ) {
-
-    val result = MutableLiveData<Resource<List<EntityAnnouncement>>>()
 
     suspend fun refreshDB(): Resource<List<EntityAnnouncement>> {
         return withContext(Dispatchers.IO) {
@@ -35,12 +32,6 @@ class AnnRepository @Inject constructor(
     suspend fun fetchAnn(): Resource<List<EntityAnnouncement>> {
         return withContext(Dispatchers.IO) {
             fetch()
-        }
-    }
-
-    suspend fun refreshDB1(): Resource<List<EntityAnnouncement>> {
-        return withContext(Dispatchers.IO) {
-            refresh()
         }
     }
 
@@ -72,17 +63,17 @@ class AnnRepository @Inject constructor(
         var erMsg = ""
         try {
             val backendResponse = endpoint.noticeBoardData.execute()
-            if (backendResponse.returnCode == 1) {
-                if (backendResponse.announcements != null) {
-                    val allAnnouncements = getAnnDataObjects(backendResponse.announcements).toList()
-                    dao.insertAnnouncement(allAnnouncements)
-                    sharedP.edit()?.putBoolean(Cons.ANN_REFRESH, false)?.apply()
-                    sharedP.edit()
-                        ?.putLong(Cons.ANN_REFRESH_TIME_STAMP, System.currentTimeMillis())
-                        ?.apply()
-                    //alarmManager.scheduleEventNotification(allAnnouncements)
-                    return Resource.success(allAnnouncements)
-                }
+            if (backendResponse.status == Status.SUCCESS.toString()) {
+                val allAnnouncements = getAnnDataObjects(backendResponse.data).toList()
+                dao.insertAnnouncement(allAnnouncements)
+                sharedP.edit()?.putBoolean(Cons.ANN_REFRESH, false)?.apply()
+                sharedP.edit()
+                    ?.putLong(Cons.ANN_REFRESH_TIME_STAMP, System.currentTimeMillis())
+                    ?.apply()
+                //alarmManager.scheduleEventNotification(allAnnouncements)
+                return Resource.success(allAnnouncements)
+            } else {
+                return Resource.error(backendResponse.message, null)
             }
 
         } catch (ex: IOException) {
@@ -107,17 +98,17 @@ class AnnRepository @Inject constructor(
         }
         try {
             val backendResponse = endpoint.noticeBoardData.execute()
-            if (backendResponse.returnCode == 1) {
-                if (backendResponse.announcements != null) {
-                    val allAnnouncements = getAnnDataObjects(backendResponse.announcements).toList()
-                    dao.insertAnnouncement(allAnnouncements)
-                    sharedP.edit()?.putBoolean(Cons.ANN_REFRESH, false)?.apply()
-                    sharedP.edit()
-                        ?.putLong(Cons.ANN_REFRESH_TIME_STAMP, System.currentTimeMillis())
-                        ?.apply()
-                    //alarmManager.scheduleEventNotification(allAnnouncements)
-                    return Resource.success(allAnnouncements)
-                }
+            if (backendResponse.status == Status.SUCCESS.toString()) {
+                val allAnnouncements = getAnnDataObjects(backendResponse.data).toList()
+                dao.insertAnnouncement(allAnnouncements)
+                sharedP.edit()?.putBoolean(Cons.ANN_REFRESH, false)?.apply()
+                sharedP.edit()
+                    ?.putLong(Cons.ANN_REFRESH_TIME_STAMP, System.currentTimeMillis())
+                    ?.apply()
+                //alarmManager.scheduleEventNotification(allAnnouncements)
+                return Resource.success(allAnnouncements)
+            } else {
+                return Resource.error(backendResponse.message, null)
             }
 
         } catch (ex: IOException) {
@@ -142,7 +133,8 @@ class AnnRepository @Inject constructor(
             entity.id = ann.id
             entity.heading = ann.heading
             entity.message = ann.message
-            entity.type = ann.type
+            entity.annType = ann.annType
+            entity.eventType = ann.eventType
             entity.imageUri = ann.imageUri
             entity.eventDate = ann.eventDate
             entity.priority = ann.priority

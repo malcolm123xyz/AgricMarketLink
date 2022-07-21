@@ -9,11 +9,4 @@
         android:title="Refresh"
         app:showAsAction="always" />
 
-    <item
-        android:id="@+id/logout"
-        android:orderInCategory="100"
-        android:icon="@mipmap/logout_white"
-        android:title="Logout"
-        app:showAsAction="always" />
-
 </menu>

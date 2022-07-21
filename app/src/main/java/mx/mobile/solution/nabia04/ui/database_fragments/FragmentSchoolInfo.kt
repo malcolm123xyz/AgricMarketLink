@@ -7,10 +7,8 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import kotlinx.android.synthetic.main.fragment_person_details.*
 import kotlinx.android.synthetic.main.fragment_school_info.*
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
@@ -20,16 +18,6 @@ import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData.Companion.selectedFolio
 import java.util.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [FragmentDone.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FragmentSchoolInfo : BaseFragment<FragmentSchoolInfoBinding>() {
 
     override fun getLayoutRes(): Int = R.layout.fragment_school_info
@@ -73,6 +61,24 @@ class FragmentSchoolInfo : BaseFragment<FragmentSchoolInfoBinding>() {
         backButtonSchoolD.setOnClickListener {
             findNavController().navigate(R.id.action_school_info_move_back)
         }
+
+        listenOnBackPressed()
+    }
+
+    private fun listenOnBackPressed() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        println("🏠 ${this.javaClass.simpleName} #${this.hashCode()}  onResume()")
+        callback.isEnabled = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        callback.isEnabled = false
+        println("🏠 ${this.javaClass.simpleName} #${this.hashCode()}  onPause()")
     }
 
     val callback = object : OnBackPressedCallback(false) {

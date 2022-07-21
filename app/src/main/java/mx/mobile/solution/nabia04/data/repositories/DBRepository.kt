@@ -2,37 +2,43 @@ package mx.mobile.solution.nabia04.data.repositories
 
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.data.dao.DBdao
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.utilities.Cons
+import mx.mobile.solution.nabia04.utilities.RateLimiter
 import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Status
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DatabaseObject
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Response
+import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.*
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.net.ssl.SSLHandshakeException
 
 @Singleton
 class DBRepository @Inject constructor(
-    var dao: DBdao,
-    var endpoint: MainEndpoint,
+    var dao: DBdao, var endpoint: MainEndpoint,
     var sharedP: SharedPreferences
 ) {
 
-    val result = MutableLiveData<Resource<List<EntityUserData>>>()
-
+    private val repoListRateLimit = RateLimiter<String>(30, TimeUnit.MINUTES)
 
     suspend fun fetchUserData(): Resource<List<EntityUserData>> {
         return withContext(Dispatchers.IO) {
             fetch()
         }
+    }
+
+    suspend fun fetchUserNames(): List<EntityUserData>? {
+        return withContext(Dispatchers.IO) {
+            return@withContext fetch().data
+        }
+
     }
 
     suspend fun refreshDB(): Resource<List<EntityUserData>> {
@@ -99,11 +105,12 @@ class DBRepository @Inject constructor(
     private fun doSetClearance(folio: String, clearance: String): Resource<List<EntityUserData>> {
         var erMsg = ""
         try {
-            val response = endpoint.setUserClearance(folio, clearance)?.execute()
-            if (response?.returnCode == 1) {
+            val cl = ClearanceTP().setFolio(folio).setPosition(clearance)
+            val response = endpoint.setUserClearance(cl)?.execute()
+            if (response?.status == Status.SUCCESS.toString()) {
                 return Resource.success(null)
             }
-            return Resource.error(response?.response.toString(), null)
+            return Resource.error(response?.message.toString(), null)
         } catch (ex: IOException) {
             erMsg = if (ex is SocketTimeoutException ||
                 ex is SSLHandshakeException ||
@@ -135,16 +142,15 @@ class DBRepository @Inject constructor(
     private fun refresh(): Resource<List<EntityUserData>> {
         var erMsg = ""
         try {
-            val backendResponse = endpoint.members.execute()
-            Log.i("TAG", "backendResponse: ${backendResponse.returnCode}")
-            if (backendResponse.returnCode == 1) {
-                if (backendResponse.databaseObj != null) {
-                    val allData = getEntity(backendResponse.databaseObj).toList()
-                    dao.insert(allData)
-                    sharedP.edit()?.putBoolean(Cons.DATABASE_REFRESH, false)?.apply()
-                    //alarmManager.scheduleBirthdayNotification(allUserData!!)
-                    return Resource.success(allData)
-                }
+            val response = endpoint.members.execute()
+            return if (response?.status == Status.SUCCESS.toString()) {
+                val allData = getEntity(response.data).toList()
+                dao.insert(allData)
+                sharedP.edit()?.putBoolean(Cons.DATABASE_REFRESH, false)?.apply()
+                //alarmManager.scheduleBirthdayNotification(allUserData!!)
+                Resource.success(allData)
+            } else {
+                Resource.error(response.message, null)
             }
         } catch (ex: IOException) {
             erMsg = if (ex is SocketTimeoutException ||
@@ -162,20 +168,24 @@ class DBRepository @Inject constructor(
 
     private fun fetch(): Resource<List<EntityUserData>> {
         var erMsg = ""
+
         val list = dao.getAllUserData
-        if (list.isNotEmpty()) {
+
+        if (!shouldFetch(list)) {
             return Resource.success(list)
         }
+
         try {
-            val backendResponse = endpoint.members.execute()
-            if (backendResponse.returnCode == 1) {
-                if (backendResponse.databaseObj != null) {
-                    val allData = getEntity(backendResponse.databaseObj).toList()
-                    dao.insert(allData)
-                    sharedP.edit()?.putBoolean(Cons.DATABASE_REFRESH, false)?.apply()
-                    //alarmManager.scheduleBirthdayNotification(allUserData!!)
-                    return Resource.success(allData)
-                }
+
+            val response = endpoint.members.execute()
+            if (response?.status == Status.SUCCESS.toString()) {
+                val allData = getEntity(response.data).toList()
+                dao.insert(allData)
+                sharedP.edit()?.putBoolean(Cons.DATABASE_REFRESH, false)?.apply()
+                //alarmManager.scheduleBirthdayNotification(allUserData!!)
+                return Resource.success(allData)
+            } else {
+                return Resource.error(response.message, null)
             }
 
         } catch (ex: IOException) {
@@ -192,18 +202,21 @@ class DBRepository @Inject constructor(
         return Resource.error(erMsg, null)
     }
 
+
     private fun doSetDeceased(
-        date: String,
         folio: String,
+        date: String,
         status: Int
     ): Resource<List<EntityUserData>> {
         var erMsg = ""
         try {
-            val response = endpoint.setDeceaseStatus(date, folio, status)?.execute()
-            if (response?.returnCode == 1) {
+            val deceaseStatus = DeceaseStatusTP().setDate(date).setFolio(folio).setStatus(status)
+            Log.i("TAG", "Deceased folio num: = $folio")
+            val response = endpoint.setDeceaseStatus(deceaseStatus)?.execute()
+            if (response?.status == Status.SUCCESS.toString()) {
                 return Resource.success(null)
             }
-            return Resource.error(response?.returnMsg.toString(), null)
+            return Resource.error(response?.message.toString(), null)
         } catch (ex: IOException) {
             erMsg = if (ex is SocketTimeoutException ||
                 ex is SSLHandshakeException ||
@@ -222,10 +235,10 @@ class DBRepository @Inject constructor(
         var erMsg = ""
         try {
             val response = endpoint.deleteUser(folio)?.execute()
-            if (response?.returnCode == 1) {
+            if (response?.status == Status.SUCCESS.toString()) {
                 return Resource.success(null)
             }
-            return Resource.error(response?.returnMsg.toString(), null)
+            return Resource.error(response?.message.toString(), null)
         } catch (ex: IOException) {
             erMsg = if (ex is SocketTimeoutException ||
                 ex is SSLHandshakeException ||
@@ -243,11 +256,12 @@ class DBRepository @Inject constructor(
     private fun doSetBiography(biography: String, folio: String): Resource<List<EntityUserData>> {
         var erMsg = ""
         try {
-            val response = endpoint.deleteUser(folio)?.execute()
-            if (response?.returnCode == 1) {
+            val bio = BiographyTP().setFolio(folio).setBio(biography)
+            val response = endpoint.setBiography(bio)?.execute()
+            if (response?.status == Status.SUCCESS.toString()) {
                 return Resource.success(null)
             }
-            return Resource.error(response?.returnMsg.toString(), null)
+            return Resource.error(response?.message.toString(), null)
         } catch (ex: IOException) {
             erMsg = if (ex is SocketTimeoutException ||
                 ex is SSLHandshakeException ||
@@ -263,20 +277,22 @@ class DBRepository @Inject constructor(
     }
 
     private fun doSendTribute(folio: String, tribute: String): Resource<List<EntityUserData>> {
-        val erMsg = ""
+        var erMsg = ""
         try {
-            val response = endpoint.addTribute(folio, tribute)?.execute()
-            if (response?.returnCode == 1) {
+            val tributeTP = TributeTP().setFolio(folio).setMsg(tribute)
+            val response = endpoint.addTribute(tributeTP)?.execute()
+            if (response?.status == Status.SUCCESS.toString()) {
                 return Resource.success(null)
             }
-            return Resource.error(response?.response.toString(), null)
+            return Resource.error(response?.message.toString(), null)
         } catch (ex: IOException) {
             ex.printStackTrace()
-            if (ex is SocketTimeoutException || ex is SSLHandshakeException || ex is UnknownHostException) {
-                Response().setResponse("Cause: NO INTERNET CONNECTION").setReturnCode(0)
-            } else {
-                Response().setResponse("UNKNOWN ERROR").setReturnCode(0)
-            }
+            erMsg =
+                if (ex is SocketTimeoutException || ex is SSLHandshakeException || ex is UnknownHostException) {
+                    "Cause: NO INTERNET CONNECTION"
+                } else {
+                    "UNKNOWN ERROR"
+                }
         }
         return Resource.error(erMsg, null)
     }
@@ -315,8 +331,19 @@ class DBRepository @Inject constructor(
         }
     }
 
-    suspend fun getNamesOnly(): List<DBdao.Names> {
-        return dao.getNamesOnly()
+    private fun shouldFetch(data: List<EntityUserData>): Boolean {
+        if (repoListRateLimit.shouldFetch("User_data")) {
+            Log.i("TAG", "Time limit reached, ShouldFetch data")
+            return true
+        }
+
+        if (data.isEmpty()) {
+            Log.i("TAG", "Data is empty, ShouldFetch data")
+            return true
+        }
+
+        Log.i("TAG", "Don't fetch new data")
+        return false
     }
 
 }

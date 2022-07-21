@@ -15,7 +15,8 @@ public class EntityAnnouncement {
     private Long id;
     private String heading;
     private String message;
-    private int type;
+    private int annType;
+    private int eventType;
     private String imageUri;
     private long eventDate;
     private int priority;
@@ -24,6 +25,22 @@ public class EntityAnnouncement {
     private String isAboutWho;
     private boolean isArelative;
     private boolean read;
+
+    public int getAnnType() {
+        return annType;
+    }
+
+    public void setAnnType(int annType) {
+        this.annType = annType;
+    }
+
+    public int getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(int eventType) {
+        this.eventType = eventType;
+    }
 
     public boolean isRead() {
         return read;
@@ -87,14 +104,6 @@ public class EntityAnnouncement {
 
     public void setImageUri(String imageUri) {
         this.imageUri = imageUri;
-    }
-
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     @NonNull

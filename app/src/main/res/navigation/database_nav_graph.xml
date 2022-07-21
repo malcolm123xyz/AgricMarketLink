@@ -14,168 +14,25 @@
         <action
             android:id="@+id/action_database_viewpager_to_current_members_detail"
             app:destination="@id/fragment_database_detail"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
         <action
             android:id="@+id/action_database_viewpager_to_departed_members_detail"
             app:destination="@id/fragment_departed_members_detail"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
-        <action
-            android:id="@+id/action_database_view_pager_to_note_fragment"
-            app:destination="@id/fragment1"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
     </fragment>
 
     <fragment
         android:id="@+id/fragment_database_detail"
         android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentCurrentMembersDetail"
         android:label="Details"
-        tools:layout="@layout/fragment_database_detail">
-        <action
-            android:id="@+id/action_database_detail_to_database_viewpager"
-            app:destination="@id/database_view_pager"
-            app:popUpTo="@id/database_view_pager"
-            app:popUpToInclusive="true"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
-        <action
-            android:id="@+id/action_fragment_database_detail_to_note_fragment"
-            app:destination="@id/fragment1"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
-    </fragment>
+        tools:layout="@layout/fragment_database_detail" />
 
     <fragment
         android:id="@+id/fragment_departed_members_detail"
         android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentDepartedMembersDetail"
         android:label="Details"
-        tools:layout="@layout/fragment_departed_members_detail">
-        <action
-            android:id="@+id/action_departed_member_detail_to_database_viewpager"
-            app:destination="@id/database_view_pager"
-            app:popUpTo="@id/database_view_pager"
-            app:popUpToInclusive="true"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
-    </fragment>
-
-    <fragment
-        android:id="@+id/fragment1"
-        android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentDatabaseUpdateNote"
-        android:label="@string/database_update"
-        tools:layout="@layout/fragment_database_update_note">
-        <action
-            android:id="@+id/action_move_forward"
-            app:destination="@id/payment_update_fragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
-        <action
-            android:id="@+id/action_note_fragment_to_database_view_pager"
-            app:destination="@id/database_view_pager"
-            app:popUpTo="@id/database_view_pager"
-            app:popUpToInclusive="true"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
-        <action
-            android:id="@+id/action_note_fragment_to_fragment_database_detail"
-            app:destination="@id/fragment_database_detail"
-            app:popUpTo="@id/database_view_pager"
-            app:popUpToInclusive="true"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
-    </fragment>
-
-    <fragment
-        android:id="@+id/payment_update_fragment"
-        android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentPersonDetails"
-        android:label="@string/lebel_personal_details"
-        tools:layout="@layout/fragment_person_details">
-        <action
-            android:id="@+id/action_personal_data_move_forward"
-            app:destination="@id/fragment_school_info"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
-        <action
-            android:id="@+id/action_personal_details_fragment_to_database_view_pager"
-            app:destination="@id/database_view_pager"
-            app:popUpTo="@id/database_view_pager"
-            app:popUpToInclusive="true"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
-    </fragment>
-
-    <fragment
-        android:id="@+id/fragment_school_info"
-        android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentSchoolInfo"
-        android:label="@string/school_information"
-        tools:layout="@layout/fragment_school_info">
-        <action
-            android:id="@+id/action_school_info_move_forward"
-            app:destination="@id/fragment_work_info"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
-        <action
-            android:id="@+id/action_school_info_move_back"
-            app:destination="@id/payment_update_fragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
-        <action
-            android:id="@+id/action_fragment_school_info_to_database_view_pager"
-            app:destination="@id/database_view_pager"
-            app:popUpTo="@id/database_view_pager"
-            app:popUpToInclusive="true"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
-    </fragment>
-
-    <fragment
-        android:id="@+id/fragment_work_info"
-        android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentWorkInfo"
-        android:label="@string/work_information"
-        tools:layout="@layout/fragment_work_info" >
-        <action
-            android:id="@+id/action_move_work_inf_move_forward"
-            app:destination="@id/fragment_done"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim" />
-        <action
-            android:id="@+id/action_work_info_move_back"
-            app:destination="@id/fragment_school_info"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"/>
-        <action
-            android:id="@+id/action_fragment_work_info_to_database_view_pager"
-            app:destination="@id/database_view_pager"
-            app:popUpTo="@id/database_view_pager"
-            app:popUpToInclusive="true"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/fragment_done"
-        android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentDone"
-        android:label="done"
-        tools:layout="@layout/fragment_done" >
-        <action
-            android:id="@+id/action_fragment_done_move_back"
-            app:destination="@id/fragment_work_info"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"/>
-        <action
-            android:id="@+id/action_fragment_done_to_database_view_pager"
-            app:destination="@id/database_view_pager"
-            app:popUpTo="@id/database_view_pager"
-            app:popUpToInclusive="true"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"/>
-        <action
-            android:id="@+id/action_fragment_done_to_fragment_database_detail"
-            app:destination="@id/fragment_database_detail"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"/>
-    </fragment>
+        tools:layout="@layout/fragment_departed_members_detail" />
 
 </navigation>

@@ -78,10 +78,6 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
             setUpListener()
             showHeader()
         }
-
-        vb?.newPayment?.setOnClickListener {
-            findNavController().navigate(R.id.action_move_forward)
-        }
     }
 
     private suspend fun setUpListener() {
@@ -190,8 +186,9 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
                 showSortPopup(menuItemView)
                 super.onOptionsItemSelected(item)
             }
-            R.id.support_request -> {
-                findNavController().navigate(R.id.action_move_cont_request)
+
+            R.id.upDateDuesPayment -> {
+                findNavController().navigate(R.id.action_move_dues_update)
                 super.onOptionsItemSelected(item)
             }
             else -> super.onOptionsItemSelected(item)

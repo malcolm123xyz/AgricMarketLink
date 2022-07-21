@@ -1,6 +1,5 @@
 package mx.mobile.solution.nabia04.ui.welfare_fragments
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -13,10 +12,6 @@ import com.smarttoolfactory.tutorial7_2bnv_viewpager2_complexarchitecture.adapte
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.databinding.WelfareNavHostFragmentBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
-import mx.mobile.solution.nabia04.ui.activities.ActivityTreasurerTools
-import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
-import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
-import mx.mobile.solution.nabia04.utilities.Cons
 
 
 /**
@@ -56,13 +51,13 @@ class WelfareNavHostFragment : BaseFragment<WelfareNavHostFragmentBinding>() {
             }
         }.attach()
 
-        if (clearance == Cons.TREASURER || userFolioNumber == "13786") {
-            vb?.treasurerFab?.visibility = View.VISIBLE
-            vb?.treasurerFab?.setOnClickListener {
-                val i = Intent(activity, ActivityTreasurerTools::class.java)
-                startActivity(i)
-            }
-        }
+//        if (clearance == Cons.TREASURER || userFolioNumber == "13786") {
+//            vb?.treasurerFab?.visibility = View.VISIBLE
+//            vb?.treasurerFab?.setOnClickListener {
+//                val i = Intent(activity, ActivityTreasurerTools::class.java)
+//                startActivity(i)
+//            }
+//        }
     }
 
     override fun onDestroyView() {

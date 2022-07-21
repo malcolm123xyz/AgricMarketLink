@@ -2,7 +2,6 @@ package mx.mobile.solution.nabia04.ui.ann_fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -90,7 +89,6 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
             }
         }
 
-        //setupObserver()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -101,21 +99,7 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.refresh -> {
-                Log.i("TAG", "Refresh")
                 viewModel.refreshDB()
-                super.onOptionsItemSelected(item)
-            }
-            R.id.logout -> {
-//                AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
-//                    .setTitle("WARNING!!!")
-//                    .setMessage("You are about to logout")
-//                    .setPositiveButton(
-//                        "Continue"
-//                    ) { dialog, id -> dialog.dismiss()
-//                    }
-//                    .setNegativeButton(
-//                        "Cancel"
-//                    ) { dialog, id -> dialog.dismiss() }.show()
                 super.onOptionsItemSelected(item)
             }
             else -> super.onOptionsItemSelected(item)

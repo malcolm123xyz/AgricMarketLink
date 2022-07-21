@@ -10,7 +10,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.AdapterView
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.activity.result.ActivityResultLauncher
@@ -36,7 +35,6 @@ import mx.mobile.solution.nabia04.databinding.ActivitySendAnnBinding
 import mx.mobile.solution.nabia04.utilities.*
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Announcement
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.AnnouncementResponse
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -47,7 +45,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ActivitySendAnnouncement : AppCompatActivity() {
     private var file: File? = null
-    private var annType = 0
     private var annData: Announcement? = null
     private var eventDate: Long = 0
     private val format = SimpleDateFormat("EEE, d MMM yyyy, hh:mm")
@@ -81,13 +78,6 @@ class ActivitySendAnnouncement : AppCompatActivity() {
             } else {
                 contentLauncher!!.launch("image/*")
             }
-        }
-        eventTypeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(adapterView: AdapterView<*>?, view: View, i: Int, l: Long) {
-                annType = i
-            }
-
-            override fun onNothingSelected(adapterView: AdapterView<*>?) {}
         }
         registerPicturePickerActivityResults()
     }
@@ -161,7 +151,7 @@ class ActivitySendAnnouncement : AppCompatActivity() {
                 "INVALID",
                 "This Announcement is about an Event, you must set an event date and numDaysLeft."
             )
-        } else if (eventCheckbox.isChecked && annType < 1) {
+        } else if (eventCheckbox.isChecked && eventTypeSpinner.selectedItemPosition < 1) {
             showDialog(
                 "INVALID",
                 "This Announcement about an Event, you must set an event type other than General"
@@ -177,8 +167,11 @@ class ActivitySendAnnouncement : AppCompatActivity() {
             annData!!.message = message
             annData!!.venue = venue
             annData!!.id = timeStamp
-            if (annType > 0) {
-                annData!!.type = annType
+            annData!!.annType = 0
+            annData!!.eventType = 0
+            if (eventTypeSpinner.selectedItemPosition > 0) {
+                annData!!.annType = 1
+                annData!!.eventType = eventTypeSpinner.selectedItemPosition
             }
             annData!!.priority = priority
             annData!!.eventDate = eventDate
@@ -271,29 +264,28 @@ class ActivitySendAnnouncement : AppCompatActivity() {
             "Sending Announcement... Please wait")
 
         object : BackgroundTasks() {
-            var response: AnnouncementResponse? = null
+            var response = ""
             override fun onPreExecute() {
                 alert.show()
             }
 
             override fun doInBackground() {
                 try {
-                    val accessToken = sharedP!!.getString(SessionManager.LOGIN_TOKEN, "")
-                    response = endpoint!!.insertAnnouncement(accessToken, announcement).execute()
-                    alert.dismiss()
+                    val res = endpoint!!.insertAnnouncement(announcement).execute()
+                    if (res.status == Status.ERROR.toString()) {
+                        response = res.message
+                    }
                 } catch (ex: IOException) {
                     ex.printStackTrace()
-                    response = AnnouncementResponse()
-                    response!!.returnCode = Cons.UNKNOWN_ERROR_CODE
-                    response!!.response =
+                    response =
                         "An error occurred while sending the Announcement. Please try again"
                 }
             }
 
             override fun onPostExecute() {
                 alert.dismiss()
-                if (response!!.returnCode != Cons.OK) {
-                    showDialog("ERROR", response!!.response)
+                if (response.isNotEmpty()) {
+                    showDialog("ERROR", response)
                 }
             }
         }.execute()

@@ -1,6 +1,7 @@
 package mx.mobile.solution.nabia04.ui.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +28,7 @@ class ContListAdapter @Inject constructor(private val context: Context) :
         val userIcon = itemView.findViewById<android.widget.ImageView?>(R.id.userIcon)
 
         fun bind(map: Map<String, String>, i: Int) {
-
+            Log.i("TAG", "Contributions: $map")
             name.text = map["name"]
             totalPayment.text = map["payment"]
             date.text = map["date"]

@@ -29,7 +29,7 @@
     "parameterName": "resource"
    },
    "response": {
-    "$ref": "DatabaseResponse"
+    "$ref": "Response_String"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -38,25 +38,13 @@
   "addTribute": {
    "httpMethod": "POST",
    "id": "mainEndpoint.addTribute",
-   "parameterOrder": [
-    "folio",
-    "message"
-   ],
-   "parameters": {
-    "folio": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    },
-    "message": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    }
-   },
    "path": "addTribute",
+   "request": {
+    "$ref": "TributeTP",
+    "parameterName": "resource"
+   },
    "response": {
-    "$ref": "Response"
+    "$ref": "Response_String"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -78,7 +66,7 @@
    },
    "path": "deleteFromServer",
    "response": {
-    "$ref": "ReturnObj"
+    "$ref": "Response_String"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -99,7 +87,7 @@
    },
    "path": "deleteUser",
    "response": {
-    "$ref": "ReturnObj"
+    "$ref": "Response_String"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -110,7 +98,7 @@
    "id": "mainEndpoint.getContributions",
    "path": "getContributions",
    "response": {
-    "$ref": "Resource_ContributionData"
+    "$ref": "Response_ContributionData"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -121,7 +109,7 @@
    "id": "mainEndpoint.getMembers",
    "path": "getMembers",
    "response": {
-    "$ref": "DatabaseResponse"
+    "$ref": "Response_DatabaseObjectCollection"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -132,7 +120,7 @@
    "id": "mainEndpoint.getNoticeBoardData",
    "path": "getNoticeBoardData",
    "response": {
-    "$ref": "AnnouncementResponse"
+    "$ref": "Response_AnnouncementCollection"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -141,23 +129,13 @@
   "insertAnnouncement": {
    "httpMethod": "POST",
    "id": "mainEndpoint.insertAnnouncement",
-   "parameterOrder": [
-    "accessToken"
-   ],
-   "parameters": {
-    "accessToken": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    }
-   },
    "path": "insertAnnouncement",
    "request": {
     "$ref": "Announcement",
     "parameterName": "resource"
    },
    "response": {
-    "$ref": "AnnouncementResponse"
+    "$ref": "Response_String"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -172,61 +150,7 @@
     "parameterName": "resource"
    },
    "response": {
-    "$ref": "DatabaseResponse"
-   },
-   "scopes": [
-    "https://www.googleapis.com/auth/userinfo.email"
-   ]
-  },
-  "login": {
-   "httpMethod": "GET",
-   "id": "mainEndpoint.login",
-   "parameterOrder": [
-    "folioNumber",
-    "pass"
-   ],
-   "parameters": {
-    "folioNumber": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    },
-    "pass": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    }
-   },
-   "path": "login",
-   "response": {
-    "$ref": "SignUpLoginResponse"
-   },
-   "scopes": [
-    "https://www.googleapis.com/auth/userinfo.email"
-   ]
-  },
-  "sendMessageToMember": {
-   "httpMethod": "POST",
-   "id": "mainEndpoint.sendMessageToMember",
-   "parameterOrder": [
-    "folio",
-    "msg"
-   ],
-   "parameters": {
-    "folio": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    },
-    "msg": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    }
-   },
-   "path": "sendMessageToMember",
-   "response": {
-    "$ref": "ReturnObj"
+    "$ref": "Response_String"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -235,25 +159,13 @@
   "setBiography": {
    "httpMethod": "POST",
    "id": "mainEndpoint.setBiography",
-   "parameterOrder": [
-    "biography",
-    "folio"
-   ],
-   "parameters": {
-    "folio": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    },
-    "biography": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    }
-   },
    "path": "setBiography",
+   "request": {
+    "$ref": "BiographyTP",
+    "parameterName": "resource"
+   },
    "response": {
-    "$ref": "Response"
+    "$ref": "Response_String"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -268,7 +180,7 @@
     "parameterName": "resource"
    },
    "response": {
-    "$ref": "ReturnObj"
+    "$ref": "Response_String"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -277,32 +189,13 @@
   "setDeceaseStatus": {
    "httpMethod": "POST",
    "id": "mainEndpoint.setDeceaseStatus",
-   "parameterOrder": [
-    "date",
-    "folio",
-    "status"
-   ],
-   "parameters": {
-    "date": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    },
-    "folio": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    },
-    "status": {
-     "format": "int32",
-     "location": "query",
-     "required": true,
-     "type": "integer"
-    }
-   },
    "path": "setDeceaseStatus",
+   "request": {
+    "$ref": "DeceaseStatusTP",
+    "parameterName": "resource"
+   },
    "response": {
-    "$ref": "ReturnObj"
+    "$ref": "Response_String"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -311,25 +204,13 @@
   "setUserClearance": {
    "httpMethod": "POST",
    "id": "mainEndpoint.setUserClearance",
-   "parameterOrder": [
-    "folio",
-    "position"
-   ],
-   "parameters": {
-    "folio": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    },
-    "position": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    }
-   },
    "path": "setUserClearance",
+   "request": {
+    "$ref": "ClearanceTP",
+    "parameterName": "resource"
+   },
    "response": {
-    "$ref": "Response"
+    "$ref": "Response_String"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -344,35 +225,22 @@
     "parameterName": "resource"
    },
    "response": {
-    "$ref": "SignUpLoginResponse"
+    "$ref": "Response_LoginData"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
-  "suspend": {
+  "upDateContPayment": {
    "httpMethod": "POST",
-   "id": "mainEndpoint.suspend",
-   "parameterOrder": [
-    "folio",
-    "status"
-   ],
-   "parameters": {
-    "folio": {
-     "location": "query",
-     "required": true,
-     "type": "string"
-    },
-    "status": {
-     "format": "int32",
-     "location": "query",
-     "required": true,
-     "type": "integer"
-    }
+   "id": "mainEndpoint.upDateContPayment",
+   "path": "upDateContPayment",
+   "request": {
+    "$ref": "ContributionData",
+    "parameterName": "resource"
    },
-   "path": "suspend",
    "response": {
-    "$ref": "ReturnObj"
+    "$ref": "Response_String"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -387,7 +255,22 @@
     "parameterName": "resource"
    },
    "response": {
-    "$ref": "ReturnObj"
+    "$ref": "Response_String"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "userLogin": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.userLogin",
+   "path": "userLogin",
+   "request": {
+    "$ref": "LoginTP",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "Response_LoginData"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -448,12 +331,20 @@
   "Announcement": {
    "id": "Announcement",
    "properties": {
+    "annType": {
+     "format": "int32",
+     "type": "integer"
+    },
     "arelative": {
      "type": "boolean"
     },
     "eventDate": {
      "format": "int64",
      "type": "string"
+    },
+    "eventType": {
+     "format": "int32",
+     "type": "integer"
     },
     "heading": {
      "type": "string"
@@ -479,31 +370,32 @@
      "format": "int32",
      "type": "integer"
     },
-    "type": {
-     "format": "int32",
-     "type": "integer"
-    },
     "venue": {
      "type": "string"
     }
    },
    "type": "object"
   },
-  "AnnouncementResponse": {
-   "id": "AnnouncementResponse",
+  "BiographyTP": {
+   "id": "BiographyTP",
    "properties": {
-    "announcements": {
-     "items": {
-      "$ref": "Announcement"
-     },
-     "type": "array"
-    },
-    "response": {
+    "bio": {
      "type": "string"
     },
-    "returnCode": {
-     "format": "int32",
-     "type": "integer"
+    "folio": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "ClearanceTP": {
+   "id": "ClearanceTP",
+   "properties": {
+    "folio": {
+     "type": "string"
+    },
+    "position": {
+     "type": "string"
     }
    },
    "type": "object"
@@ -533,6 +425,12 @@
      "type": "string"
     },
     "message": {
+     "type": "string"
+    },
+    "momoName": {
+     "type": "string"
+    },
+    "momoNum": {
      "type": "string"
     },
     "name": {
@@ -633,142 +531,18 @@
    },
    "type": "object"
   },
-  "DatabaseResponse": {
-   "id": "DatabaseResponse",
+  "DeceaseStatusTP": {
+   "id": "DeceaseStatusTP",
    "properties": {
-    "databaseObj": {
-     "items": {
-      "$ref": "DatabaseObject"
-     },
-     "type": "array"
-    },
-    "response": {
+    "date": {
      "type": "string"
-    },
-    "returnCode": {
-     "format": "int32",
-     "type": "integer"
-    }
-   },
-   "type": "object"
-  },
-  "EventsPicsData": {
-   "id": "EventsPicsData",
-   "properties": {
-    "id": {
-     "format": "int64",
-     "type": "string"
-    },
-    "picturName": {
-     "type": "string"
-    },
-    "picturePath": {
-     "type": "string"
-    },
-    "pictureSize": {
-     "type": "string"
-    },
-    "type": {
-     "format": "int32",
-     "type": "integer"
-    }
-   },
-   "type": "object"
-  },
-  "HotSeatPersonDataModel": {
-   "id": "HotSeatPersonDataModel",
-   "properties": {
-    "classs": {
-     "type": "string"
-    },
-    "educativeLevel": {
-     "type": "string"
-    },
-    "educativeVotes": {
-     "items": {
-      "type": "string"
-     },
-     "type": "array"
     },
     "folio": {
      "type": "string"
     },
-    "honestyVotes": {
-     "items": {
-      "type": "string"
-     },
-     "type": "array"
-    },
-    "house": {
-     "type": "string"
-    },
-    "humor": {
-     "type": "string"
-    },
-    "humorVotes": {
-     "items": {
-      "type": "string"
-     },
-     "type": "array"
-    },
-    "imageId": {
-     "type": "string"
-    },
-    "imageUri": {
-     "type": "string"
-    },
-    "informativeVotes": {
-     "items": {
-      "type": "string"
-     },
-     "type": "array"
-    },
-    "inspirationLevel": {
-     "type": "string"
-    },
-    "lastDateOn": {
-     "format": "int64",
-     "type": "string"
-    },
-    "name": {
-     "type": "string"
-    },
-    "numberOfTimes": {
+    "status": {
      "format": "int32",
      "type": "integer"
-    },
-    "occupation": {
-     "type": "string"
-    },
-    "overallPerformance": {
-     "type": "string"
-    },
-    "percentageHonesty": {
-     "type": "string"
-    },
-    "percentageInformative": {
-     "type": "string"
-    },
-    "pornSkills": {
-     "type": "string"
-    },
-    "pornSkillsVotes": {
-     "items": {
-      "type": "string"
-     },
-     "type": "array"
-    },
-    "seatStatus": {
-     "type": "string"
-    },
-    "totalQuestions": {
-     "type": "string"
-    },
-    "usersList": {
-     "items": {
-      "type": "string"
-     },
-     "type": "array"
     }
    },
    "type": "object"
@@ -804,6 +578,18 @@
    },
    "type": "object"
   },
+  "LoginTP": {
+   "id": "LoginTP",
+   "properties": {
+    "folio": {
+     "type": "string"
+    },
+    "password": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
   "Map_String_String": {
    "additionalProperties": {
     "type": "string"
@@ -830,8 +616,26 @@
    },
    "type": "object"
   },
-  "Resource_ContributionData": {
-   "id": "Resource_ContributionData",
+  "Response_AnnouncementCollection": {
+   "id": "Response_AnnouncementCollection",
+   "properties": {
+    "data": {
+     "items": {
+      "$ref": "Announcement"
+     },
+     "type": "array"
+    },
+    "message": {
+     "type": "string"
+    },
+    "status": {
+     "$ref": "Status"
+    }
+   },
+   "type": "object"
+  },
+  "Response_ContributionData": {
+   "id": "Response_ContributionData",
    "properties": {
     "data": {
      "$ref": "ContributionData"
@@ -845,84 +649,50 @@
    },
    "type": "object"
   },
-  "Response": {
-   "id": "Response",
+  "Response_DatabaseObjectCollection": {
+   "id": "Response_DatabaseObjectCollection",
    "properties": {
-    "response": {
-     "type": "string"
-    },
-    "returnCode": {
-     "format": "int32",
-     "type": "integer"
-    }
-   },
-   "type": "object"
-  },
-  "ReturnObj": {
-   "id": "ReturnObj",
-   "properties": {
-    "announcements": {
-     "items": {
-      "$ref": "Announcement"
-     },
-     "type": "array"
-    },
-    "contributionData": {
-     "$ref": "ContributionData"
-    },
-    "dataBaseData": {
+    "data": {
      "items": {
       "$ref": "DatabaseObject"
      },
      "type": "array"
     },
-    "eventsPicsData": {
-     "items": {
-      "$ref": "EventsPicsData"
-     },
-     "type": "array"
-    },
-    "hotSeatData": {
-     "$ref": "HotSeatPersonDataModel"
-    },
-    "hotSeatNumberOftimes": {
-     "format": "int32",
-     "type": "integer"
-    },
-    "hotSeatPerfObjList": {
-     "items": {
-      "$ref": "HotSeatPersonDataModel"
-     },
-     "type": "array"
-    },
-    "loginData": {
-     "$ref": "LoginData"
-    },
-    "returnCode": {
-     "format": "int32",
-     "type": "integer"
-    },
-    "returnMsg": {
+    "message": {
      "type": "string"
     },
-    "token": {
-     "type": "string"
+    "status": {
+     "$ref": "Status"
     }
    },
    "type": "object"
   },
-  "SignUpLoginResponse": {
-   "id": "SignUpLoginResponse",
+  "Response_LoginData": {
+   "id": "Response_LoginData",
    "properties": {
-    "loginData": {
+    "data": {
      "$ref": "LoginData"
     },
-    "response": {
+    "message": {
      "type": "string"
     },
-    "returnCode": {
-     "format": "int32",
-     "type": "integer"
+    "status": {
+     "$ref": "Status"
+    }
+   },
+   "type": "object"
+  },
+  "Response_String": {
+   "id": "Response_String",
+   "properties": {
+    "data": {
+     "type": "string"
+    },
+    "message": {
+     "type": "string"
+    },
+    "status": {
+     "$ref": "Status"
     }
    },
    "type": "object"
@@ -940,6 +710,18 @@
    ],
    "id": "Status",
    "type": "string"
+  },
+  "TributeTP": {
+   "id": "TributeTP",
+   "properties": {
+    "folio": {
+     "type": "string"
+    },
+    "msg": {
+     "type": "string"
+    }
+   },
+   "type": "object"
   }
  },
  "servicePath": "mainEndpoint/v1/",

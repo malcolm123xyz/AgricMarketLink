@@ -39,14 +39,13 @@ class UserWelfareHostStateAdapter(fragmentManager: FragmentManager, lifecycle: L
                     }
                 }
 
-
             } else {
                 super.onFragmentMaxLifecyclePreUpdated(fragment, maxLifecycleState)
             }
         })
     }
 
-    override fun getItemCount(): Int = 3
+    override fun getItemCount(): Int = 2
 
     override fun createFragment(position: Int): Fragment {
 

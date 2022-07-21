@@ -67,7 +67,7 @@ class MyAlarmManager @Inject constructor(context: Context) {
                 val alarmId = eventItem.id.toString().substring(9).toInt()
                 val intent = Intent(context, AlarmReceiver::class.java)
                 intent.putExtra("itemId", eventItem.id)
-                intent.putExtra("type", annTypes[eventItem.type])
+                intent.putExtra("type", annTypes[eventItem.eventType])
                 intent.putExtra("eventDate", fd.format(Date(eventItem.eventDate)))
                 intent.putExtra("heading", getHeading(eventItem.heading))
                 val pIntent = PendingIntent.getBroadcast(context, alarmId, intent, flag)
@@ -123,7 +123,7 @@ class MyAlarmManager @Inject constructor(context: Context) {
         val alarmId = ann.id.toString().substring(9).toInt()
         val intent = Intent(context, AlarmReceiver::class.java)
         intent.putExtra("itemId", ann.id)
-        intent.putExtra("type", annTypes[ann.type])
+        intent.putExtra("type", annTypes[ann.eventType])
         intent.putExtra("eventDate", fd.format(Date(ann.eventDate)))
         intent.putExtra("heading", getHeading(ann.heading))
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as? AlarmManager

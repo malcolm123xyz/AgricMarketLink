@@ -11,13 +11,10 @@ import com.google.api.client.extensions.android.json.AndroidJsonFactory
 import com.google.api.client.http.javanet.NetHttpTransport
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.databinding.FragmentRegisterAuthBinding
-import mx.mobile.solution.nabia04.utilities.BackgroundTasks
-import mx.mobile.solution.nabia04.utilities.Cons
-import mx.mobile.solution.nabia04.utilities.MyAlertDialog
-import mx.mobile.solution.nabia04.utilities.SessionManager
+import mx.mobile.solution.nabia04.utilities.*
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.LoginData
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.SignUpLoginResponse
+import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.ResponseLoginData
 import java.io.IOException
 
 class RegisterFragment : Fragment() {
@@ -76,7 +73,7 @@ class RegisterFragment : Fragment() {
         object : BackgroundTasks() {
             private val alert = MyAlertDialog(requireContext(), "SIGN UP","Sign up in progress...")
             var exceptionThrown: Exception? = null
-            var response: SignUpLoginResponse? = null
+            var response: ResponseLoginData? = null
             override fun onPreExecute() {
                 alert.show()
             }
@@ -94,12 +91,12 @@ class RegisterFragment : Fragment() {
             override fun onPostExecute() {
                 alert.dismiss()
                 if (exceptionThrown == null && response != null) {
-                    if (response!!.returnCode == Cons.OK) {
+                    if (response!!.status == Status.SUCCESS.toString()) {
                         val sessionManager = SessionManager(requireContext())
-                        sessionManager.createLoginSession(response!!.loginData)
+                        sessionManager.createLoginSession(response!!.data)
                         listener!!.onFinished()
                     } else {
-                        showDialog("FAILED", response!!.response)
+                        showDialog("FAILED", response!!.message)
                     }
                 } else {
                     assert(exceptionThrown != null)

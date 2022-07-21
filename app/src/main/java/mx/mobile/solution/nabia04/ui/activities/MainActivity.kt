@@ -10,16 +10,21 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import android.util.Log
+import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -74,7 +79,9 @@ import javax.inject.Inject
  * in the NavigationExtensions code for setting BottomNavigationView back stack
  */
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
+class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
+    NavigationView.OnNavigationItemSelectedListener {
+    private lateinit var navController: NavController
     private val RC_APP_PERM = 1244
     private val appbarViewModel by viewModels<MainAppbarViewModel>()
 
@@ -91,6 +98,8 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         lateinit var clearance: String
     }
 
+    private lateinit var drawerLayout: DrawerLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -103,9 +112,15 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         userFolioNumber = sharedP.getString(SessionManager.FOLIO_NUMBER, "") ?: ""
         clearance = sharedP.getString(Cons.CLEARANCE, "") ?: ""
 
+        drawerLayout = dataBinding.drawerLayout
+
+        val navigationView = findViewById<NavigationView>(R.id.nav_view)
+        navigationView.setNavigationItemSelectedListener(this)
+
         if (savedInstanceState == null) {
             setupBottomNavigationBar()
         } // Else, need to wait for onRestoreInstanceState
+
         requestPermissions()
     }
 
@@ -206,7 +221,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             R.navigation.gallery_nav_graph
         )
 
-        // Setup the bottom navigation view with a list of navigation graphs
+        //Setup the bottom navigation view with a list of navigation graphs
         val controller = bottomNavigationView.setupWithNavController(
             navGraphIds = navGraphIds,
             fragmentManager = supportFragmentManager,
@@ -214,21 +229,48 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
             intent = intent
         )
 
-        // Whenever the selected controller changes, setup the action bar.
+        //Whenever the selected controller changes, setup the action bar.
         controller.observe(this) { navController ->
-            val appBarConfig = AppBarConfiguration(navController.graph)
+            val appBarConfig = AppBarConfiguration(navController.graph, drawerLayout)
             dataBinding.toolbar.setupWithNavController(navController, appBarConfig)
+            NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
         }
 
         appbarViewModel.currentNavController.observe(this) {
-
             it?.let { event: Event<NavController> ->
                 event.getContentIfNotHandled()?.let { navController ->
-                    val appBarConfig = AppBarConfiguration(navController.graph)
+                    val appBarConfig = AppBarConfiguration(navController.graph, drawerLayout)
                     dataBinding.toolbar.setupWithNavController(navController, appBarConfig)
+                    NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
                 }
             }
         }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        Log.i("TAG", "onNavigationItemSelected")
+        when (item.itemId) {
+
+            R.id.treasurer -> {
+                Log.i("TAG", "onNavigationItemSelected treasurer")
+                val i = Intent(this, ActivityTreasurerTools::class.java)
+                startActivity(i)
+            }
+
+//            R.id.nav_sent -> {
+//                //navController.navigate(R.id.sentFragment)
+//            }
+//
+//            R.id.nav_privacy_policy -> {
+//                //navController.navigate(Uri.parse("loveletter://agreement/privacy-policy"))
+//            }
+//
+//            R.id.nav_terms_of_service -> {
+//                //navController.navigate(Uri.parse("loveletter://agreement/terms-of-service"))
+//            }
+        }
+        drawerLayout.closeDrawer(GravityCompat.START)
+        return true
     }
 
 }

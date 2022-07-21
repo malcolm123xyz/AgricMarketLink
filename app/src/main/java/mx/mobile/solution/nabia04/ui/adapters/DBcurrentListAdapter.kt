@@ -3,7 +3,6 @@ package mx.mobile.solution.nabia04.ui.adapters
 import android.content.Context
 import android.graphics.Typeface
 import android.text.util.Linkify
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,8 +69,6 @@ class DBcurrentListAdapter @Inject constructor(private val context: Context) :
             contact1Txt.text = userItem.contact
             Linkify.addLinks(contact1Txt, Linkify.PHONE_NUMBERS)
 
-            Log.i("TAG", "Image $i, imageUri = $imageUri, imageId = $imageId")
-
             GlideApp.with(context)
                 .load(imageUri)
                 .placeholder(R.drawable.listitem_image_holder)
@@ -111,13 +108,7 @@ class DBcurrentListAdapter @Inject constructor(private val context: Context) :
             if (queryValue.isEmpty()) {
                 filteredList.addAll(list)
             } else {
-                Log.i("TAG", "Query word: $queryValue")
                 for (item in list) {
-                    val reg =
-                        Log.i(
-                            "TAG",
-                            "Region: ${item.regionOfResidence.lowercase(Locale.getDefault())}, Name: ${item.fullName}"
-                        )
                     try {
                         val nameSearch =
                             item.fullName.lowercase(Locale.getDefault()).contains(queryValue) ||

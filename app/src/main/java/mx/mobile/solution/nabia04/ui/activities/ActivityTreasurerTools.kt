@@ -3,8 +3,10 @@ package mx.mobile.solution.nabia04.ui.activities
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import mx.mobile.solution.nabia04.R
@@ -12,7 +14,8 @@ import mx.mobile.solution.nabia04.R
 @AndroidEntryPoint
 class ActivityTreasurerTools : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var navController: NavController
+    private lateinit var appBarConfiguration1: AppBarConfiguration
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,14 +26,18 @@ class ActivityTreasurerTools : AppCompatActivity() {
 
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nestedFragmentHolder) as NavHostFragment
-        val navController = navHostFragment.navController
+        navController = navHostFragment.navController
 
         // Get App Configuration from nav graph
-        appBarConfiguration = AppBarConfiguration(navController.graph)
+        appBarConfiguration1 = AppBarConfiguration(navController.graph)
 
         // Handles arrow back button
-        setupActionBarWithNavController(navController, appBarConfiguration)
+        setupActionBarWithNavController(navController, appBarConfiguration1)
 
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp(appBarConfiguration1) || super.onSupportNavigateUp()
     }
 
 }

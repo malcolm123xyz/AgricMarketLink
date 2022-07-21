@@ -3,16 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/fragment1">
+    app:startDestination="@+id/fragment_payment_view">
 
     <fragment
-        android:id="@+id/fragment1"
+        android:id="@+id/fragment_payment_view"
         android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentDatabaseUpdateNote"
         android:label="@string/database_update"
         tools:layout="@layout/fragment_database_update_note">
         <action
             android:id="@+id/action_move_forward"
-            app:destination="@id/payment_update_fragment" />
+            app:destination="@id/payment_update_fragment"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
     </fragment>
 
     <fragment
@@ -22,7 +24,9 @@
         tools:layout="@layout/fragment_person_details">
         <action
             android:id="@+id/action_personal_data_move_forward"
-            app:destination="@id/fragment_school_info" />
+            app:destination="@id/fragment_school_info"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
     </fragment>
 
     <fragment
@@ -32,10 +36,14 @@
         tools:layout="@layout/fragment_school_info">
         <action
             android:id="@+id/action_school_info_move_forward"
-            app:destination="@id/fragment_work_info" />
+            app:destination="@id/fragment_work_info"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
         <action
             android:id="@+id/action_school_info_move_back"
-            app:destination="@id/payment_update_fragment" />
+            app:destination="@id/payment_update_fragment"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
     </fragment>
 
     <fragment
@@ -44,21 +52,10 @@
         android:label="@string/work_information"
         tools:layout="@layout/fragment_work_info" >
         <action
-            android:id="@+id/action_move_work_inf_move_forward"
-            app:destination="@id/fragment_done"/>
-        <action
             android:id="@+id/action_work_info_move_back"
-            app:destination="@id/fragment_school_info"/>
-    </fragment>
-
-    <fragment
-        android:id="@+id/fragment_done"
-        android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentDone"
-        android:label="done"
-        tools:layout="@layout/fragment_done" >
-        <action
-            android:id="@+id/action_fragment_done_move_back"
-            app:destination="@id/fragment_work_info"/>
+            app:destination="@id/fragment_school_info"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
     </fragment>
 
 </navigation>

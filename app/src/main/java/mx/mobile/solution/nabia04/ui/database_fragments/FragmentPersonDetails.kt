@@ -17,20 +17,13 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_database_detail.*
-import kotlinx.android.synthetic.main.fragment_done.*
 import kotlinx.android.synthetic.main.fragment_person_details.*
-import kotlinx.android.synthetic.main.fragment_person_details.district_spinner
-import kotlinx.android.synthetic.main.fragment_person_details.email
-import kotlinx.android.synthetic.main.fragment_person_details.region_spinner
-import kotlinx.android.synthetic.main.fragment_work_info.*
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager.CallBack
@@ -49,11 +42,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-/**
- * A simple [Fragment] subclass.
- * Use the [FragmentDone.newInstance] factory method to
- * create an instance of this fragment.
- */
 @AndroidEntryPoint
 class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
 
@@ -67,7 +55,6 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
     private val storagPermission: Int = 8574
     private var birthDayValue: Long? = null
     private var strFutureDate: String = ""
-    private val TAG: String = "FragmentPersonDetails"
     private val regionsId = intArrayOf(
         0,
         R.array.ahafo,
@@ -138,11 +125,38 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
             }
         }
 
-        buttonCancel.setOnClickListener { requireActivity().finish() }
+        buttonCancel.setOnClickListener {
+            AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+                .setTitle("WARNING").setMessage("Do you want to cancel the update?")
+                .setPositiveButton("YES") { dialog: DialogInterface, id: Int ->
+                    dialog.dismiss()
+                    requireActivity().finish()
+                }.setNegativeButton("NO") { dialog: DialogInterface, id: Int ->
+                    dialog.dismiss()
+                }.show()
+        }
 
         nextButtonPersonalD.setOnClickListener { onNext() }
 
         registerPicturePickerActivityResults()
+
+        listenOnBackPressed()
+    }
+
+    private fun listenOnBackPressed() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        println("🏠 ${this.javaClass.simpleName} #${this.hashCode()}  onResume()")
+        callback.isEnabled = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        callback.isEnabled = false
+        println("🏠 ${this.javaClass.simpleName} #${this.hashCode()}  onPause()")
     }
 
     private fun show() {
@@ -191,7 +205,7 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
             .load(updateObj?.imageUri ?: "")
             .placeholder(R.drawable.use_icon)
             .apply(RequestOptions.circleCropTransform())
-            .signature(ObjectKey(updateObj?.getImageId() ?: ""))
+            .signature(ObjectKey(updateObj?.imageId ?: ""))
             .into(profilePicture)
     }
 

@@ -4,12 +4,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.include_error.*
-import kotlinx.android.synthetic.main.include_loading.*
-import kotlinx.coroutines.launch
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.data.view_models.DBViewModel
@@ -44,60 +40,30 @@ class FragmentCurrentMembers : BaseFragment<ListFragmentBinding>() {
             .observe(viewLifecycleOwner) { users: Resource<List<EntityUserData>> ->
                 when (users.status) {
                     Status.SUCCESS -> {
-                        showLoading(false)
-                        showError(false, null)
-                        users.data?.let { renderList(it) }
+                        users.data?.let { renderList(it.toMutableList()) }
+                        vb?.pb?.visibility = View.GONE
                     }
                     Status.LOADING -> {
-                        showLoading(true)
-                        showError(false, null)
+                        vb?.pb?.visibility = View.VISIBLE
                     }
-                Status.ERROR -> {
-                    showLoading(false)
-                    showError(true, users.message)
-                    Toast.makeText(requireContext(), users.message, Toast.LENGTH_LONG).show()
+                    Status.ERROR -> {
+                        vb?.pb?.visibility = View.GONE
+                        Toast.makeText(requireContext(), users.message, Toast.LENGTH_LONG)
+                            .show()
+                    }
                 }
             }
-        }
 
-    }
-
-    private fun showError(isError: Boolean, errorMessage: String?) {
-        if (isError) {
-            ivError.visibility = View.VISIBLE
-            tvErrorMessage.visibility = View.VISIBLE
-            tvErrorMessage.text = errorMessage
-        } else {
-            ivError.visibility = View.GONE
-            tvErrorMessage.visibility = View.GONE
-        }
-    }
-
-    private fun showLoading(isLoading: Boolean) {
-        if (isLoading) {
-            vb?.recyclerView?.visibility = View.GONE
-            pbLoading.visibility = View.VISIBLE
-            tvLoadingMessage.visibility = View.VISIBLE
-        } else {
-            vb?.recyclerView?.visibility = View.VISIBLE
-            pbLoading.visibility = View.GONE
-            tvLoadingMessage.visibility = View.GONE
-        }
     }
 
     private fun renderList(list: List<EntityUserData>) {
-        lifecycleScope.launch {
-            val data: MutableList<EntityUserData> = ArrayList()
-            for (user in list) {
-                if (user.survivingStatus != 1) {
-                    data.add(user)
-                }
+        val data: MutableList<EntityUserData> = ArrayList()
+        for (user in list) {
+            if (user.survivingStatus != 1) {
+                data.add(user)
             }
-            data.sortWith { obj1: EntityUserData, obj2: EntityUserData ->
-                obj1.fullName.compareTo(obj2.fullName)
-            }
-            adapter.setData(data)
         }
+        adapter.setData(data)
     }
 
 }

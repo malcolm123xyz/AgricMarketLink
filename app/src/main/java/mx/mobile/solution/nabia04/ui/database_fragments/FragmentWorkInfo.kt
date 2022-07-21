@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -17,12 +16,10 @@ import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_person_details.*
 import kotlinx.android.synthetic.main.fragment_work_info.*
-import kotlinx.android.synthetic.main.fragment_work_info.district_spinner
-import kotlinx.android.synthetic.main.fragment_work_info.region_spinner
-import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.data.view_models.DBUpdateViewModel
@@ -30,10 +27,12 @@ import mx.mobile.solution.nabia04.databinding.FragmentWorkInfoBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData.Companion.newImageUri
 import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData.Companion.selectedFolio
-import mx.mobile.solution.nabia04.utilities.*
+import mx.mobile.solution.nabia04.utilities.MyAlertDialog
+import mx.mobile.solution.nabia04.utilities.SessionManager
+import mx.mobile.solution.nabia04.utilities.Status
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DatabaseObject
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DatabaseResponse
+import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.ResponseString
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -41,12 +40,6 @@ import java.util.*
 import javax.inject.Inject
 import javax.net.ssl.SSLHandshakeException
 
-
-/**
- * A simple [Fragment] subclass.
- * Use the [FragmentDone.newInstance] factory method to
- * create an instance of this fragment.
- */
 @AndroidEntryPoint
 class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
 
@@ -81,8 +74,6 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
         R.array.north_east
     )
 
-    private val TAG: String = "FragmentWorkInfo"
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -106,9 +97,6 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
                         (employment_sector_spinner.adapter as ArrayAdapter<String>)
                             .getPosition(userData?.employmentSector ?: "")
                     )
-
-                    Log.i(TAG, "Region selected index = " + userData?.regionOfResidence)
-
                     region_spinner.setSelection(
                         (region_spinner.adapter as ArrayAdapter<String>)
                             .getPosition(userData?.establishmentRegion ?: "")
@@ -139,6 +127,24 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
                     region_spinner.onItemSelectedListener = OnRegionSpinnerAdapterClick()
                 }
             }
+
+        listenOnBackPressed()
+    }
+
+    private fun listenOnBackPressed() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        println("🏠 ${this.javaClass.simpleName} #${this.hashCode()}  onResume()")
+        callback.isEnabled = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        callback.isEnabled = false
+        println("🏠 ${this.javaClass.simpleName} #${this.hashCode()}  onPause()")
     }
 
     val callback = object : OnBackPressedCallback(false) {
@@ -158,7 +164,6 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
     inner class OnRegionSpinnerAdapterClick : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, i: Int, l: Long) {
             if (i != 0) {
-                Log.i(TAG, "ADAPTER SELECTED INDEX = $i")
                 val selectedArray: Array<String> = resources.getStringArray(regionsId[i])
                 val adapter =
                     ArrayAdapter(requireContext(), R.layout.simple_spinner_item, selectedArray)
@@ -168,6 +173,7 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
 
         override fun onNothingSelected(adapterView: AdapterView<*>?) {}
     }
+
 
     fun onNext() {
 
@@ -283,7 +289,7 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
 
     private fun doDataUpdate(pDial: MyAlertDialog, imageUri: String) {
         var erMsg = ""
-        val response: DatabaseResponse?
+        val response: ResponseString
         userData?.imageUri = imageUri
         try {
             response = if (selectedFolio.isEmpty()) {
@@ -294,18 +300,15 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
             pDial.dismiss()
             if (response != null) {
                 lifecycleScope.launch {
-                    when (response.returnCode) {
-                        Cons.OK -> {
+                    when (response.status) {
+                        Status.SUCCESS.toString() -> {
                             lifecycleScope.launch {
                                 Toast.makeText(requireContext(), "DONE", Toast.LENGTH_SHORT).show()
                             }
                             requireActivity().finish()
                         }
-                        Cons.ALREADY_EXIST -> {
-                            showAlertDialog("ERROR", response.response)
-                        }
                         else -> {
-                            showAlertDialog("ERROR", "Unknown error. Please try again")
+                            showAlertDialog("FAILED", response.message)
                         }
                     }
                 }

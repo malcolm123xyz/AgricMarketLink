@@ -12,6 +12,7 @@
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.1" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.1" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.1095" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/drawable/side_nav_bar.xml" value="0.1095" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout-v26/ann_detail_view.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/activity_authentication.xml" value="0.16145833333333334" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/activity_authentication2.xml" value="0.16145833333333334" />
@@ -30,6 +31,7 @@
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/activity_user_data_edit1.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/ann_detail_view.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/announcement_list_item.xml" value="0.17552083333333332" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/app_bar_home.xml" value="0.1603336422613531" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/appbar_progress_bar.xml" value="0.16145833333333334" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/biography_edit.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/birthdays_list_item.xml" value="0.17552083333333332" />
@@ -52,6 +54,7 @@
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_announcements.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_blank.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_cont_history.xml" value="0.17552083333333332" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_cont_payment_update.xml" value="0.16354166666666667" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_cont_request.xml" value="0.15658362989323843" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_contributions.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_current_members-not.xml" value="0.17552083333333332" />
@@ -99,6 +102,7 @@
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_login.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_login1.xml" value="0.16354166666666667" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_login_auth.xml" value="0.17552083333333332" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_navhost_notification.xml" value="0.1" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_notice_board.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_notification1.xml" value="0.1" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_notification2.xml" value="0.1" />
@@ -111,9 +115,11 @@
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_school_info.xml" value="0.16666666666666666" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_second.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_tools.xml" value="0.17552083333333332" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_treasurer.xml" value="0.16354166666666667" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_treasurer_hos.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_treasurer_host.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_treasurer_payment_detail_host.xml" value="0.17552083333333332" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_treasurer_tools.xml" value="0.16354166666666667" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_viewpager_container.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_welfare_host.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/fragment_welfare_summary.xml" value="0.22" />
@@ -124,6 +130,7 @@
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/include_loading.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/input_text.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/list_fragment.xml" value="0.17552083333333332" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/nav_header_home.xml" value="0.16354166666666667" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/new_payment.xml" value="0.16354166666666667" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/request_passwrd.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/set_clearance.xml" value="0.17552083333333332" />
@@ -131,8 +138,10 @@
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/simple_spinner_item.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/tribute.xml" value="0.16145833333333334" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/tribute_edit.xml" value="0.17552083333333332" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/welfare_nav_host_fragment.xml" value="0.16354166666666667" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/yearly_dues_list_item.xml" value="0.21232876712328766" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/menu/activity_announcements.xml" value="0.17552083333333332" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/menu/activity_home_drawer.xml" value="0.22" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/menu/bottom_nav_menu.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/menu/bottom_nav_menu_auth.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/menu/database.xml" value="0.17552083333333332" />

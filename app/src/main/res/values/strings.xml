@@ -43,6 +43,8 @@
     <string name="copy">Copy</string>
     <string name="delete">Delete</string>
     <string name="delete_from_server">Delete From server</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="personal_details"><u>PERSONAL DETAILS</u></string>
     <string name="school_details"><u>SCHOOL DETAILS</u></string>
@@ -97,5 +99,10 @@
     <string name="nov">Nov</string>
     <string name="dec">Dec</string>
     <string name="total">Total</string>
+    <string name="home">Home</string>
+    <string name="database">Database</string>
+    <string name="announcements1">Notice board</string>
+    <string name="about_navasco">Navasco</string>
+    <string name="about_nabia_04">Nabia04</string>
 
 </resources>

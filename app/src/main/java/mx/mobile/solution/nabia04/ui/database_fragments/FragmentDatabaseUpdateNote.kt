@@ -5,31 +5,40 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import kotlinx.android.synthetic.main.fragment_database_update_note.*
-import kotlinx.android.synthetic.main.fragment_database_update_note.buttonCancel
-import kotlinx.android.synthetic.main.fragment_person_details.*
-import kotlinx.android.synthetic.main.fragment_school_info.*
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.databinding.FragmentDatabaseUpdateNoteBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 
-/**
- * A simple [Fragment] subclass.
- * Use the [FragmentDatabaseUpdateNote.newInstance] factory method to
- * create an instance of this fragment.
- */
 class FragmentDatabaseUpdateNote : BaseFragment<FragmentDatabaseUpdateNoteBinding>() {
 
     override fun getLayoutRes(): Int = R.layout.fragment_database_update_note
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        nextButtonWelcome.setOnClickListener{
+        nextButtonWelcome.setOnClickListener {
             findNavController().navigate(R.id.action_move_forward)
         }
-        buttonCancel.setOnClickListener{ requireActivity().finish() }
+        buttonCancel.setOnClickListener { requireActivity().finish() }
+
+        listenOnBackPressed()
+    }
+
+    private fun listenOnBackPressed() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        println("🏠 ${this.javaClass.simpleName} #${this.hashCode()}  onResume()")
+        callback.isEnabled = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        callback.isEnabled = false
+        println("🏠 ${this.javaClass.simpleName} #${this.hashCode()}  onPause()")
     }
 
     val callback = object : OnBackPressedCallback(false) {

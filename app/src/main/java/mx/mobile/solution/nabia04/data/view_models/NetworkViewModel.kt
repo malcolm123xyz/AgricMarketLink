@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Status
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.ContributionData
 import java.io.IOException
@@ -81,10 +82,10 @@ class NetworkViewModel @Inject constructor(val endpoint: MainEndpoint) : ViewMod
         data.postValue(Resource.loading("Sending to Server"))
         try {
             val response = endpoint.setContRequest(contribution).execute()
-            if (response.returnCode == 1) {
+            if (response.status == Status.SUCCESS.toString()) {
                 data.postValue(Resource.success(""))
             } else {
-                val err = response.returnMsg ?: "Unknown error"
+                val err = response.message ?: "Unknown error"
                 data.postValue(Resource.error(err, ""))
             }
         } catch (ex: IOException) {

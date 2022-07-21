@@ -42,7 +42,8 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FragmentContributionRequest : BaseFragment<FragmentContRequestBinding>() {
+class FragmentContributionRequest : BaseFragment<
+        FragmentContRequestBinding>() {
 
     override fun getLayoutRes(): Int = R.layout.fragment_cont_request
 
@@ -73,6 +74,8 @@ class FragmentContributionRequest : BaseFragment<FragmentContRequestBinding>() {
     private lateinit var btnDeadline: Button
     private lateinit var tvDeadline: TextView
     private lateinit var msgEdit: EditText
+    private lateinit var momoNumEdit: EditText
+    private lateinit var momoNameEdit: EditText
     private lateinit var profilePic: ImageView
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,17 +87,20 @@ class FragmentContributionRequest : BaseFragment<FragmentContRequestBinding>() {
         super.onViewCreated(view, savedInstanceState)
 
         contData = ContributionData()
+        contData.id = Cons.CONTRIBUTION_BACKEND_ID
+        contData.momoName = ""
+        contData.momoNum = ""
 
         msgEdit = vb?.messageEdit!!
         msgEdit.setText("Contribution towards...")
+        momoNameEdit = vb?.momoName!!
+        momoNumEdit = vb?.phoneNumber!!
 
         userSpinner = vb?.nameSpinner!!
         reqTypeSpinner = vb?.reqTypeSpinner!!
         btnDeadline = vb?.btnDeadline!!
         tvDeadline = vb?.tvDeadline!!
         profilePic = vb?.profilePic!!
-
-
 
         setSinners()
 
@@ -138,9 +144,12 @@ class FragmentContributionRequest : BaseFragment<FragmentContRequestBinding>() {
             ) {
                 val imageUri = usersList?.get(i)?.imageUri ?: ""
                 val folio = usersList?.get(i)?.folioNumber ?: ""
-                contData.name = usersList?.get(i)?.fullName ?: ""
+                val name = usersList?.get(i)?.fullName ?: ""
+                contData.name = name
                 contData.folio = folio
                 contData.imageUri = imageUri
+
+                msgEdit.setText("Contribution towards ${name}'s...")
 
                 if (i > 0) {
                     GlideApp.with(requireContext())
@@ -188,14 +197,21 @@ class FragmentContributionRequest : BaseFragment<FragmentContRequestBinding>() {
 
 
     private fun checkDataBeforeSend() {
-        val message: String = msgEdit.getText().toString()
-        if (message.isEmpty()) {
+        contData.message = msgEdit.text.toString()
+        contData.momoName = momoNameEdit.text.toString()
+        contData.momoNum = momoNumEdit.text.toString()
+
+        if (contData.message.isEmpty()) {
             showDialog("ERROR", "Message cannot be empty")
         } else if (contData.deadline.isEmpty()) {
             showDialog("ERROR", "Deadline not set")
+        } else if (reqTypeSpinner.selectedItemPosition < 1) {
+            showDialog("ERROR", "Request type/purpose cannot be empty")
+        } else if (contData.momoNum.isEmpty()) {
+            showDialog("ERROR", "Momo number cannot be empty")
+        } else if (contData.momoName.isEmpty()) {
+            showDialog("ERROR", "Momo name cannot be empty")
         } else {
-            contData.id = Cons.CONTRIBUTION_BACKEND_ID
-            contData.message = message
 
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("WARNING")
@@ -239,7 +255,7 @@ class FragmentContributionRequest : BaseFragment<FragmentContRequestBinding>() {
                     Status.SUCCESS -> {
                         pDial.dismiss()
                         Toast.makeText(requireContext(), "DONE", Toast.LENGTH_SHORT).show()
-                        findNavController().navigate(R.id.action_move_back1)
+                        findNavController().navigate(R.id.action_move_back)
                     }
                     Status.LOADING -> {
                         pDial.setMessage(resource.message)

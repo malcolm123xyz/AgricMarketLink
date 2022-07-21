@@ -24,7 +24,6 @@ class TreasurerPaymentDetailHost() :
         lateinit var title: TextView
         lateinit var totalAmount: TextView
         lateinit var numContributers: TextView
-        //var dataList: List<EntityDues>? = null
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

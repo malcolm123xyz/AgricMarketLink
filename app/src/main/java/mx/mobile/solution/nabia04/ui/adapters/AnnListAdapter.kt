@@ -30,26 +30,23 @@ class AnnListAdapter @Inject constructor(private val context: Context) :
     private val fd = SimpleDateFormat("EEE, d MMM yyyy hh:mm", Locale.US)
 
     inner class MyViewHolder(val parent: View) : RecyclerView.ViewHolder(parent) {
-        val topic: TextView = itemView.findViewById(R.id.heading)
+        private val topic: TextView = itemView.findViewById(R.id.heading)
         val time: TextView = itemView.findViewById(R.id.time)
         val annPicture: ImageView = itemView.findViewById(R.id.ann_picture)
 
-        private var ann: EntityAnnouncement? = null
-
-        fun bind(annItem: EntityAnnouncement, i: Int) {
-            ann = annItem
-            val topicc = annItem.heading
+        fun bind(annItem: EntityAnnouncement) {
+            val topic = annItem.heading
             val date = getDate(annItem.id)
-            topic.text = topicc
+            this.topic.text = topic
             time.text = date
             if (annItem.isRead) {
-                topic.setTypeface(null)
+                this.topic.typeface = null
             }
 
-            val imagUri: String = annItem.imageUri ?: ""
+            val imageUri: String = annItem.imageUri ?: ""
 
             GlideApp.with(context)
-                .load(imagUri)
+                .load(imageUri)
                 .signature(ObjectKey(annItem.id))
                 .placeholder(R.drawable.photo_galary)
                 .addListener(object : RequestListener<Drawable?> {
@@ -74,7 +71,7 @@ class AnnListAdapter @Inject constructor(private val context: Context) :
                     }
                 }).into(annPicture)
 
-            parent.setOnClickListener { view: View? ->
+            parent.setOnClickListener {
                 val bundle = bundleOf("folio" to annItem.id)
                 parent.findNavController().navigate(R.id.action_gen_not_to_events_not, bundle)
             }
@@ -89,8 +86,7 @@ class AnnListAdapter @Inject constructor(private val context: Context) :
 
     /* Gets current flower and uses it to bind view. */
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val flower = getItem(position)
-        holder.bind(flower, position)
+        holder.bind(getItem(position))
 
     }
 
@@ -103,16 +99,14 @@ class AnnListAdapter @Inject constructor(private val context: Context) :
             oldItem: EntityAnnouncement,
             newItem: EntityAnnouncement
         ): Boolean {
-            val araTheSame = oldItem.id == newItem.id
-            return araTheSame
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(
             oldItem: EntityAnnouncement,
             newItem: EntityAnnouncement
         ): Boolean {
-            val araTheSame = oldItem.heading == newItem.heading
-            return araTheSame
+            return oldItem.heading == newItem.heading
         }
     }
 

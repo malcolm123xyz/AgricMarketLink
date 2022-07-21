@@ -8,10 +8,11 @@
         android:title="Sort by"
         android:icon="@drawable/sort_white"
         app:showAsAction="always" />
+
     <item
-        android:id="@+id/support_request"
+        android:id="@+id/upDateDuesPayment"
         android:orderInCategory="100"
-        android:title="Request support"
+        android:title="Update Dues Payment"
         app:showAsAction="never" />
     <item
         android:id="@+id/search"

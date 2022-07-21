@@ -18,12 +18,6 @@ interface AnnDao {
     @get:Query("SELECT * FROM announcement_table ORDER BY id DESC")
     val annList: List<EntityAnnouncement>
 
-    @get:Query("SELECT * FROM announcement_table WHERE type = '0'")
-    val generalAnnouncements: List<EntityAnnouncement?>?
-
-    @get:Query("SELECT * FROM announcement_table WHERE type > '0'")
-    val eventsAnnouncements: List<EntityAnnouncement?>?
-
     @Query("SELECT * FROM announcement_table WHERE id = :id")
     suspend fun getAnnouncement(id: Long): EntityAnnouncement?
 

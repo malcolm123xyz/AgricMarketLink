@@ -39,7 +39,6 @@ import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
 import mx.mobile.solution.nabia04.utilities.*
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Response
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -208,12 +207,11 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
             } catch (ex: IOException) {
                 ex.printStackTrace()
                 if (ex is SocketTimeoutException || ex is SSLHandshakeException || ex is UnknownHostException) {
-                    Response().setResponse("Cause: NO INTERNET CONNECTION").returnCode = 0
+                    showAlertDialog("Error", "Cause: NO INTERNET CONNECTION")
                 } else {
-                    Response().setResponse("UNKNOWN ERROR").returnCode = 0
+                    showAlertDialog("Error", "\"UNKNOWN ERROR\"")
                 }
             }
-            this.cancel()
         }
 
     }

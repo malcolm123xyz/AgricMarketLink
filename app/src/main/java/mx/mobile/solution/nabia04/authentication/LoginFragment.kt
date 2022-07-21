@@ -9,23 +9,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.fragment.app.Fragment
-import com.google.api.client.extensions.android.json.AndroidJsonFactory
-import com.google.api.client.http.javanet.NetHttpTransport
+import dagger.hilt.android.AndroidEntryPoint
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.databinding.FragmentLoginAuthBinding
 import mx.mobile.solution.nabia04.utilities.BackgroundTasks
-import mx.mobile.solution.nabia04.utilities.Cons
-import mx.mobile.solution.nabia04.utilities.Cons.OK
 import mx.mobile.solution.nabia04.utilities.MyAlertDialog
 import mx.mobile.solution.nabia04.utilities.SessionManager
+import mx.mobile.solution.nabia04.utilities.Status
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.SignUpLoginResponse
+import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.LoginTP
+import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.ResponseLoginData
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class LoginFragment : Fragment() {
+
+
+    @Inject
+    public lateinit var endpoint: MainEndpoint
+
     private var folioTextEmail: EditText? = null
     private var editTextPass: EditText? = null
     private var binding: FragmentLoginAuthBinding? = null
@@ -55,17 +60,19 @@ class LoginFragment : Fragment() {
 
     private fun login(folio: String, pass: String) {
         object : BackgroundTasks() {
-            private val alert = MyAlertDialog(requireContext(), "LOGIN","Login in progress...")
-            var response: SignUpLoginResponse? = null
+            private val alert = MyAlertDialog(requireContext(), "LOGIN", "Login in progress...")
+            var response: ResponseLoginData? = null
             var exceptionThrown: Exception? = null
+
             override fun onPreExecute() {
                 alert.show()
             }
 
             override fun doInBackground() {
-                endpoint = endpointObject
+
                 try {
-                    response = endpoint?.login(folio, pass)?.execute()
+                    val logInData = LoginTP().setFolio(folio).setPassword(pass)
+                    response = endpoint.userLogin(logInData).execute()
                 } catch (e: IOException) {
                     e.printStackTrace()
                     exceptionThrown = e
@@ -84,12 +91,12 @@ class LoginFragment : Fragment() {
                     exceptionThrown!!.printStackTrace()
                     showDialog("Log in failed", exceptionThrown!!.localizedMessage as String)
                 } else if (response != null) {
-                    if (response?.returnCode == OK) {
+                    if (response?.status == Status.SUCCESS.toString()) {
                         val sessionManager = SessionManager(requireContext())
-                        sessionManager.createLoginSession(response!!.loginData)
+                        sessionManager.createLoginSession(response!!.data)
                         listener!!.onFinished()
                     } else {
-                        showDialog("FAILED", response!!.response)
+                        showDialog("FAILED", response!!.message)
                     }
                 } else {
                     showDialog("FAILED", "Unknown Error. Please try again")
@@ -134,19 +141,6 @@ class LoginFragment : Fragment() {
     }
 
     companion object {
-        private var endpoint: MainEndpoint? = null
         private var listener: Listener? = null
-        val endpointObject: MainEndpoint?
-            get() {
-                if (endpoint == null) {
-                    val builder: MainEndpoint.Builder =
-                        MainEndpoint.Builder(NetHttpTransport(),
-                            AndroidJsonFactory(), null
-                        )
-                            .setRootUrl(Cons.ROOT_URL)
-                    endpoint = builder.build()
-                }
-                return endpoint
-            }
     }
 }

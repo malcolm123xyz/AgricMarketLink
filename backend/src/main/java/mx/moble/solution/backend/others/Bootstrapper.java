@@ -5,11 +5,11 @@ import com.googlecode.objectify.ObjectifyService;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import mx.moble.solution.backend.dataModel.Announcement;
-import mx.moble.solution.backend.dataModel.ContributionData;
-import mx.moble.solution.backend.dataModel.DatabaseObject;
-import mx.moble.solution.backend.dataModel.LoginData;
-import mx.moble.solution.backend.dataModel.RegistrationToken;
+import mx.moble.solution.backend.model.Announcement;
+import mx.moble.solution.backend.model.ContributionData;
+import mx.moble.solution.backend.model.DatabaseObject;
+import mx.moble.solution.backend.model.LoginData;
+import mx.moble.solution.backend.model.RegistrationToken;
 
 public class Bootstrapper implements ServletContextListener {
     public void contextInitialized(ServletContextEvent event) {

@@ -15,55 +15,52 @@ import javax.inject.Inject
 @HiltViewModel
 class AnnViewModel @Inject constructor(var repository: AnnRepository) : ViewModel() {
 
-    private var data: MutableLiveData<Resource<List<EntityAnnouncement>>> = MutableLiveData()
+    private var genData: MutableLiveData<Resource<List<EntityAnnouncement>>> = MutableLiveData()
 
     fun fetchAnn(): LiveData<Resource<List<EntityAnnouncement>>> {
         viewModelScope.launch {
-            data.postValue(Resource.loading(null))
+            genData.postValue(Resource.loading(null))
             val response = repository.fetchAnn()
             when (response.status) {
                 Status.SUCCESS -> {
-                    data.postValue(Resource.success(response.data))
+                    val announcements = response.data?.toMutableList()
+                    announcements?.sortWith { obj1: EntityAnnouncement, obj2: EntityAnnouncement ->
+                        obj2.id.compareTo(obj1.id)
+                    }
+                    genData.postValue(Resource.success(announcements))
                 }
                 else -> {
                     val e = response.message ?: ""
-                    data.postValue(Resource.error(e, null))
+                    genData.postValue(Resource.error(e, null))
                 }
             }
         }
-        return data
+        return genData
     }
-
 
     suspend fun getAnn(id: Long): EntityAnnouncement? {
         return repository.getAnn(id)
     }
 
-    suspend fun getSingleData(id: Long): EntityAnnouncement? {
-        val list = data.value?.data ?: ArrayList()
-        for (ann in list) {
-            if (ann.id == id) {
-                return ann
-            }
-        }
-        return null
-    }
-
     fun refreshDB(): LiveData<Resource<List<EntityAnnouncement>>> {
         viewModelScope.launch {
-            data.postValue(Resource.loading(null))
+            genData.postValue(Resource.loading(null))
             val response = repository.refreshDB()
             when (response.status) {
                 Status.SUCCESS -> {
-                    data.postValue(Resource.success(response.data))
+                    val announcements = response.data?.toMutableList()
+                    announcements?.sortWith { obj1: EntityAnnouncement, obj2: EntityAnnouncement ->
+                        obj2.id.compareTo(obj1.id)
+                    }
+                    genData.postValue(Resource.success(announcements))
                 }
                 else -> {
                     val e = response.message ?: ""
-                    data.postValue(Resource.error(e, null))
+                    genData.postValue(Resource.error(e, null))
                 }
             }
         }
-        return data
+        return genData
     }
 
     suspend fun setAnnAsRead(announcement: EntityAnnouncement) {

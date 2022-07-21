@@ -56,9 +56,6 @@ class FragmentBirthDay : BaseFragment<ListFragmentBinding>() {
         adapter = ListAdapter()
         vb!!.recyclerView.adapter = adapter
 
-        //repository?.refreshDatabase(false);
-
-        listenForLoadingStatus()
         lifecycleScope.launch {
             observeLiveData()
         }
@@ -70,16 +67,6 @@ class FragmentBirthDay : BaseFragment<ListFragmentBinding>() {
             setData(data)
         }
 
-    }
-
-    private fun listenForLoadingStatus() {
-//        annloadingStatus.value.observe(
-//        viewLifecycleOwner
-//    ) { state: mx.mobile.solution.nabia04.data.view_models.State ->
-//        showProgress(
-//            state.isTrue
-//        )
-//    }
     }
 
     private fun setData(list: List<EntityUserData>) {
@@ -107,7 +94,7 @@ class FragmentBirthDay : BaseFragment<ListFragmentBinding>() {
     }
 
 
-    private inner class ListAdapter() :
+    private inner class ListAdapter :
         RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
         private var data: List<EntityUserData>? = null
         private val fd = SimpleDateFormat(
@@ -115,12 +102,12 @@ class FragmentBirthDay : BaseFragment<ListFragmentBinding>() {
         )
 
         @SuppressLint("NotifyDataSetChanged")
-        fun upDateList(recievedData: List<EntityUserData>?) {
-            data = recievedData
+        fun upDateList(receivedData: List<EntityUserData>?) {
+            data = receivedData
             notifyDataSetChanged()
         }
 
-        inner class MyViewHolder(val parent: View) :
+        inner class MyViewHolder(parent: View) :
             RecyclerView.ViewHolder(parent) {
             val name: TextView = itemView.findViewById(R.id.name)
             val dateOfBirth: TextView = itemView.findViewById(R.id.dateOfBirth)
@@ -143,7 +130,7 @@ class FragmentBirthDay : BaseFragment<ListFragmentBinding>() {
                 "Birthday is on: %s",
                 fd.format(Date(data!![i].birthDayAlarm))
             )
-            val daysLeft = getDaysLeft(data!![i].birthDayAlarm);
+            val daysLeft = getDaysLeft(data!![i].birthDayAlarm)
             holder.numDaysLeft.text = String.format("%s Day(s) more!", daysLeft)
 
             Log.i("BD", "Name: " + data?.get(i)?.fullName)
@@ -171,10 +158,6 @@ class FragmentBirthDay : BaseFragment<ListFragmentBinding>() {
                     }
                 })
                 .into(holder.icon)
-        }
-
-        private fun getDate(l: Long): String {
-            return fd.format(l)
         }
 
         override fun getItemCount(): Int {
