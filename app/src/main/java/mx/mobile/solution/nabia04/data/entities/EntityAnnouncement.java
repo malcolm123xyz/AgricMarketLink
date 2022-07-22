@@ -22,8 +22,6 @@ public class EntityAnnouncement {
     private int priority;
     private int rowNum;
     private String venue;
-    private String isAboutWho;
-    private boolean isArelative;
     private boolean read;
 
     public int getAnnType() {
@@ -56,22 +54,6 @@ public class EntityAnnouncement {
 
     public void setVenue(String venue) {
         this.venue = venue;
-    }
-
-    public String getIsAboutWho() {
-        return isAboutWho;
-    }
-
-    public void setIsAboutWho(String isAboutWho) {
-        this.isAboutWho = isAboutWho;
-    }
-
-    public boolean isArelative() {
-        return isArelative;
-    }
-
-    public void setArelative(boolean arelative) {
-        isArelative = arelative;
     }
 
     public int getRowNum() {

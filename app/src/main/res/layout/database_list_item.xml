@@ -57,7 +57,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.7"
                         android:text="Folio No."
-                        android:textColor="@color/white" />
+                        android:textColor="@color/black" />
 
                     <TextView
                         android:id="@+id/folio"
@@ -65,7 +65,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.3"
                         android:text="Folio"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         android:textStyle="bold" />
                 </LinearLayout>
 
@@ -81,7 +81,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.425"
                         android:text="Contact:"
-                        android:textColor="@color/white" />
+                        android:textColor="@color/black" />
 
                     <TextView
                         android:id="@+id/contact"
@@ -89,7 +89,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.575"
                         android:text="Contact"
-                        android:textColor="@color/white"
+                        android:textColor="@color/black"
                         android:textStyle="bold" />
 
                 </LinearLayout>

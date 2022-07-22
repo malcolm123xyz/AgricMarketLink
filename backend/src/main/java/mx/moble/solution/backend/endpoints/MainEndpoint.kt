@@ -59,7 +59,7 @@ class MainEndpoint {
                     error("No Announcement found", null)
                 }
             } catch (e: Exception) {
-                error("An error occured: ${e.localizedMessage}", null)
+                error("An error occurred: ${e.localizedMessage}", null)
             }
         }
 
@@ -74,7 +74,7 @@ class MainEndpoint {
         val timeStamp = announcementData.id
         val message = announcementData.message
         val heading = announcementData.heading
-        val id = java.lang.Long.toString(timeStamp)
+        val id = timeStamp.toString()
         val annType = announcementData.eventType.toString()
         val eventDate = announcementData.eventDate.toString()
         val priority = announcementData.priority.toString()
@@ -372,9 +372,6 @@ class MainEndpoint {
             val loginData = ObjectifyService.ofy().load().type(
                 LoginData::class.java
             ).id(id).safe()
-            if (loginData.suspended == 1) {
-                return Constants.SUSPENDED
-            }
         } catch (e: NotFoundException) {
             return Constants.NOT_FOUND
         }
@@ -423,10 +420,6 @@ class MainEndpoint {
             LoginData::class.java
         ).id(loginTP.folio).now()
             ?: return error("Not signed up. Sign up first", null)
-        if (loginData.suspended == 1) {
-            val msg = "Sorry You have been Suspended. Contact the PRO"
-            return error(msg, null)
-        }
         return if (loginData.password == loginTP.password) {
             loginData.accessToken = UUID.randomUUID().toString()
             ObjectifyService.ofy().save().entity(loginData).now()
@@ -491,7 +484,7 @@ class MainEndpoint {
                 .putData("folio", folio)
                 .addAllTokens(registrationTokens)
                 .build()
-            var response: BatchResponse? = null
+            val response: BatchResponse?
             var reponseMsg = "All tokens sent successfull"
             try {
                 response = FirebaseMessaging.getInstance().sendMulticast(fbcMessage)
@@ -525,7 +518,7 @@ class MainEndpoint {
 
     private fun getRegistrationTokens(regtoken: String): List<String> {
         val registrationTokens: MutableList<String> = ArrayList()
-        if (!regtoken.isEmpty()) {
+        if (regtoken.isNotEmpty()) {
             registrationTokens.add(regtoken)
             return registrationTokens
         }
@@ -533,7 +526,7 @@ class MainEndpoint {
             RegistrationToken::class.java
         ).list()
         for (s in records) {
-            if (!s.token.isEmpty()) {
+            if (s.token.isNotEmpty()) {
                 registrationTokens.add(s.token)
             }
         }

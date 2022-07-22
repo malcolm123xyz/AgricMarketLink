@@ -3,7 +3,6 @@ package mx.mobile.solution.nabia04.authentication
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,8 +19,6 @@ import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.LoginTP
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.ResponseLoginData
 import java.io.IOException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -30,6 +27,9 @@ class LoginFragment : Fragment() {
 
     @Inject
     public lateinit var endpoint: MainEndpoint
+
+    @Inject
+    lateinit var session: SessionManager
 
     private var folioTextEmail: EditText? = null
     private var editTextPass: EditText? = null
@@ -60,7 +60,10 @@ class LoginFragment : Fragment() {
 
     private fun login(folio: String, pass: String) {
         object : BackgroundTasks() {
-            private val alert = MyAlertDialog(requireContext(), "LOGIN", "Login in progress...")
+            private val alert =
+                MyAlertDialog(requireContext(), "LOGIN", "Login in progress...", false)
+
+
             var response: ResponseLoginData? = null
             var exceptionThrown: Exception? = null
 
@@ -82,18 +85,11 @@ class LoginFragment : Fragment() {
             override fun onPostExecute() {
                 alert.dismiss()
                 if (exceptionThrown != null) {
-                    if (exceptionThrown is SocketTimeoutException) {
-                        Log.i("NETWORK STATE: ", "Error is java.net.SocketTimeoutException")
-                    }
-                    if (exceptionThrown is UnknownHostException) {
-                        Log.i("NETWORK STATE: ", "Error is java.net.UnknownHostException")
-                    }
                     exceptionThrown!!.printStackTrace()
                     showDialog("Log in failed", exceptionThrown!!.localizedMessage as String)
                 } else if (response != null) {
                     if (response?.status == Status.SUCCESS.toString()) {
-                        val sessionManager = SessionManager(requireContext())
-                        sessionManager.createLoginSession(response!!.data)
+                        session.createLoginSession(response!!.data)
                         listener!!.onFinished()
                     } else {
                         showDialog("FAILED", response!!.message)

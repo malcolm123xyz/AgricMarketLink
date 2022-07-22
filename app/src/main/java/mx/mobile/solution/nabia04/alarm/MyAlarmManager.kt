@@ -48,11 +48,12 @@ class MyAlarmManager @Inject constructor(context: Context) {
 
     fun showDayMonthPicker(callBack: CallBack) {
         val cal: Calendar = Calendar.getInstance()
-        DatePickerDialog(context, { _, y, m, d ->
+        DatePickerDialog(
+            context, { _, _, m, d ->
                 cal[Calendar.MONTH] = m
                 cal[Calendar.YEAR] = cal[Calendar.YEAR]
                 cal[Calendar.DAY_OF_MONTH] = d
-                callBack.done(cal.timeInMillis + (1000*60*2))
+                callBack.done(cal.timeInMillis + (1000 * 60 * 2))
             }, cal[Calendar.YEAR],
             cal[Calendar.MONTH], cal[Calendar.DAY_OF_MONTH]
         ).show()

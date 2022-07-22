@@ -20,7 +20,6 @@ import com.bumptech.glide.signature.ObjectKey
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.utilities.GlideApp
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -29,7 +28,6 @@ import javax.inject.Singleton
 class DBcurrentListAdapter @Inject constructor(private val context: Context) :
     ListAdapter<EntityUserData,
             DBcurrentListAdapter.MyViewHolder>(DiffCallbackCurrList), Filterable {
-    private val fd = SimpleDateFormat("EEE, d MMM yyyy hh:mm", Locale.US)
     private val fontBody: Typeface = Typeface.createFromAsset(context.assets, "text_body.ttf")
     private val fontHeading: Typeface = Typeface.createFromAsset(context.assets, "header_font.ttf")
 
@@ -41,10 +39,10 @@ class DBcurrentListAdapter @Inject constructor(private val context: Context) :
     }
 
     inner class MyViewHolder(val parent: View) : RecyclerView.ViewHolder(parent) {
-        val fullNameTxt: TextView = itemView.findViewById(R.id.name)
-        val folioTxt: TextView = itemView.findViewById(R.id.folio)
-        val contact1Txt: TextView = itemView.findViewById(R.id.contact)
-        val profileIcon: ImageView = itemView.findViewById(R.id.icon)
+        private val fullNameTxt: TextView = itemView.findViewById(R.id.name)
+        private val folioTxt: TextView = itemView.findViewById(R.id.folio)
+        private val contact1Txt: TextView = itemView.findViewById(R.id.contact)
+        private val profileIcon: ImageView = itemView.findViewById(R.id.icon)
 
         private var user: EntityUserData? = null
 

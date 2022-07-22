@@ -11,7 +11,9 @@ import android.view.View
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
@@ -60,11 +62,16 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(
+            MyMenuProvider(),
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED
+        )
 
         selectedFolio = arguments?.getString("folio") ?: ""
 
@@ -84,22 +91,24 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.details_menu1, menu)
-        val redoMenu = menu.findItem(R.id.redo)
-        if (clearance == Cons.PRO || userFolioNumber == "13786") {
-            redoMenu.isVisible = true
-        }
-    }
+    private inner class MyMenuProvider : MenuProvider {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.details_menu1, menu)
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == R.id.redo) {
-            showSetDeceasedDial()
+            val redoMenu = menu.findItem(R.id.redo)
+            if (clearance == Cons.PRO || userFolioNumber == "13786") {
+                redoMenu.isVisible = true
+            }
+        }
+
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            val id = menuItem.itemId
+            if (id == R.id.redo) {
+                showSetDeceasedDial()
+                return true
+            }
             return true
         }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun showSetDeceasedDial() {
@@ -124,7 +133,7 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
 
 
     private fun setDeceased(folio: String) {
-        val pDialog = MyAlertDialog(requireContext(), "WORKING", "Setting deceased status...")
+        val pDialog = MyAlertDialog(requireContext(), "ALERT", "Setting deceased status...", false)
         pDialog.show()
         lifecycleScope.launch {
             val retValue = viewModel.setDeceaseStatus(folio, "date", 0)
@@ -142,7 +151,8 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
     }
 
     private fun setBiography(biography: String) {
-        val pDialog = MyAlertDialog(requireContext(), "WORKING", "Sending Biography... Please wait")
+        val pDialog =
+            MyAlertDialog(requireContext(), "BIOGRAPHY", "Sending Biography... Please wait", false)
         pDialog.show()
         lifecycleScope.launch {
             val retValue = viewModel.setBiography(biography, selectedFolio)
@@ -180,7 +190,7 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
 
     private fun sendTribute(tribute: String) {
 
-        val pDialog = MyAlertDialog(requireContext(), "WORKING", "Sending Tribute...")
+        val pDialog = MyAlertDialog(requireContext(), "TRIBUTE", "Sending Tribute...", false)
         pDialog.show()
         lifecycleScope.launch {
             val name = shared.getString(SessionManager.USER_FULL_NAME, "").toString()

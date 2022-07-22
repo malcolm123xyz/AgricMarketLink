@@ -1,19 +1,27 @@
 package mx.mobile.solution.nabia04.ui.activities
 
-import android.Manifest
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.os.Build.VERSION
+import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.os.Environment
 import android.provider.Settings
 import android.util.Log
 import android.view.MenuItem
+import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
@@ -30,6 +38,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.R
+import mx.mobile.solution.nabia04.authentication.AuthenticationActivity
 import mx.mobile.solution.nabia04.data.view_models.*
 import mx.mobile.solution.nabia04.databinding.ActivityMainBinding
 import mx.mobile.solution.nabia04.main.setupWithNavController
@@ -37,7 +46,6 @@ import mx.mobile.solution.nabia04.util.Event
 import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.ExcelHelper
 import mx.mobile.solution.nabia04.utilities.SessionManager
-import pub.devrel.easypermissions.EasyPermissions
 import javax.inject.Inject
 
 
@@ -79,8 +87,8 @@ import javax.inject.Inject
  * in the NavigationExtensions code for setting BottomNavigationView back stack
  */
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
-    NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+    private val PERMISSION_REQUEST_CODE = 9684
     private lateinit var navController: NavController
     private val RC_APP_PERM = 1244
     private val appbarViewModel by viewModels<MainAppbarViewModel>()
@@ -119,37 +127,32 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
 
         if (savedInstanceState == null) {
             setupBottomNavigationBar()
-        } // Else, need to wait for onRestoreInstanceState
+        }
 
-        requestPermissions()
+        lifecycleScope.launch {
+            initializeExcel()
+        }
+
     }
 
-    private fun requestPermissions() {
-        Log.i("TAG", "Checking Permission b4 Initializing excelHelper")
-        if (sharedP.getBoolean(Cons.HAS_STORAGE_MANAGEMENT_PERM, false)) {
-            Log.i("TAG", "Has permission... Initializing excelHelper...")
-            lifecycleScope.launch {
-                initializeExcel()
-            }
+    private fun checkPermission(): Boolean {
+        return if (SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
         } else {
-            Log.i("TAG", "No permissions... Requesting...")
-            requestStoragePermission()
+            val result =
+                ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE)
+            val result1 =
+                ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
+            result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED
         }
     }
 
-    private suspend fun initializeExcel() {
-        withContext(Dispatchers.IO) {
-            excelHelper.createExcel()
-        }
-    }
-
-    private fun requestStoragePermission() {
-        if (VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+    private fun requestPermission() {
+        if (SDK_INT >= Build.VERSION_CODES.R) {
             try {
                 val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
                 intent.addCategory("android.intent.category.DEFAULT")
-                intent.data =
-                    Uri.parse(String.format("package:%s", applicationContext.packageName))
+                intent.data = Uri.parse(String.format("package:%s", applicationContext.packageName))
                 startActivityForResult(intent, 2296)
             } catch (e: Exception) {
                 val intent = Intent()
@@ -157,46 +160,63 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
                 startActivityForResult(intent, 2296)
             }
         } else {
-            EasyPermissions.requestPermissions(
-                this,
-                "This app needs access to your storage", RC_APP_PERM,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+            //below android 11
+            ActivityCompat.requestPermissions(
+                this, arrayOf(WRITE_EXTERNAL_STORAGE),
+                PERMISSION_REQUEST_CODE
             )
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, @Nullable data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.i("TAG", "requestCode = $requestCode")
         if (requestCode == 2296) {
-            if (VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (SDK_INT >= Build.VERSION_CODES.R) {
                 if (Environment.isExternalStorageManager()) {
-                    sharedP.edit().putBoolean(Cons.HAS_STORAGE_MANAGEMENT_PERM, true).apply()
-                    //initializeExcelHelper(this)
+                    Log.i("TAG", "Permission Granted")
+                    excelHelper.createExcel()
                 } else {
-                    sharedP.edit().putBoolean(Cons.HAS_STORAGE_MANAGEMENT_PERM, false).apply()
+                    Log.i("TAG", "Permission not Granted")
+                    Toast.makeText(this, "Allow permission for storage access!", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String?>,
+        requestCode: Int, permissions: Array<out String>,
         grantResults: IntArray
     ) {
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty()) {
+                val READ_EXTERNAL_STORAGE = grantResults[0] == PackageManager.PERMISSION_GRANTED
+                val WRITE_EXTERNAL_STORAGE = grantResults[1] == PackageManager.PERMISSION_GRANTED
+                if (READ_EXTERNAL_STORAGE && WRITE_EXTERNAL_STORAGE) {
+                    Log.i("TAG", "Permission Granted")
+                    excelHelper.createExcel()
+                } else {
+                    Log.i("TAG", "Permission not Granted")
+                    Toast.makeText(this, "Allow permission for storage access!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
+    private suspend fun initializeExcel() {
+        val hasPermission = checkPermission()
+        Log.i("TAG", "hasPermission: $hasPermission")
+        if (checkPermission()) {
+            withContext(Dispatchers.IO) {
+                excelHelper.createExcel()
+            }
+        } else {
+            Log.i("TAG", "Requesting permissions")
+            requestPermission()
+        }
 
-    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        Log.i("TAG", "Permission granted, Initializing excelHelper")
-        //initializeExcelHelper(this)
-    }
-
-    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
-        Log.i("TAG", "Permission not granted")
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
@@ -257,9 +277,17 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
                 startActivity(i)
             }
 
-//            R.id.nav_sent -> {
-//                //navController.navigate(R.id.sentFragment)
-//            }
+            R.id.nav_logout -> {
+                AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle)
+                    .setMessage("LOGOUT")
+                    .setTitle("Are you sure you want to logout?")
+                    .setPositiveButton("YES") { dialog, _ ->
+                        dialog.dismiss()
+                        logoutUser()
+                    }.setNegativeButton("NO") { dialog, _ ->
+                        dialog.dismiss()
+                    }.show()
+            }
 //
 //            R.id.nav_privacy_policy -> {
 //                //navController.navigate(Uri.parse("loveletter://agreement/privacy-policy"))
@@ -271,6 +299,26 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
         }
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun logoutUser() {
+
+        getWindow().setFlags(
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+        );
+
+        SessionManager.clearData()
+
+        deleteDatabase("main_database");
+
+        val i = Intent(this, AuthenticationActivity::class.java)
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+
+        finishAffinity()
+
+        startActivity(i)
     }
 
 }

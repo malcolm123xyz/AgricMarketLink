@@ -2,7 +2,6 @@ package mx.mobile.solution.nabia04.ui.ann_fragments
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.ProgressDialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.DialogInterface
@@ -17,7 +16,9 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.load.DataSource
@@ -35,6 +36,7 @@ import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
 import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.GlideApp
+import mx.mobile.solution.nabia04.utilities.MyAlertDialog
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import java.text.SimpleDateFormat
 import java.util.*
@@ -53,13 +55,15 @@ class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
     private var annId: Long = 0
     private val fd = SimpleDateFormat("EEE, d MMM yyyy hh:mm", Locale.US)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(
+            MyMenuProvider(),
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED
+        )
+
         annId = arguments?.get("folio") as Long
 
         lifecycleScope.launch {
@@ -68,7 +72,6 @@ class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
         }
         vb?.fabShare?.setOnClickListener { v: View? -> doShare() }
     }
-
 
     private fun showAnnouncement() {
         vb?.heading?.text = announcement.heading
@@ -91,43 +94,44 @@ class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.menu_notice_board_detail, menu)
+    private inner class MyMenuProvider : MenuProvider {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.menu_notice_board_detail, menu)
 
-        val serverDeleteItem = menu.findItem(R.id.delete_from_server)
+            val serverDeleteItem = menu.findItem(R.id.delete_from_server)
 
-        if (clearance == Cons.PRO || clearance == Cons.PRESIDENT ||
-            clearance == Cons.VICE_PRESIDENT || userFolioNumber == "13786"
-        ) {
-            serverDeleteItem.isVisible = true
+            if (clearance == Cons.PRO || clearance == Cons.PRESIDENT ||
+                clearance == Cons.VICE_PRESIDENT || userFolioNumber == "13786"
+            ) {
+                serverDeleteItem.isVisible = true
+            }
         }
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == R.id.copy) {
-            copy()
-            return true
-        } else if (id == R.id.delete) {
-            delete(false, "Do you really want to delete this Announcement?")
-            return true
-        } else if (id == R.id.delete_from_server) {
-            delete(
-                true,
-                "Do you really want to delete this Announcement from the server? This cannot be undone"
-            )
-            return true
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            when (menuItem.itemId) {
+                R.id.copy -> {
+                    copy()
+                    return true
+                }
+                R.id.delete -> {
+                    delete(false, "Do you really want to delete this Announcement?")
+                    return true
+                }
+                R.id.delete_from_server -> {
+                    delete(
+                        true,
+                        "Do you really want to delete this Announcement from the server? This cannot be undone"
+                    )
+                    return true
+                }
+                else -> return true
+            }
         }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun doDelete(fromServer: Boolean) {
-        val pb = ProgressDialog(requireContext())
-        pb.isIndeterminate = true
-        pb.setTitle("DELETE")
-        pb.setMessage("Deleting...")
 
+        val pb = MyAlertDialog(requireContext(), "DELETE", "Deleting...", false)
         lifecycleScope.launch {
             pb.show()
             if (!fromServer) {

@@ -335,9 +335,6 @@
      "format": "int32",
      "type": "integer"
     },
-    "arelative": {
-     "type": "boolean"
-    },
     "eventDate": {
      "format": "int64",
      "type": "string"
@@ -354,9 +351,6 @@
      "type": "string"
     },
     "imageUri": {
-     "type": "string"
-    },
-    "isAboutWho": {
      "type": "string"
     },
     "message": {
@@ -570,10 +564,6 @@
     },
     "password": {
      "type": "string"
-    },
-    "suspended": {
-     "format": "int32",
-     "type": "integer"
     }
    },
    "type": "object"

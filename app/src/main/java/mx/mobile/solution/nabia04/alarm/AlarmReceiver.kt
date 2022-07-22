@@ -67,7 +67,6 @@ class AlarmReceiver : BroadcastReceiver() {
 
     private fun showBirthdayNotification(context: Context, intent: Intent) {
         val alarmId = intent.getLongExtra("itemId", 0).toInt()
-        val type = intent.getStringExtra("type")
         val bigText = """Today is:
              ${intent.getStringExtra("name")}:
             Birthday

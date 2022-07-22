@@ -7,8 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.google.api.client.extensions.android.json.AndroidJsonFactory
-import com.google.api.client.http.javanet.NetHttpTransport
+import dagger.hilt.android.AndroidEntryPoint
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.databinding.FragmentRegisterAuthBinding
 import mx.mobile.solution.nabia04.utilities.*
@@ -16,9 +15,19 @@ import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.LoginData
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.ResponseLoginData
 import java.io.IOException
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class RegisterFragment : Fragment() {
+
     private var binding: FragmentRegisterAuthBinding? = null
+
+    @Inject
+    lateinit var session: SessionManager
+
+    @Inject
+    lateinit var endpoint: MainEndpoint
+
     private var listener: Listener? = null
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -63,7 +72,6 @@ class RegisterFragment : Fragment() {
             loginData.fullName = fullname
             loginData.contact = contact
             loginData.password = passW
-            loginData.suspended = 0
             loginData.executivePosition = Cons.POSITION_NONE
             signUp(loginData)
         }
@@ -71,7 +79,8 @@ class RegisterFragment : Fragment() {
 
     private fun signUp(loginData: LoginData) {
         object : BackgroundTasks() {
-            private val alert = MyAlertDialog(requireContext(), "SIGN UP","Sign up in progress...")
+            private val alert =
+                MyAlertDialog(requireContext(), "SIGN UP", "Sign up in progress...", false)
             var exceptionThrown: Exception? = null
             var response: ResponseLoginData? = null
             override fun onPreExecute() {
@@ -79,9 +88,8 @@ class RegisterFragment : Fragment() {
             }
 
             override fun doInBackground() {
-                endpoint = endpointObject
                 try {
-                    response = endpoint!!.signUp(loginData).execute()
+                    response = endpoint.signUp(loginData).execute()
                 } catch (e: IOException) {
                     e.printStackTrace()
                     exceptionThrown = e
@@ -92,8 +100,7 @@ class RegisterFragment : Fragment() {
                 alert.dismiss()
                 if (exceptionThrown == null && response != null) {
                     if (response!!.status == Status.SUCCESS.toString()) {
-                        val sessionManager = SessionManager(requireContext())
-                        sessionManager.createLoginSession(response!!.data)
+                        session.createLoginSession(response!!.data)
                         listener!!.onFinished()
                     } else {
                         showDialog("FAILED", response!!.message)
@@ -168,22 +175,5 @@ class RegisterFragment : Fragment() {
                         + " must implement OnFragmentInteractionListener"
             )
         }
-    }
-
-    companion object {
-        private var endpoint: MainEndpoint? = null
-        val endpointObject: MainEndpoint?
-            get() {
-                if (endpoint == null) {
-                    val builder = MainEndpoint.Builder(
-                        NetHttpTransport(),
-                        AndroidJsonFactory(),
-                        null
-                    )
-                        .setRootUrl(Cons.ROOT_URL)
-                    endpoint = builder.build()
-                }
-                return endpoint
-            }
     }
 }

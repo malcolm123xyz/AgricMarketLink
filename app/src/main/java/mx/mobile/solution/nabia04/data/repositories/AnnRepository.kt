@@ -60,7 +60,7 @@ class AnnRepository @Inject constructor(
     }
 
     private fun refresh(): Resource<List<EntityAnnouncement>> {
-        var erMsg = ""
+        val erMsg: String
         try {
             val backendResponse = endpoint.noticeBoardData.execute()
             if (backendResponse.status == Status.SUCCESS.toString()) {
@@ -91,7 +91,7 @@ class AnnRepository @Inject constructor(
     }
 
     private fun fetch(): Resource<List<EntityAnnouncement>> {
-        var erMsg = ""
+        val erMsg: String
         val annList = dao.annList
         if (annList.isNotEmpty()) {
             return Resource.success(annList)
@@ -140,8 +140,6 @@ class AnnRepository @Inject constructor(
             entity.priority = ann.priority
             entity.rowNum = ann.rowNum
             entity.venue = ann.venue
-            entity.isAboutWho = ann.isAboutWho
-            entity.isArelative = ann.arelative
             entityAnn.add(entity)
         }
         return entityAnn

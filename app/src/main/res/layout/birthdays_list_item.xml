@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="2dp"
-    android:orientation="vertical"
-    xmlns:card_view="http://schemas.android.com/tools">
+    android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -47,28 +46,23 @@
                     android:textStyle="bold" />
 
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/colorPrimary" />
-
                 <TextView
                     android:id="@+id/dateOfBirth"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginLeft="10dp"
                     android:text="Date of birth"
-                    android:textColor="@color/white"/>
+                    android:textColor="@color/black" />
 
                 <TextView
                     android:id="@+id/numberDaysleft"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_marginTop="4dp"
                     android:layout_weight="0.425"
-                    android:textColor="@color/white"
+                    android:textColor="@color/black"
                     android:text="Number of days left" />
 
             </LinearLayout>

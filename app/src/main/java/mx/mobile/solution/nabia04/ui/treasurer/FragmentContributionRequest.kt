@@ -233,7 +233,7 @@ class FragmentContributionRequest : BaseFragment<
             .setCancelable(false)
             .setPositiveButton("OK") { dialog: DialogInterface, _: Int ->
                 val p = passEdit.text.toString()
-                if (p == sharedP.getString(SessionManager.PASSWORK, "")) {
+                if (p == sharedP.getString(SessionManager.PASSWORD, "")) {
                     dialog.dismiss()
                     send(contData, newImageUri)
                 } else {

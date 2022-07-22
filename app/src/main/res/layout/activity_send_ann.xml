@@ -71,16 +71,7 @@
                                 android:text="@string/event"
                                 android:layout_marginLeft="36dp"
                                 android:onClick="onEventCheck"
-                                android:layout_marginStart="36dp" />
 
-                            <CheckBox
-                                android:id="@+id/priority"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="25dp"
-                                android:text="Prioritized"
-                                android:layout_marginLeft="36dp"
-                                android:onClick="onEventCheck"
                                 android:layout_marginStart="36dp" />
 
                         </LinearLayout>
@@ -125,7 +116,6 @@
                             android:text="@string/set_event_due_date"
                             android:padding="5dp"
                             android:gravity="center_vertical"
-                            android:onClick="pickEvent"
                             android:layout_marginStart="30dp"
                             android:visibility="gone"
                             app:drawableLeftCompat="@android:drawable/ic_menu_my_calendar"
@@ -205,6 +195,15 @@
                             android:layout_gravity="center_horizontal"
                             android:src="@drawable/photo_galary" />
 
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/changePicture"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/edit"
+                            android:padding="15dp"
+                            android:layout_gravity="center_horizontal"
+                            android:text="Change Picture" />
+
                     </LinearLayout>
 
                 </LinearLayout>
@@ -215,14 +214,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabAddImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="bottom|left"
-        android:src="@drawable/photo_galary" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabSendAnn"

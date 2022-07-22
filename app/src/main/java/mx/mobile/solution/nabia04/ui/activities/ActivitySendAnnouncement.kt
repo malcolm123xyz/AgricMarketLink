@@ -65,9 +65,11 @@ class ActivitySendAnnouncement : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         endpoint = endpointObject
         fabSendAnn.setOnClickListener { doSend() }
-        fabAddImage.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(this@ActivitySendAnnouncement,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)
+        changePicture.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(
+                    this@ActivitySendAnnouncement,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                )
                 != PackageManager.PERMISSION_GRANTED
             ) {
                 ActivityCompat.requestPermissions(
@@ -78,6 +80,15 @@ class ActivitySendAnnouncement : AppCompatActivity() {
             } else {
                 contentLauncher!!.launch("image/*")
             }
+        }
+        eventDateTv.setOnClickListener {
+            MyAlarmManager(this).showDateTimePicker(object : CallBack {
+                override fun done(alarmTime: Long) {
+                    eventDate = alarmTime
+                    Log.i("MyAlarmManager", "Alarm time picked: " + format.format(eventDate))
+                    eventDateTv.text = format.format(eventDate)
+                }
+            })
         }
         registerPicturePickerActivityResults()
     }
@@ -121,13 +132,7 @@ class ActivitySendAnnouncement : AppCompatActivity() {
                 venueHolder!!.visibility = View.GONE
             }
         }
-        if (v.getId() == R.id.priority) {
-            priority = if (checked) {
-                1
-            } else {
-                0
-            }
-        }
+
     }
 
     override fun onRequestPermissionsResult(
@@ -209,7 +214,7 @@ class ActivitySendAnnouncement : AppCompatActivity() {
                 "OK"
             ) { dialog: DialogInterface, _: Int ->
                 val p = passEdit.text.toString()
-                if (p == sharedP.getString(SessionManager.PASSWORK, "")) {
+                if (p == sharedP.getString(SessionManager.PASSWORD, "")) {
                     dialog.dismiss()
                     sendPicture()
                 } else {
@@ -222,8 +227,10 @@ class ActivitySendAnnouncement : AppCompatActivity() {
     private fun sendPicture() {
         if (file != null) {
 
-            val alert = MyAlertDialog(this, "NEW ANNOUNCEMENT",
-                "Uploading picture... Please wait")
+            val alert = MyAlertDialog(
+                this, "ANNOUNCEMENT", "Uploading picture... Please wait",
+                false
+            )
             MediaManager.get().upload(file!!.absolutePath)
                 .option("resource_type", "auto")
                 .unsigned("my_preset")
@@ -260,8 +267,10 @@ class ActivitySendAnnouncement : AppCompatActivity() {
 
     private fun sendTask(announcement: Announcement?) {
 
-        val alert = MyAlertDialog(this, "NEW ANNOUNCEMENT",
-            "Sending Announcement... Please wait")
+        val alert = MyAlertDialog(
+            this, "ANNOUNCEMENT",
+            "Sending Announcement... Please wait", false
+        )
 
         object : BackgroundTasks() {
             var response = ""
@@ -289,16 +298,6 @@ class ActivitySendAnnouncement : AppCompatActivity() {
                 }
             }
         }.execute()
-    }
-
-    fun pickEvent(v: View) {
-        MyAlarmManager(this).showDateTimePicker(object : CallBack {
-            override fun done(alarmTime: Long) {
-                eventDate = alarmTime
-                Log.i("MyAlarmManager", "Alarm time picked: "+format.format(eventDate))
-                eventDateTv.text = format.format(eventDate)
-            }
-        })
     }
 
     private fun showDialog(t: String, s: String) {

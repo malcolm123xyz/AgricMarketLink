@@ -3,8 +3,10 @@ package mx.mobile.solution.nabia04.ui.activities
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import mx.mobile.solution.nabia04.R
@@ -12,6 +14,7 @@ import mx.mobile.solution.nabia04.R
 @AndroidEntryPoint
 class ActivityUpdateUserData : AppCompatActivity() {
 
+    private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
 
     companion object {
@@ -30,7 +33,7 @@ class ActivityUpdateUserData : AppCompatActivity() {
         selectedFolio = intent.getStringExtra("folio").toString()
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nestedFragmentHolder) as NavHostFragment
-        val navController = navHostFragment.navController
+        navController = navHostFragment.navController
 
         // Get App Configuration from nav graph
         appBarConfiguration = AppBarConfiguration(navController.graph)
@@ -38,6 +41,10 @@ class ActivityUpdateUserData : AppCompatActivity() {
         // Handles arrow back button
         setupActionBarWithNavController(navController, appBarConfiguration)
 
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
 }

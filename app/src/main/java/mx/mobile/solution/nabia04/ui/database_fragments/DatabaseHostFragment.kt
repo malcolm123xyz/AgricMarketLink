@@ -19,8 +19,10 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat.requireViewById
 import androidx.core.os.bundleOf
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
@@ -96,11 +98,16 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(
+            MyMenuProvider(),
+            viewLifecycleOwner, Lifecycle.State.RESUMED
+        )
+
         // ViewPager2
         vb?.viewpager?.adapter =
             DatabaseChildFragmentStateAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
@@ -270,37 +277,38 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
+    private inner class MyMenuProvider : MenuProvider {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.database, menu)
 
-        inflater.inflate(R.menu.database, menu)
-        val searchItem: MenuItem = menu.findItem(R.id.search)
-        val searchView = searchItem.actionView as SearchView
+            val searchItem: MenuItem = menu.findItem(R.id.search)
+            val searchView = searchItem.actionView as SearchView
+            searchView.setOnQueryTextListener(this@DatabaseHostFragment)
+        }
 
-        searchView.setOnQueryTextListener(this)
-
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.refresh -> {
-                viewModel.refreshDB()
-                super.onOptionsItemSelected(item)
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            when (menuItem.itemId) {
+                R.id.refresh -> {
+                    viewModel.refreshDB()
+                    return true
+                }
+                R.id.profile -> {
+                    val bundle = bundleOf("folio" to userFolioNumber)
+                    findNavController().navigate(
+                        R.id.action_database_viewpager_to_current_members_detail,
+                        bundle
+                    )
+                    return true
+                }
+                R.id.filter -> {
+                    val menuItemView: View = requireViewById(requireActivity(), R.id.filter)
+                    showFilterPopup(menuItemView)
+                    return true
+                }
+                else -> {
+                    return true
+                }
             }
-            R.id.profile -> {
-                val bundle = bundleOf("folio" to userFolioNumber)
-                findNavController().navigate(
-                    R.id.action_database_viewpager_to_current_members_detail,
-                    bundle
-                )
-                super.onOptionsItemSelected(item)
-            }
-            R.id.filter -> {
-                val menuItemView: View = requireViewById(requireActivity(), R.id.filter)
-                showFilterPopup(menuItemView)
-                super.onOptionsItemSelected(item)
-            }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 

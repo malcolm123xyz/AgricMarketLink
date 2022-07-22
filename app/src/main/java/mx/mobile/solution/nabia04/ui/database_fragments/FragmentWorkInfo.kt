@@ -128,7 +128,25 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
                 }
             }
 
+        vb?.employmentStatusSpinner?.onItemSelectedListener = OnEmploymentStatusClickListener()
+
+
         listenOnBackPressed()
+    }
+
+    private inner class OnEmploymentStatusClickListener : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+            if (p2 == 1) {
+                vb?.holder?.visibility = View.VISIBLE
+            } else {
+                vb?.holder?.visibility = View.GONE
+            }
+        }
+
+        override fun onNothingSelected(p0: AdapterView<*>?) {
+
+        }
+
     }
 
     private fun listenOnBackPressed() {
@@ -218,7 +236,7 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
                 "OK"
             ) { dialog: DialogInterface, _: Int ->
                 val p = passEdit.text.toString()
-                if (p == sharedP.getString(SessionManager.PASSWORK, "")) {
+                if (p == sharedP.getString(SessionManager.PASSWORD, "")) {
                     dialog.dismiss()
                     sending()
                 } else {
@@ -229,8 +247,7 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
     }
 
     private fun sending() {
-        val pDial = MyAlertDialog(requireContext(), "USER DATA UPDATE", "Updating...")
-        pDial.show()
+        val pDial = MyAlertDialog(requireContext(), "DATABASE", "Updating...", false).show()
         lifecycleScope.launch {
             sendPicture(pDial)
         }

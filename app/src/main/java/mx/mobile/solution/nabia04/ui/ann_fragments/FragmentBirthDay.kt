@@ -57,7 +57,9 @@ class FragmentBirthDay : BaseFragment<ListFragmentBinding>() {
         vb!!.recyclerView.adapter = adapter
 
         lifecycleScope.launch {
+            vb?.pb?.visibility = View.VISIBLE
             observeLiveData()
+            vb?.pb?.visibility = View.GONE
         }
     }
 

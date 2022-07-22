@@ -6,8 +6,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
@@ -58,6 +60,12 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        requireActivity().addMenuProvider(
+            MyMenuProvider(),
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED
+        )
+
         // ViewPager2
         val viewPager = vb!!.viewPager
 
@@ -91,18 +99,20 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.activity_announcements, menu)
-    }
+    private inner class MyMenuProvider : MenuProvider {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.activity_announcements, menu)
+        }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.refresh -> {
-                viewModel.refreshDB()
-                super.onOptionsItemSelected(item)
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            val id = menuItem.itemId
+            return when (id) {
+                R.id.refresh -> {
+                    viewModel.refreshDB()
+                    true
+                }
+                else -> true
             }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -112,7 +122,6 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
 
         /*
             Without setting ViewPager2 Adapter it causes memory leak
-
             https://stackoverflow.com/questions/62851425/viewpager2-inside-a-fragment-leaks-after-replacing-the-fragment-its-in-by-navig
          */
         viewPager2?.let {

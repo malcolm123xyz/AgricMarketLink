@@ -47,17 +47,11 @@ class DBRepository @Inject constructor(
         }
     }
 
-    suspend fun deleteFrmServer(id: Long): Int {
-        return withContext(Dispatchers.IO) {
-            doDeleteFrmServer(id)
-        }
-    }
-
     suspend fun getUser(folio: String): EntityUserData? {
         return dao.userData(folio)
     }
 
-    fun getEntity(list: List<DatabaseObject>): List<EntityUserData> {
+    private fun getEntity(list: List<DatabaseObject>): List<EntityUserData> {
         val entityUserDataList: MutableList<EntityUserData> =
             ArrayList()
         for (obj in list) {
@@ -103,7 +97,7 @@ class DBRepository @Inject constructor(
     }
 
     private fun doSetClearance(folio: String, clearance: String): Resource<List<EntityUserData>> {
-        var erMsg = ""
+        val erMsg: String
         try {
             val cl = ClearanceTP().setFolio(folio).setPosition(clearance)
             val response = endpoint.setUserClearance(cl)?.execute()
@@ -125,22 +119,8 @@ class DBRepository @Inject constructor(
         return Resource.error(erMsg, null)
     }
 
-    private fun doDeleteFrmServer(id: Long): Int {
-
-        try {
-            val ret = endpoint.deleteFromServer(id).execute()
-            if (ret != null) {
-                return 1
-            }
-            return -1
-        } catch (ex: IOException) {
-            ex.printStackTrace()
-            return 0
-        }
-    }
-
     private fun refresh(): Resource<List<EntityUserData>> {
-        var erMsg = ""
+        val erMsg: String
         try {
             val response = endpoint.members.execute()
             return if (response?.status == Status.SUCCESS.toString()) {
@@ -178,14 +158,14 @@ class DBRepository @Inject constructor(
         try {
 
             val response = endpoint.members.execute()
-            if (response?.status == Status.SUCCESS.toString()) {
+            return if (response?.status == Status.SUCCESS.toString()) {
                 val allData = getEntity(response.data).toList()
                 dao.insert(allData)
                 sharedP.edit()?.putBoolean(Cons.DATABASE_REFRESH, false)?.apply()
                 //alarmManager.scheduleBirthdayNotification(allUserData!!)
-                return Resource.success(allData)
+                Resource.success(allData)
             } else {
-                return Resource.error(response.message, null)
+                Resource.error(response.message, null)
             }
 
         } catch (ex: IOException) {

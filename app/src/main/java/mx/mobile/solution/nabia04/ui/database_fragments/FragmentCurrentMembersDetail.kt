@@ -12,7 +12,9 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
@@ -54,13 +56,14 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
 
     override fun getLayoutRes(): Int = R.layout.fragment_database_detail
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(
+            MyMenuProvider(),
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED
+        )
 
         selectedFolio = arguments?.getString("folio") ?: ""
 
@@ -84,32 +87,33 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.details_menu, menu)
-        val clearanceMenu = menu.findItem(R.id.set_clearance)
-        val setaliveMen = menu.findItem(R.id.living_status)
-        val delete = menu.findItem(R.id.delete)
-        if (clearance == Cons.PRO || userFolioNumber == "13786") {
-            clearanceMenu.isVisible = true
-            setaliveMen.isVisible = true
-            delete.isVisible = true
+    private inner class MyMenuProvider : MenuProvider {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.details_menu, menu)
+            val clearanceMenu = menu.findItem(R.id.set_clearance)
+            val setaliveMen = menu.findItem(R.id.living_status)
+            val delete = menu.findItem(R.id.delete)
+            if (clearance == Cons.PRO || userFolioNumber == "13786") {
+                clearanceMenu.isVisible = true
+                setaliveMen.isVisible = true
+                delete.isVisible = true
+            }
         }
-    }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == R.id.set_clearance) {
-            showClearanceSettingDial()
-            return true
-        } else if (id == R.id.living_status) {
-            showSetDeceasedDial()
-            return true
-        } else if (id == R.id.delete) {
-            showDeleteConfirmDial()
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            val id = menuItem.itemId
+            if (id == R.id.set_clearance) {
+                showClearanceSettingDial()
+                return true
+            } else if (id == R.id.living_status) {
+                showSetDeceasedDial()
+                return true
+            } else if (id == R.id.delete) {
+                showDeleteConfirmDial()
+                return true
+            }
             return true
         }
-        return super.onOptionsItemSelected(item)
     }
 
     private fun showClearanceSettingDial() {
@@ -153,7 +157,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
 
     private fun setClearance (folio:String, Clearance:String) {
         val pDialog =
-            MyAlertDialog(requireContext(), "WORKING", "Assigning position... Please wait")
+            MyAlertDialog(requireContext(), "ALERT", "Assigning position... Please wait", false)
         pDialog.show()
         lifecycleScope.launch {
             val retValue = viewModel.setUserClearance(folio, Clearance)
@@ -221,10 +225,10 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     }
 
     private fun setDeceased (folio:String, date: String, status: Int) {
-        val pDialog = MyAlertDialog(requireContext(), "WORKING", "Setting deceased status...")
+        val pDialog = MyAlertDialog(requireContext(), "ALERT", "Setting deceased status...", false)
         pDialog.show()
         lifecycleScope.launch {
-            val retValue = viewModel.setDeceaseStatus(date, folio, status)
+            val retValue = viewModel.setDeceaseStatus(folio, date, status)
             pDialog.dismiss()
             when (retValue.status) {
                 Status.SUCCESS ->
@@ -259,7 +263,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     }
 
     private fun deleteUser(folio: String) {
-        val pDialog = MyAlertDialog(requireContext(), "DELETE", "Deleting...")
+        val pDialog = MyAlertDialog(requireContext(), "DELETE", "Deleting...", false)
         pDialog.show()
         lifecycleScope.launch {
             val retValue = viewModel.deleteUser(folio)

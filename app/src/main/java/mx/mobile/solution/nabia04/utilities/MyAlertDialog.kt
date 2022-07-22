@@ -4,19 +4,25 @@ import android.content.Context
 import android.graphics.Color
 import android.view.Gravity
 import android.view.ViewGroup
-import android.view.Window
 import android.view.WindowManager
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
-import mx.mobile.solution.nabia04.R
 
-open class MyAlertDialog(val context: Context, title: String, txt: String) {
 
+open class MyAlertDialog(val context: Context, title: String, txt: String, cancelable: Boolean) {
     private var dialog: AlertDialog
 
     init {
+        dialog = setProgressDialog(context, title, txt, cancelable)
+    }
+
+    private fun setProgressDialog(
+        context: Context, title: String,
+        message: String, cancelable:
+        Boolean
+    ): AlertDialog {
         val llPadding = 30
         val ll = LinearLayout(context)
         ll.orientation = LinearLayout.HORIZONTAL
@@ -28,47 +34,49 @@ open class MyAlertDialog(val context: Context, title: String, txt: String) {
         )
         llParam.gravity = Gravity.CENTER
         ll.layoutParams = llParam
+
         val progressBar = ProgressBar(context)
         progressBar.isIndeterminate = true
         progressBar.setPadding(0, 0, llPadding, 0)
         progressBar.layoutParams = llParam
+
         llParam = LinearLayout.LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
         llParam.gravity = Gravity.CENTER
         val tvText = TextView(context)
-        tvText.text = txt
+        tvText.text = message
         tvText.setTextColor(Color.parseColor("#000000"))
-        tvText.textSize = 20f
+        tvText.textSize = 20.toFloat()
         tvText.layoutParams = llParam
+
         ll.addView(progressBar)
         ll.addView(tvText)
-        val alertBuilder = AlertDialog.Builder(context, R.style.AppCompatAlertDialogStyle)
-        alertBuilder.setTitle(title)
-        alertBuilder.setCancelable(true)
-        alertBuilder.setView(ll)
-        dialog = alertBuilder.create()
-        val window: Window? = dialog.window
+
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(title)
+        builder.setCancelable(cancelable)
+        builder.setView(ll)
+
+        val dialog = builder.create()
+        val window = dialog.window
         if (window != null) {
             val layoutParams = WindowManager.LayoutParams()
-            layoutParams.copyFrom(dialog.window!!.attributes)
+            layoutParams.copyFrom(dialog.window?.attributes)
             layoutParams.width = LinearLayout.LayoutParams.WRAP_CONTENT
             layoutParams.height = LinearLayout.LayoutParams.WRAP_CONTENT
-            dialog.window!!.attributes = layoutParams
+            dialog.window?.attributes = layoutParams
         }
+        return dialog
     }
 
     fun dismiss() {
         dialog.dismiss()
     }
 
-    open fun show() {
+    open fun show(): MyAlertDialog {
         dialog.show()
-    }
-
-    open fun setContent(tittle: String, msg: String) {
-        dialog.setTitle(tittle)
-        dialog.setMessage(msg)
+        return this
     }
 }
