@@ -1,7 +1,7 @@
 package mx.mobile.solution.nabia04.authentication
 
 import android.app.AlertDialog
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import dagger.hilt.android.AndroidEntryPoint
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.databinding.FragmentRegisterAuthBinding
+import mx.mobile.solution.nabia04.ui.activities.MainActivity
 import mx.mobile.solution.nabia04.utilities.*
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.LoginData
@@ -28,7 +29,6 @@ class RegisterFragment : Fragment() {
     @Inject
     lateinit var endpoint: MainEndpoint
 
-    private var listener: Listener? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?, savedInstanceState: Bundle?
@@ -101,7 +101,9 @@ class RegisterFragment : Fragment() {
                 if (exceptionThrown == null && response != null) {
                     if (response!!.status == Status.SUCCESS.toString()) {
                         session.createLoginSession(response!!.data)
-                        listener!!.onFinished()
+                        val intent = Intent(requireActivity(), MainActivity::class.java)
+                        startActivity(intent)
+                        requireActivity().finish()
                     } else {
                         showDialog("FAILED", response!!.message)
                     }
@@ -159,21 +161,5 @@ class RegisterFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
-    }
-
-    interface Listener {
-        fun onFinished()
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        listener = if (context is LoginFragment.Listener) {
-            context as Listener
-        } else {
-            throw RuntimeException(
-                context.toString()
-                        + " must implement OnFragmentInteractionListener"
-            )
-        }
     }
 }

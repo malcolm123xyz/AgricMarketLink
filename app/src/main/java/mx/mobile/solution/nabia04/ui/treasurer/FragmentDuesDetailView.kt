@@ -11,6 +11,8 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -62,14 +64,20 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(DuesViewModel::class.java)
+        viewModel = ViewModelProvider(this)[DuesViewModel::class.java]
         adapter = ListAdapter1()
-        setHasOptionsMenu(true)
     }
 
     @OptIn(ExperimentalTime::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().addMenuProvider(
+            MyMenuProvider(),
+            viewLifecycleOwner,
+            Lifecycle.State.RESUMED
+        )
+
         vb!!.recyclerView.setHasFixedSize(true)
         vb!!.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
 
@@ -79,6 +87,7 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
             showHeader()
         }
     }
+
 
     private suspend fun setUpListener() {
         viewModel.fetchAnn().observe(viewLifecycleOwner) { users: Resource<List<EntityDues>> ->
@@ -168,30 +177,31 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.dues_detail_menu, menu)
+    private inner class MyMenuProvider : MenuProvider {
+        override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+            menuInflater.inflate(R.menu.dues_detail_menu, menu)
 
-        val searchItem: MenuItem = menu.findItem(R.id.search)
-        val searchView = searchItem.actionView as SearchView
+            val searchItem: MenuItem = menu.findItem(R.id.search)
+            val searchView = searchItem.actionView as SearchView
 
-        searchView.setOnQueryTextListener(this)
-    }
+            searchView.setOnQueryTextListener(this@FragmentDuesDetailView)
+        }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.sort -> {
-                val menuItemView: View =
-                    ActivityCompat.requireViewById(requireActivity(), R.id.sort)
-                showSortPopup(menuItemView)
-                super.onOptionsItemSelected(item)
+        override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+            return when (menuItem.itemId) {
+                R.id.sort -> {
+                    val menuItemView: View =
+                        ActivityCompat.requireViewById(requireActivity(), R.id.sort)
+                    showSortPopup(menuItemView)
+                    true
+                }
+
+                R.id.upDateDuesPayment -> {
+                    findNavController().navigate(R.id.action_move_dues_update)
+                    true
+                }
+                else -> true
             }
-
-            R.id.upDateDuesPayment -> {
-                findNavController().navigate(R.id.action_move_dues_update)
-                super.onOptionsItemSelected(item)
-            }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 

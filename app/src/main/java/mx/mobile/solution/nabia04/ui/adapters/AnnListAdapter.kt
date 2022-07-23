@@ -39,9 +39,6 @@ class AnnListAdapter @Inject constructor(private val context: Context) :
             val date = getDate(annItem.id)
             this.topic.text = topic
             time.text = date
-            if (annItem.isRead) {
-                this.topic.typeface = null
-            }
 
             val imageUri: String = annItem.imageUri ?: ""
 

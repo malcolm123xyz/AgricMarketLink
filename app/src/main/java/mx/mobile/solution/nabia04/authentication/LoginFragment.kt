@@ -1,7 +1,7 @@
 package mx.mobile.solution.nabia04.authentication
 
 import android.app.AlertDialog
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import dagger.hilt.android.AndroidEntryPoint
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.databinding.FragmentLoginAuthBinding
+import mx.mobile.solution.nabia04.ui.activities.MainActivity
 import mx.mobile.solution.nabia04.utilities.BackgroundTasks
 import mx.mobile.solution.nabia04.utilities.MyAlertDialog
 import mx.mobile.solution.nabia04.utilities.SessionManager
@@ -34,6 +35,7 @@ class LoginFragment : Fragment() {
     private var folioTextEmail: EditText? = null
     private var editTextPass: EditText? = null
     private var binding: FragmentLoginAuthBinding? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?, savedInstanceState: Bundle?
@@ -90,7 +92,9 @@ class LoginFragment : Fragment() {
                 } else if (response != null) {
                     if (response?.status == Status.SUCCESS.toString()) {
                         session.createLoginSession(response!!.data)
-                        listener!!.onFinished()
+                        val intent = Intent(requireActivity(), MainActivity::class.java)
+                        startActivity(intent)
+                        requireActivity().finish()
                     } else {
                         showDialog("FAILED", response!!.message)
                     }
@@ -110,33 +114,9 @@ class LoginFragment : Fragment() {
             ) { dialog, _ -> dialog.dismiss() }.show()
     }
 
-    interface Listener {
-        fun onFinished()
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        if (context is Listener) {
-            listener = context
-        } else {
-            throw RuntimeException(
-                context.toString()
-                        + " must implement OnFragmentInteractionListener"
-            )
-        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        listener = null
-    }
-
-    companion object {
-        private var listener: Listener? = null
-    }
 }

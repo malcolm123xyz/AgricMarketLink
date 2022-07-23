@@ -442,7 +442,7 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
             u.survivingStatus = obj.survivingStatus
             u.dateDeparted = obj.dateDeparted
             u.biography = obj.biography
-            u.tributes = obj.tribute
+            u.tributes = obj.tributes
         }
         return u
     }

@@ -60,10 +60,6 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
 
     val viewModel by activityViewModels<DBViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -196,8 +192,8 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
             val name = shared.getString(SessionManager.USER_FULL_NAME, "").toString()
             try {
                 var tributes: MutableList<Map<String, String>> = ArrayList()
-                if (userData?.tribute != null) {
-                    tributes = convertMap(userData!!.tribute)
+                if (userData?.tributes != null) {
+                    tributes = convertMap(userData!!.tributes)
                 }
                 val tributeMap: MutableMap<String, String> = HashMap()
                 tributeMap["tribute"] = tribute
@@ -251,7 +247,6 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
             if(s.isEmpty()){
                 Toast.makeText(requireContext(), "Biography is empty", Toast.LENGTH_SHORT).show()
             }else {
-                Log.i("TAG", "BIOGRAPHY : $s")
                 setBiography(s)
             }
         }
@@ -261,38 +256,22 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
 
     private fun showDetails(data: EntityUserData) {
         var nickName = ""
-        if (data.nickName != null) {
-            nickName = " (" + data.nickName.toString() + ")"
-        }
-        val name: String = data.fullName.toString() + nickName
+        nickName = " (" + data.nickName + ")"
+        val name: String = data.fullName + nickName
         fullNameTv_Nickname.text = name
         folio_number_Tv.text = data.folioNumber
 
-        if (data.homeTown != null) {
-            hometownTV.text = data.homeTown
-        }
-        if (data.districtOfResidence != null) {
-            dis_residence_tv.text = data.districtOfResidence
-        }
-        if (data.regionOfResidence != null) {
-            region_residence.text = data.regionOfResidence
-        }
+        hometownTV.text = data.homeTown
+        dis_residence_tv.text = data.districtOfResidence
+        region_residence.text = data.regionOfResidence
 
-        if (data.className != null) {
-            classTV.text = data.className
-        }
-        if (data.courseStudied != null) {
-            courseTV.text = data.courseStudied
-        }
-        if (data.house != null) {
-            houseTV.text = data.house
-        }
-        if (data.positionHeld != null) {
-            position1TV.text = data.positionHeld
-        }
+        classTV.text = data.className
+        courseTV.text = data.courseStudied
+        houseTV.text = data.house
+        position1TV.text = data.positionHeld
 
-        val imageUri: String = data.imageUri ?: ""
-        val imageId: String = data.imageId ?: ""
+        val imageUri: String = data.imageUri
+        val imageId: String = data.imageId
 
         GlideApp.with(requireContext())
             .load(imageUri)
@@ -301,26 +280,19 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
             .apply(RequestOptions.circleCropTransform())
             .into(imageView)
 
-        if (data.dateDeparted != null) {
-            val s = "Died on: " + data.dateDeparted
-            departed_on.text = s
-        }
+        val s = "Died on: " + data.dateDeparted
+        departed_on.text = s
 
-        Log.i("TAG", "BIOGRAPHY = "+data.biography)
+        Log.i("TAG", "BIOGRAPHY = " + data.biography)
 
-        if (data.biography != null) {
-            biography.text = data.biography
-        }
+        biography.text = data.biography
 
-        if(data.tribute != null){
-            val tbs = convertMap(data.tribute)
-            for (tribute in tbs) {
-                val view = layoutInflater.inflate(R.layout.tribute, null)
-                view.findViewById<TextView>(R.id.tribute).text = tribute["tribute"].toString()
-                val s = "By: " + tribute["from"].toString()
-                view.findViewById<TextView>(R.id.sender).text = s
-                tribute_holder.addView(view)
-            }
+        val tbs = convertMap(data.tributes)
+        for (tribute in tbs) {
+            val view = layoutInflater.inflate(R.layout.tribute, null)
+            view.findViewById<TextView>(R.id.tribute).text = tribute["tribute"].toString()
+            view.findViewById<TextView>(R.id.sender).text = "By: " + tribute["from"].toString()
+            tribute_holder.addView(view)
         }
     }
 

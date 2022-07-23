@@ -56,33 +56,33 @@ class DBRepository @Inject constructor(
         for (obj in list) {
             val u =
                 EntityUserData()
-            u.birthDayAlarm = obj.birthDayAlarm
-            u.className = obj.className
-            u.contact = obj.contact
-            u.courseStudied = obj.courseStudied
-            u.districtOfResidence = obj.districtOfResidence
-            u.email = obj.email
-            u.folioNumber = obj.folioNumber
-            u.homeTown = obj.homeTown
-            u.house = obj.house
-            u.imageId = obj.imageId
-            u.imageUri = obj.imageUri
-            u.nickName = obj.nickName
-            u.jobDescription = obj.jobDescription
-            u.specificOrg = obj.specificOrg
-            u.employmentStatus = obj.employmentStatus
-            u.employmentSector = obj.employmentSector
-            u.nameOfEstablishment = obj.nameOfEstablishment
-            u.establishmentRegion = obj.establishmentRegion
-            u.establishmentDist = obj.establishmentDist
-            u.positionHeld = obj.positionHeld
-            u.regionOfResidence = obj.regionOfResidence
-            u.sex = obj.sex
-            u.fullName = obj.fullName
-            u.survivingStatus = obj.survivingStatus
-            u.dateDeparted = obj.dateDeparted
-            u.biography = obj.biography
-            u.tribute = obj.tributes
+            u.birthDayAlarm = obj.birthDayAlarm ?: 0L
+            u.className = obj.className ?: ""
+            u.contact = obj.contact ?: ""
+            u.courseStudied = obj.courseStudied ?: ""
+            u.districtOfResidence = obj.districtOfResidence ?: ""
+            u.email = obj.email ?: ""
+            u.folioNumber = obj.folioNumber ?: ""
+            u.homeTown = obj.homeTown ?: ""
+            u.house = obj.house ?: ""
+            u.imageId = obj.imageId ?: ""
+            u.imageUri = obj.imageUri ?: ""
+            u.nickName = obj.nickName ?: ""
+            u.jobDescription = obj.jobDescription ?: ""
+            u.specificOrg = obj.specificOrg ?: ""
+            u.employmentStatus = obj.employmentStatus ?: ""
+            u.employmentSector = obj.employmentSector ?: ""
+            u.nameOfEstablishment = obj.nameOfEstablishment ?: ""
+            u.establishmentRegion = obj.establishmentRegion ?: ""
+            u.establishmentDist = obj.establishmentDist ?: ""
+            u.positionHeld = obj.positionHeld ?: ""
+            u.regionOfResidence = obj.regionOfResidence ?: ""
+            u.sex = obj.sex ?: ""
+            u.fullName = obj.fullName ?: ""
+            u.survivingStatus = obj.survivingStatus ?: 0
+            u.dateDeparted = obj.dateDeparted ?: ""
+            u.biography = obj.biography ?: ""
+            u.tributes = obj.tributes ?: ""
             entityUserDataList.add(u)
         }
         return entityUserDataList

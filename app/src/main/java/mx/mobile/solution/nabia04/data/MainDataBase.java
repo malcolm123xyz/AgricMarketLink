@@ -19,7 +19,7 @@ import mx.mobile.solution.nabia04.data.entities.EntityUserData;
 
 
 @Database(entities = {EntityAnnouncement.class, EntityUserData.class, EntityDues.class},
-        version = 73, exportSchema = false)
+        version = 74, exportSchema = false)
 @TypeConverters({DataConverter.class})
 public abstract class MainDataBase extends RoomDatabase {
 

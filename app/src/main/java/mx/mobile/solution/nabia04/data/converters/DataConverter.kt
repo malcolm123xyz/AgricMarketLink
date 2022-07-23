@@ -1,59 +1,46 @@
-package mx.mobile.solution.nabia04.data.converters;
+package mx.mobile.solution.nabia04.data.converters
 
+import androidx.room.TypeConverter
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
-
-import androidx.room.TypeConverter;
-
-
-public class DataConverter {
+class DataConverter {
     @TypeConverter
-    public String getStrPayments(String[] payments) {
+    fun getStrPayments(payments: Array<String?>?): String? {
         if (payments == null) {
-            return (null);
+            return null
         }
-        Gson gson = new Gson();
-        Type type = new TypeToken<String[]>() {}.getType();
-        return gson.toJson(payments, type);
+        val gson = Gson()
+        val type = object : TypeToken<Array<String?>?>() {}.type
+        return gson.toJson(payments, type)
     }
 
     @TypeConverter
-    public String[] getPaymentFrmStr(String payments) {
-
+    fun getPaymentFrmStr(payments: String?): Array<String>? {
         if (payments == null) {
-            return (null);
+            return null
         }
-        Gson gson = new Gson();
-        Type type = new TypeToken<String[]>() {
-        }.getType();
-        return gson.fromJson(payments, type);
+        val gson = Gson()
+        val type = object : TypeToken<Array<String?>?>() {}.type
+        return gson.fromJson(payments, type)
     }
 
-    public String getPaymentToString(List<Map<String, String>> countryLang) {
+    fun getPaymentToString(countryLang: List<Map<String?, String?>?>?): String? {
         if (countryLang == null) {
-            return (null);
+            return null
         }
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<Map<String, String>>>() {
-        }.getType();
-        return gson.toJson(countryLang, type);
+        val gson = Gson()
+        val type = object : TypeToken<List<Map<String?, String?>?>?>() {}.type
+        return gson.toJson(countryLang, type)
     }
 
     @TypeConverter
-    public List<Map<String, String>> getPaymentList(String countryLangString) {
+    fun getPaymentList(countryLangString: String?): List<Map<String, String>>? {
         if (countryLangString == null) {
-            return (null);
+            return null
         }
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<Map<String, String>>>() {
-        }.getType();
-        return gson.fromJson(countryLangString, type);
+        val gson = Gson()
+        val type = object : TypeToken<List<Map<String?, String?>?>?>() {}.type
+        return gson.fromJson(countryLangString, type)
     }
-
-
 }
