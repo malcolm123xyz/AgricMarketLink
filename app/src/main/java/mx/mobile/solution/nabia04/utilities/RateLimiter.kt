@@ -16,32 +16,27 @@
 
 package mx.mobile.solution.nabia04.utilities
 
-import android.os.Build
+import android.content.SharedPreferences
 import android.os.SystemClock
-import android.util.ArrayMap
-import androidx.annotation.RequiresApi
-
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 /**
  * Utility class that decides whether we should fetch some data or not.
  */
-class RateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
-    private val timestamps = ArrayMap<KEY, Long>()
-    private val timeout = timeUnit.toMillis(timeout.toLong())
 
-    @RequiresApi(Build.VERSION_CODES.KITKAT)
-    @Synchronized
-    fun shouldFetch(key: KEY): Boolean {
-        val lastFetched = timestamps[key]
+class RateLimiter @Inject constructor(var sharedP: SharedPreferences) {
+
+    fun shouldFetch(key: String, tOut: Int, tUnit: TimeUnit): Boolean {
+        val timeout = tUnit.toMillis(tOut.toLong())
+        val lastFetched = sharedP.getLong(key, 0L)
         val now = now()
-        if (lastFetched == null) {
-            timestamps[key] = now
+        if (lastFetched == 0L) {
+            sharedP.edit().putLong(key, now).apply()
             return true
         }
         if (now - lastFetched > timeout) {
-            timestamps[key] = now
+            sharedP.edit().putLong(key, now).apply()
             return true
         }
         return false
@@ -49,8 +44,7 @@ class RateLimiter<in KEY>(timeout: Int, timeUnit: TimeUnit) {
 
     private fun now() = SystemClock.uptimeMillis()
 
-    @Synchronized
-    fun reset(key: KEY) {
-        timestamps.remove(key)
+    fun reset(key: String) {
+        sharedP.edit().putLong(key, now()).apply()
     }
 }

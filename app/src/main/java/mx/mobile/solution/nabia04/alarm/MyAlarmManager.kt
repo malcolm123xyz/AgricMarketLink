@@ -11,6 +11,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import android.widget.DatePicker
+import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement
+import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -59,9 +61,10 @@ class MyAlarmManager @Inject constructor(context: Context) {
         ).show()
     }
 
-    fun scheduleEventNotification(annDataObject: List<mx.mobile.solution.nabia04.data.entities.EntityAnnouncement>) {
-        var numAlarms = 0
-        for (eventItem: mx.mobile.solution.nabia04.data.entities.EntityAnnouncement in annDataObject) {
+    fun scheduleEventNotification(annDataObject: List<EntityAnnouncement>) {
+        Log.i(TAG, "Events list size = ${annDataObject.size}")
+        val numAlarms = 0
+        for (eventItem in annDataObject) {
             val alarmTime = eventItem.eventDate;
             val currentTime = System.currentTimeMillis()
             if (alarmTime > currentTime) {
@@ -93,8 +96,8 @@ class MyAlarmManager @Inject constructor(context: Context) {
         }
     }
 
-    fun scheduleBirthdayNotification(users: List<mx.mobile.solution.nabia04.data.entities.EntityUserData>) {
-        for (user: mx.mobile.solution.nabia04.data.entities.EntityUserData in users) {
+    fun scheduleBirthdayNotification(users: List<EntityUserData>) {
+        for (user: EntityUserData in users) {
             val alarmTime = user.birthDayAlarm;
             val currentTime = System.currentTimeMillis()
             if (alarmTime > currentTime) {
@@ -120,7 +123,7 @@ class MyAlarmManager @Inject constructor(context: Context) {
         return s
     }
 
-    fun cancel(ann: mx.mobile.solution.nabia04.data.entities.EntityAnnouncement) {
+    fun cancel(ann: EntityAnnouncement) {
         val alarmId = ann.id.toString().substring(9).toInt()
         val intent = Intent(context, AlarmReceiver::class.java)
         intent.putExtra("itemId", ann.id)

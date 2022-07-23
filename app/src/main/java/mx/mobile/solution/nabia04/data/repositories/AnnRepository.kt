@@ -1,11 +1,13 @@
 package mx.mobile.solution.nabia04.data.repositories
 
 import android.content.SharedPreferences
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.data.dao.AnnDao
 import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement
-import mx.mobile.solution.nabia04.utilities.Cons
+import mx.mobile.solution.nabia04.utilities.RateLimiter
 import mx.mobile.solution.nabia04.utilities.Resource
 import mx.mobile.solution.nabia04.utilities.Status
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
@@ -13,6 +15,7 @@ import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Announcement
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.net.ssl.SSLHandshakeException
@@ -20,7 +23,8 @@ import javax.net.ssl.SSLHandshakeException
 @Singleton
 class AnnRepository @Inject constructor(
     var dao: AnnDao, var endpoint: MainEndpoint,
-    var sharedP: SharedPreferences
+    var sharedP: SharedPreferences, var limiter: RateLimiter,
+    var alarmManager: MyAlarmManager
 ) {
 
     suspend fun refreshDB(): Resource<List<EntityAnnouncement>> {
@@ -66,11 +70,8 @@ class AnnRepository @Inject constructor(
             if (backendResponse.status == Status.SUCCESS.toString()) {
                 val allAnnouncements = getAnnDataObjects(backendResponse.data).toList()
                 dao.insertAnnouncement(allAnnouncements)
-                sharedP.edit()?.putBoolean(Cons.ANN_REFRESH, false)?.apply()
-                sharedP.edit()
-                    ?.putLong(Cons.ANN_REFRESH_TIME_STAMP, System.currentTimeMillis())
-                    ?.apply()
-                //alarmManager.scheduleEventNotification(allAnnouncements)
+                limiter.reset("Announcement")
+                alarmManager.scheduleEventNotification(allAnnouncements)
                 return Resource.success(allAnnouncements)
             } else {
                 return Resource.error(backendResponse.message, null)
@@ -92,23 +93,23 @@ class AnnRepository @Inject constructor(
 
     private fun fetch(): Resource<List<EntityAnnouncement>> {
         val erMsg: String
+
         val annList = dao.annList
-        if (annList.isNotEmpty()) {
+
+        if (!shouldFetch(annList)) {
             return Resource.success(annList)
         }
+
         try {
             val backendResponse = endpoint.noticeBoardData.execute()
-            if (backendResponse.status == Status.SUCCESS.toString()) {
+            return if (backendResponse.status == Status.SUCCESS.toString()) {
                 val allAnnouncements = getAnnDataObjects(backendResponse.data).toList()
                 dao.insertAnnouncement(allAnnouncements)
-                sharedP.edit()?.putBoolean(Cons.ANN_REFRESH, false)?.apply()
-                sharedP.edit()
-                    ?.putLong(Cons.ANN_REFRESH_TIME_STAMP, System.currentTimeMillis())
-                    ?.apply()
-                //alarmManager.scheduleEventNotification(allAnnouncements)
-                return Resource.success(allAnnouncements)
+                limiter.reset("Announcement")
+                alarmManager.scheduleEventNotification(allAnnouncements)
+                Resource.success(allAnnouncements)
             } else {
-                return Resource.error(backendResponse.message, null)
+                Resource.error(backendResponse.message, null)
             }
 
         } catch (ex: IOException) {
@@ -151,6 +152,21 @@ class AnnRepository @Inject constructor(
 
     suspend fun delete(announcement: EntityAnnouncement): Int {
         return dao.delete(announcement)
+    }
+
+    private fun shouldFetch(data: List<EntityAnnouncement>): Boolean {
+        if (this.limiter.shouldFetch("Announcement", 12, TimeUnit.HOURS)) {
+            Log.i("TAG", "Time limit reached, ShouldFetch Announcement data")
+            return true
+        }
+
+        if (data.isEmpty()) {
+            Log.i("TAG", "Data is empty, ShouldFetch Announcement data")
+            return true
+        }
+
+        Log.i("TAG", "Don't fetch new Announcement data")
+        return false
     }
 
 }

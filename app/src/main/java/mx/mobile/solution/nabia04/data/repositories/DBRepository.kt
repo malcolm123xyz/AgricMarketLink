@@ -4,9 +4,9 @@ import android.content.SharedPreferences
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.data.dao.DBdao
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
-import mx.mobile.solution.nabia04.utilities.Cons
 import mx.mobile.solution.nabia04.utilities.RateLimiter
 import mx.mobile.solution.nabia04.utilities.Resource
 import mx.mobile.solution.nabia04.utilities.Status
@@ -23,10 +23,9 @@ import javax.net.ssl.SSLHandshakeException
 @Singleton
 class DBRepository @Inject constructor(
     var dao: DBdao, var endpoint: MainEndpoint,
-    var sharedP: SharedPreferences
+    var sharedP: SharedPreferences, var limiter: RateLimiter,
+    var alarmManager: MyAlarmManager
 ) {
-
-    private val repoListRateLimit = RateLimiter<String>(30, TimeUnit.MINUTES)
 
     suspend fun fetchUserData(): Resource<List<EntityUserData>> {
         return withContext(Dispatchers.IO) {
@@ -126,8 +125,7 @@ class DBRepository @Inject constructor(
             return if (response?.status == Status.SUCCESS.toString()) {
                 val allData = getEntity(response.data).toList()
                 dao.insert(allData)
-                sharedP.edit()?.putBoolean(Cons.DATABASE_REFRESH, false)?.apply()
-                //alarmManager.scheduleBirthdayNotification(allUserData!!)
+                alarmManager.scheduleBirthdayNotification(allData)
                 Resource.success(allData)
             } else {
                 Resource.error(response.message, null)
@@ -161,8 +159,8 @@ class DBRepository @Inject constructor(
             return if (response?.status == Status.SUCCESS.toString()) {
                 val allData = getEntity(response.data).toList()
                 dao.insert(allData)
-                sharedP.edit()?.putBoolean(Cons.DATABASE_REFRESH, false)?.apply()
-                //alarmManager.scheduleBirthdayNotification(allUserData!!)
+                limiter.reset("Announcement")
+                alarmManager.scheduleBirthdayNotification(allData)
                 Resource.success(allData)
             } else {
                 Resource.error(response.message, null)
@@ -312,17 +310,17 @@ class DBRepository @Inject constructor(
     }
 
     private fun shouldFetch(data: List<EntityUserData>): Boolean {
-        if (repoListRateLimit.shouldFetch("User_data")) {
-            Log.i("TAG", "Time limit reached, ShouldFetch data")
+        if (limiter.shouldFetch("User_data", 12, TimeUnit.HOURS)) {
+            Log.i("TAG", "Time limit reached, ShouldFetch User_data data")
             return true
         }
 
         if (data.isEmpty()) {
-            Log.i("TAG", "Data is empty, ShouldFetch data")
+            Log.i("TAG", "Data is empty, ShouldFetch User_data data")
             return true
         }
 
-        Log.i("TAG", "Don't fetch new data")
+        Log.i("TAG", "Don't fetch new User_data data")
         return false
     }
 

@@ -56,18 +56,17 @@
             android:label="Database Update" />
 
         <activity
-            android:name=".ui.activities.ActivityTreasurer"
-            android:exported="true"
-            android:label="Treasurer" />
-
-        <activity
             android:name=".ui.activities.ActivityTreasurerTools"
             android:exported="true"
             android:label="Treasurer Tools" />
 
         <receiver
-            android:name=".alarm.AlarmReceiver"
-            android:enabled="false"
+            android:name="mx.mobile.solution.nabia04.alarm.AlarmReceiver"
+            android:enabled="true" />
+
+        <receiver
+            android:name="mx.mobile.solution.nabia04.alarm.BootCompleteReceiver"
+            android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

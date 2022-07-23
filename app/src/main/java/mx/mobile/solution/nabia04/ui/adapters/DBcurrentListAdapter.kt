@@ -1,7 +1,6 @@
 package mx.mobile.solution.nabia04.ui.adapters
 
 import android.content.Context
-import android.graphics.Typeface
 import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.View
@@ -28,8 +27,6 @@ import javax.inject.Singleton
 class DBcurrentListAdapter @Inject constructor(private val context: Context) :
     ListAdapter<EntityUserData,
             DBcurrentListAdapter.MyViewHolder>(DiffCallbackCurrList), Filterable {
-    private val fontBody: Typeface = Typeface.createFromAsset(context.assets, "text_body.ttf")
-    private val fontHeading: Typeface = Typeface.createFromAsset(context.assets, "header_font.ttf")
 
     private var list = mutableListOf<EntityUserData>()
 
@@ -58,9 +55,6 @@ class DBcurrentListAdapter @Inject constructor(private val context: Context) :
             val folio = userItem.folioNumber ?: ""
             val imageUri = userItem.imageUri ?: ""
             val imageId = userItem.folioNumber ?: ""
-            fullNameTxt.typeface = fontHeading
-            folioTxt.typeface = fontBody
-            contact1Txt.typeface = fontBody
             fullNameTxt.text = name
             val f = ": " + userItem.folioNumber
             folioTxt.text = f
