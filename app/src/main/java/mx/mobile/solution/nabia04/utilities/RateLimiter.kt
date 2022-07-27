@@ -49,5 +49,11 @@ class RateLimiter @Inject constructor(var sharedP: SharedPreferences) {
             sharedP.edit().putLong(key, now()).apply()
             Log.i("RateLimiter", "$key reset to : ${Date(now())}")
         }
+        
+      fun allow(sharedP: SharedPreferences, key: String) {
+            sharedP.edit().putLong(key, 0L).apply()
+            Log.i("RateLimiter", "$key reset to : ${Date(0L)}")
+        }
+        
     }
 }
