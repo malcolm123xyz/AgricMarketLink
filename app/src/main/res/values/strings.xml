@@ -104,5 +104,6 @@
     <string name="announcements1">Notice board</string>
     <string name="about_navasco">Navasco</string>
     <string name="about_nabia_04">Nabia04</string>
+    <string name="default_notification_channel_id">fcm_notification_chanell</string>
 
 </resources>

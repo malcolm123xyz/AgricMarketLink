@@ -73,4 +73,5 @@ object DatabaseModule {
     @Singleton
     fun provideAlarmManager(@ApplicationContext appContext: Context):
             MyAlarmManager = MyAlarmManager(appContext)
+
 }

@@ -7,7 +7,7 @@ import android.content.Context
 import android.os.Build
 import com.cloudinary.android.MediaManager
 import dagger.hilt.android.HiltAndroidApp
-import mx.mobile.solution.nabia04.utilities.Cons
+import mx.mobile.solution.nabia04.utilities.Const
 
 @HiltAndroidApp
 class App : Application() {
@@ -15,32 +15,67 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         MediaManager.init(this)
-        createAlarmNotChannel()
-        createBirthdayNotChannel()
+        createNotificationChannels()
     }
 
-    private fun createBirthdayNotChannel() {
+    private fun createNotificationChannels() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager =
+                (this.getSystemService(Context.NOTIFICATION_SERVICE)
+                        as NotificationManager?)
+
+            val channel1 = NotificationChannel(
+                Const.BIRTHDAY_CHANNEL_ID, "Birthday Alarm Notification",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+
+            val channel2 = NotificationChannel(
+                Const.EVENT_CHANNEL_ID, "Event Alarm Notification",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+
+            val channel3 = NotificationChannel(
+                Const.TOKEN_REFRESH_NOTIFY_CHANNEL, "Token Refreshment Notification",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+
+            val channel4 = NotificationChannel(
+                Const.GENERAL_CHANNEL_ID, "General Notification",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+
+            notificationManager?.createNotificationChannel(channel1)
+            notificationManager?.createNotificationChannel(channel2)
+            notificationManager?.createNotificationChannel(channel3)
+            notificationManager?.createNotificationChannel(channel4)
+        }
+    }
+
+    private fun createAlarmNotChannel() {
         val notificationManager =
             (this.getSystemService(Context.NOTIFICATION_SERVICE)
                     as NotificationManager?)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                Cons.BIRTHDAY_CHANNEL_ID, "Birthday Alarm Notification",
-                NotificationManager.IMPORTANCE_HIGH)
+                Const.EVENT_CHANNEL_ID, "Event Alarm Notification",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+
             notificationManager?.createNotificationChannel(channel)
         }
     }
 
-    private fun createAlarmNotChannel (){
+    private fun createTokenRefreshNotChannel() {
         val notificationManager =
             (this.getSystemService(Context.NOTIFICATION_SERVICE)
                     as NotificationManager?)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                Cons.EVENT_CHANNEL_ID, "Event Alarm Notification",
-                NotificationManager.IMPORTANCE_HIGH)
+                Const.TOKEN_REFRESH_NOTIFY_CHANNEL, "Token Refreshment Notification",
+                NotificationManager.IMPORTANCE_HIGH
+            )
 
             notificationManager?.createNotificationChannel(channel)
         }

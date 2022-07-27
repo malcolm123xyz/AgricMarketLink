@@ -103,10 +103,23 @@ dependencies {
     implementation 'javax.xml.stream:stax-api:1.0'
     implementation 'com.fasterxml:aalto-xml:1.2.2'
 
+//    //Firebase
+//    implementation 'com.google.firebase:firebase-core:21.1.0'
+//    implementation 'com.google.firebase:firebase-messaging:23.0.6'
 
-    implementation 'pub.devrel:easypermissions:3.0.0'
+//    // Firebase Cloud Messaging (Java)
+//    implementation 'com.google.firebase:firebase-messaging'
+
+    // Firebase Cloud Messaging (Kotlin)
+    implementation 'com.google.firebase:firebase-messaging-ktx:23.0.6'
+
+    //Workmanager
+    implementation "androidx.work:work-runtime:2.7.1"
+    implementation "androidx.concurrent:concurrent-futures:1.1.0"
 }
 
 kapt {
     correctErrorTypes = true
 }
+
+apply plugin: 'com.google.gms.google-services'

@@ -17,7 +17,8 @@
 package mx.mobile.solution.nabia04.utilities
 
 import android.content.SharedPreferences
-import android.os.SystemClock
+import android.util.Log
+import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -42,9 +43,11 @@ class RateLimiter @Inject constructor(var sharedP: SharedPreferences) {
         return false
     }
 
-    private fun now() = SystemClock.uptimeMillis()
-
-    fun reset(key: String) {
-        sharedP.edit().putLong(key, now()).apply()
+    companion object {
+        private fun now() = System.currentTimeMillis()
+        fun reset(sharedP: SharedPreferences, key: String) {
+            sharedP.edit().putLong(key, now()).apply()
+            Log.i("RateLimiter", "$key reset to : ${Date(now())}")
+        }
     }
 }

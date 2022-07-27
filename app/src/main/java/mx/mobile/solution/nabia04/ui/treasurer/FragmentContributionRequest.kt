@@ -87,7 +87,7 @@ class FragmentContributionRequest : BaseFragment<
         super.onViewCreated(view, savedInstanceState)
 
         contData = ContributionData()
-        contData.id = Cons.CONTRIBUTION_BACKEND_ID
+        contData.id = Const.CONTRIBUTION_BACKEND_ID
         contData.momoName = ""
         contData.momoNum = ""
 

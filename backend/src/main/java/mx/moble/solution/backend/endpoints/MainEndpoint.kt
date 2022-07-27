@@ -3,13 +3,6 @@ package mx.moble.solution.backend.endpoints
 import com.google.api.server.spi.config.Api
 import com.google.api.server.spi.config.ApiMethod
 import com.google.api.server.spi.config.ApiNamespace
-import com.google.auth.oauth2.GoogleCredentials
-import com.google.firebase.FirebaseApp
-import com.google.firebase.FirebaseOptions
-import com.google.firebase.messaging.BatchResponse
-import com.google.firebase.messaging.FirebaseMessaging
-import com.google.firebase.messaging.FirebaseMessagingException
-import com.google.firebase.messaging.MulticastMessage
 import com.googlecode.objectify.NotFoundException
 import com.googlecode.objectify.ObjectifyService
 import mx.moble.solution.backend.model.*
@@ -22,6 +15,7 @@ import java.io.IOException
 import java.util.*
 import java.util.logging.Logger
 import javax.inject.Named
+
 
 /**
  * WARNING: This generated code is intended as a sample or starting point for using a
@@ -71,65 +65,17 @@ class MainEndpoint {
     @Throws(IOException::class)
     fun insertAnnouncement(announcementData: Announcement): Response<String> {
         ObjectifyService.ofy().save().entity(announcementData).now()
-        val timeStamp = announcementData.id
-        val message = announcementData.message
-        val heading = announcementData.heading
-        val id = timeStamp.toString()
-        val annType = announcementData.eventType.toString()
-        val eventDate = announcementData.eventDate.toString()
-        val priority = announcementData.priority.toString()
-        val records = ObjectifyService.ofy().load().type(
-            RegistrationToken::class.java
-        ).list()
-        val registrationTokens: MutableList<String> = ArrayList()
-        for (s in records) {
-            registrationTokens.add(s.token)
-        }
-        if (registrationTokens.size > 0) {
-            val options = FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.getApplicationDefault())
-                .setDatabaseUrl("https://nabia04.firebaseio.com")
-                .setProjectId("nabia04")
-                .build()
-            if (FirebaseApp.getApps().isEmpty()) {
-                FirebaseApp.initializeApp(options)
-            }
-            val fbcMessage = MulticastMessage.builder()
-                .putData("NOTIFICATION_TYPE", Constants.NOTIFY_NEW_ANN)
-                .putData("heading", heading)
-                .putData("id", id)
-                .putData("annTyp", annType)
-                .putData("eventDate", eventDate)
-                .putData("message", message)
-                .putData("priority", priority)
-                .putData("trancated", "no")
-                .addAllTokens(registrationTokens)
-                .build()
-            var response: BatchResponse? = null
-            try {
-                response = FirebaseMessaging.getInstance().sendMulticast(fbcMessage)
-            } catch (e: FirebaseMessagingException) {
-                e.printStackTrace()
-                println("Error while sending msg: " + e.message)
-            }
-            if (response!!.failureCount > 0) {
-                val responses = response.responses
-                for (i in responses.indices) {
-                    if (!responses[i].isSuccessful) {
-                        // The order of responses corresponds to the order of the registration tokens.
-                        val thisToken = registrationTokens[i]
-                        println("Error while sending to this token: " + thisToken + "Error: " + responses[i].exception)
-                        val tokenData = ObjectifyService.ofy().load().type(
-                            RegistrationToken::class.java
-                        ).filter("token =", thisToken).list()
-                        if (tokenData != null && tokenData.size > 0) {
-                            println("Deleting token " + tokenData[0].token)
-                            ObjectifyService.ofy().delete().entity(tokenData[0]).now()
-                        }
-                    }
-                }
-            }
-        }
+
+        val dataMap = HashMap<String, String>()
+        dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_NEW_ANN
+        dataMap["message"] = announcementData.message
+        dataMap["heading"] = announcementData.heading
+        dataMap["id"] = announcementData.id.toString()
+        dataMap["annTyp"] = announcementData.annType.toString()
+        dataMap["alarm"] = announcementData.eventDate.toString()
+
+        NotificationManager("").sendNotDataOnly(dataMap)
+
         return success(null)
     }
 
@@ -180,17 +126,25 @@ class MainEndpoint {
         logger.info("New user to set = " + loginData.fullName)
         loginData.executivePosition = clearanceTP.position
         ObjectifyService.ofy().save().entity(loginData).now()
-        val regToken = ObjectifyService.ofy().load().type(
-            RegistrationToken::class.java
-        ).id(clearanceTP.folio).now()
-        if (regToken != null) {
-            notifyAction(
-                Constants.NOTIFY_CLEARANCE,
-                getRegistrationTokens(regToken.token),
-                clearanceTP.position,
-                clearanceTP.folio
-            )
+
+        val regToken = ObjectifyService.ofy().load().type(RegistrationToken::class.java).list()
+        var token = ""
+        if (regToken.size > 0) {
+            for (m in regToken) {
+                if (m.folioNumber == clearanceTP.folio) {
+                    token = m.token
+                }
+            }
         }
+
+        if (token.isNotEmpty()) {
+            val dataMap = HashMap<String, String>()
+            dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_CLEARANCE
+            dataMap["msg"] = clearanceTP.position
+            dataMap["folio"] = clearanceTP.folio
+            NotificationManager(token).sendNotDataOnly(dataMap)
+        }
+
         return success("")
     }
 
@@ -208,7 +162,9 @@ class MainEndpoint {
             dataBaseDataModel.survivingStatus = data.status
             dataBaseDataModel.dateDeparted = data.date
             ObjectifyService.ofy().save().entity(dataBaseDataModel).now()
-            //notifyAction(Constants.NOTIFY_DATABASE_UPDATE, getRegistrationTokens(""), "", "")
+            val dataMap = HashMap<String, String>()
+            dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_DATABASE_UPDATE
+            NotificationManager("").sendNotDataOnly(dataMap)
             return success("")
         }
         return error("The specified user was not found in the database", "")
@@ -253,7 +209,9 @@ class MainEndpoint {
                 DatabaseObject::class.java
             ).id(folio).safe()
             ObjectifyService.ofy().delete().entity(databaseItem).now()
-            notifyAction(Constants.NOTIFY_DATABASE_UPDATE, getRegistrationTokens(""), "", "")
+            val dataMap = HashMap<String, String>()
+            dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_DATABASE_UPDATE
+            NotificationManager("").sendNotDataOnly(dataMap)
             success("")
         } catch (e: NotFoundException) {
             error("The user with this folio number was not found in the database", "")
@@ -289,7 +247,10 @@ class MainEndpoint {
         } catch (e: IOException) {
             error("Server error: ${e.localizedMessage}")
         }
-        //notifyAction(Constants.NOTIFY_DATABASE_UPDATE, getRegistrationTokens(""), "", "")
+        val dataMap = HashMap<String, String>()
+        dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_DATABASE_UPDATE
+        NotificationManager("").sendNotDataOnly(dataMap)
+
         return success("")
     }
 
@@ -304,12 +265,11 @@ class MainEndpoint {
         } catch (e: IOException) {
             error("Server error: ${e.localizedMessage}")
         }
-        notifyAction(
-            Constants.NOTIFY_NEW_CONTRIBUTION,
-            getRegistrationTokens(""),
-            contribution.message,
-            ""
-        )
+        val dataMap = HashMap<String, String>()
+        dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_NEW_CONTRIBUTION
+        dataMap["msg"] = contribution.message
+        NotificationManager("").sendNotOnly("Silver Contribution Request", contribution.message)
+
         return success("")
     }
 
@@ -343,12 +303,14 @@ class MainEndpoint {
     fun upDateContPayment(contributionData: ContributionData): Response<String> {
         return try {
             ObjectifyService.ofy().save().entity<Any>(contributionData).now()
-            notifyAction(
-                Constants.NOTIFY_NEW_PAYMENT,
-                getRegistrationTokens(""),
-                contributionData.name,
-                contributionData.folio
-            )
+
+            val dataMap = HashMap<String, String>()
+            dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_NEW_PAYMENT
+            val title = "New Contribution Payment"
+            val msg = "A user has made a contribution towards the ongoing Silver collection"
+
+            NotificationManager("").sendNotOnly(title, msg)
+
             success("")
         } catch (e: java.lang.Exception) {
             error("Server error: ${e.localizedMessage}", "")
@@ -395,7 +357,9 @@ class MainEndpoint {
                 updateModel.contact = loginData.contact
                 ObjectifyService.ofy().save().entity(updateModel).now()
             }
-            //notifyAction(Constants.NOTIFY_DATABASE_UPDATE, getRegistrationTokens(""), "", "")
+            val dataMap = HashMap<String, String>()
+            dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_DATABASE_UPDATE
+            NotificationManager("").sendNotDataOnly(dataMap)
             return success(loginData)
         } else if (loginStatus == Constants.ALREADY_SIGN_UP) {
             val resMsg =
@@ -447,90 +411,15 @@ class MainEndpoint {
                 updatModel.establishmentDist = ""
                 updatModel.establishmentRegion = ""
                 ObjectifyService.ofy().save().entity(updatModel).now()
-                try {
-                    notifyAction(
-                        Constants.NOTIFY_DATABASE_UPDATE,
-                        getRegistrationTokens(""),
-                        "",
-                        ""
-                    )
-                } catch (ignored: IOException) {
-                }
+
+                val dataMap = HashMap<String, String>()
+                dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_DATABASE_UPDATE
+                NotificationManager("").sendNotDataOnly(dataMap)
             }
             success(loginData)
         } else {
             error("Invalide password or Folio number", null)
         }
-    }
-
-    private fun notifyAction(
-        Action: String,
-        registrationTokens: List<String>,
-        optMsg: String,
-        folio: String
-    ) {
-        if (registrationTokens.isNotEmpty()) {
-            val options = FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.getApplicationDefault())
-                .setDatabaseUrl("https://nabia04.firebaseio.com")
-                .setProjectId("nabia04")
-                .build()
-            if (FirebaseApp.getApps().isEmpty()) {
-                FirebaseApp.initializeApp(options)
-            }
-            val fbcMessage = MulticastMessage.builder()
-                .putData("NOTIFICATION_TYPE", Action)
-                .putData("msg", optMsg)
-                .putData("folio", folio)
-                .addAllTokens(registrationTokens)
-                .build()
-            val response: BatchResponse?
-            var reponseMsg = "All tokens sent successfull"
-            try {
-                response = FirebaseMessaging.getInstance().sendMulticast(fbcMessage)
-                if (response!!.failureCount > 0) {
-                    val responses = response.responses
-                    for (i in responses.indices) {
-                        if (!responses[i].isSuccessful) {
-                            // The order of responses corresponds to the order of the registration tokens.
-                            val thisToken = registrationTokens[i]
-                            println("Error while sending to this token: " + thisToken + "Error: " + responses[i].exception)
-                            val tokenData = ObjectifyService.ofy().load().type(
-                                RegistrationToken::class.java
-                            ).filter("token =", thisToken).list()
-                            if (tokenData != null && tokenData.size > 0) {
-                                println("Deleting token " + tokenData[0].token)
-                                ObjectifyService.ofy().delete().entity(tokenData[0]).now()
-                            }
-                            reponseMsg = "Could not send to some tokens"
-                        }
-                    }
-                }
-            } catch (e: FirebaseMessagingException) {
-                e.printStackTrace()
-                println("Error while sending msg: " + e.message)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-            logger.info(reponseMsg)
-        }
-    }
-
-    private fun getRegistrationTokens(regtoken: String): List<String> {
-        val registrationTokens: MutableList<String> = ArrayList()
-        if (regtoken.isNotEmpty()) {
-            registrationTokens.add(regtoken)
-            return registrationTokens
-        }
-        val records = ObjectifyService.ofy().load().type(
-            RegistrationToken::class.java
-        ).list()
-        for (s in records) {
-            if (s.token.isNotEmpty()) {
-                registrationTokens.add(s.token)
-            }
-        }
-        return registrationTokens
     }
 
     @ApiMethod(

@@ -125,6 +125,7 @@ class DBRepository @Inject constructor(
             return if (response?.status == Status.SUCCESS.toString()) {
                 val allData = getEntity(response.data).toList()
                 dao.insert(allData)
+                RateLimiter.reset(sharedP, "User_data")
                 alarmManager.scheduleBirthdayNotification(allData)
                 Resource.success(allData)
             } else {
@@ -159,7 +160,7 @@ class DBRepository @Inject constructor(
             return if (response?.status == Status.SUCCESS.toString()) {
                 val allData = getEntity(response.data).toList()
                 dao.insert(allData)
-                limiter.reset("Announcement")
+                RateLimiter.reset(sharedP, "User_data")
                 alarmManager.scheduleBirthdayNotification(allData)
                 Resource.success(allData)
             } else {

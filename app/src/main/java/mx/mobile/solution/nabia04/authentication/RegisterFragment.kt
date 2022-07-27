@@ -72,7 +72,7 @@ class RegisterFragment : Fragment() {
             loginData.fullName = fullname
             loginData.contact = contact
             loginData.password = passW
-            loginData.executivePosition = Cons.POSITION_NONE
+            loginData.executivePosition = Const.POSITION_NONE
             signUp(loginData)
         }
     }

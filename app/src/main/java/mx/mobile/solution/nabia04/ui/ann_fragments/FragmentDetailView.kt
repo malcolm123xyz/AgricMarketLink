@@ -34,7 +34,7 @@ import mx.mobile.solution.nabia04.databinding.FragmentDetailBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
-import mx.mobile.solution.nabia04.utilities.Cons
+import mx.mobile.solution.nabia04.utilities.Const
 import mx.mobile.solution.nabia04.utilities.GlideApp
 import mx.mobile.solution.nabia04.utilities.MyAlertDialog
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
@@ -100,8 +100,8 @@ class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
 
             val serverDeleteItem = menu.findItem(R.id.delete_from_server)
 
-            if (clearance == Cons.PRO || clearance == Cons.PRESIDENT ||
-                clearance == Cons.VICE_PRESIDENT || userFolioNumber == "13786"
+            if (clearance == Const.PRO || clearance == Const.PRESIDENT ||
+                clearance == Const.VICE_PRESIDENT || userFolioNumber == "13786"
             ) {
                 serverDeleteItem.isVisible = true
             }

@@ -70,7 +70,7 @@ class AnnRepository @Inject constructor(
             if (backendResponse.status == Status.SUCCESS.toString()) {
                 val allAnnouncements = getAnnDataObjects(backendResponse.data).toList()
                 dao.insertAnnouncement(allAnnouncements)
-                limiter.reset("Announcement")
+                RateLimiter.reset(sharedP, "Announcement")
                 alarmManager.scheduleEventNotification(allAnnouncements)
                 return Resource.success(allAnnouncements)
             } else {
@@ -105,7 +105,7 @@ class AnnRepository @Inject constructor(
             return if (backendResponse.status == Status.SUCCESS.toString()) {
                 val allAnnouncements = getAnnDataObjects(backendResponse.data).toList()
                 dao.insertAnnouncement(allAnnouncements)
-                limiter.reset("Announcement")
+                RateLimiter.reset(sharedP, "Announcement")
                 alarmManager.scheduleEventNotification(allAnnouncements)
                 Resource.success(allAnnouncements)
             } else {

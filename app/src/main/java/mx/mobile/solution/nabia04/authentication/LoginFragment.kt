@@ -64,8 +64,6 @@ class LoginFragment : Fragment() {
         object : BackgroundTasks() {
             private val alert =
                 MyAlertDialog(requireContext(), "LOGIN", "Login in progress...", false)
-
-
             var response: ResponseLoginData? = null
             var exceptionThrown: Exception? = null
 

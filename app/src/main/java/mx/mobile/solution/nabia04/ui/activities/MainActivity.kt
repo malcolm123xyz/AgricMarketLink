@@ -31,6 +31,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import androidx.viewpager2.widget.ViewPager2
+import androidx.work.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
@@ -41,11 +42,14 @@ import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.authentication.AuthenticationActivity
 import mx.mobile.solution.nabia04.data.view_models.*
 import mx.mobile.solution.nabia04.databinding.ActivityMainBinding
+import mx.mobile.solution.nabia04.fcm_.SendTokenToServerWorker
 import mx.mobile.solution.nabia04.main.setupWithNavController
 import mx.mobile.solution.nabia04.util.Event
-import mx.mobile.solution.nabia04.utilities.Cons
+import mx.mobile.solution.nabia04.utilities.Const
 import mx.mobile.solution.nabia04.utilities.ExcelHelper
 import mx.mobile.solution.nabia04.utilities.SessionManager
+import mx.mobile.solution.nabia04.workManager.TokenRefreshWorker
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -118,7 +122,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setSupportActionBar(toolbar)
 
         userFolioNumber = sharedP.getString(SessionManager.FOLIO_NUMBER, "") ?: ""
-        clearance = sharedP.getString(Cons.CLEARANCE, "") ?: ""
+        clearance = sharedP.getString(Const.CLEARANCE, "") ?: ""
 
         drawerLayout = dataBinding.drawerLayout
 
@@ -133,6 +137,46 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             initializeExcel()
         }
 
+        scheduleSendingTokenToServer()
+
+        //scheduleTokenRefresh()
+    }
+
+    private fun scheduleSendingTokenToServer() {
+        val myWorkRequest: WorkRequest =
+            OneTimeWorkRequest.Builder(SendTokenToServerWorker::class.java)
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                )
+                .setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS
+                )
+                .build()
+        WorkManager.getInstance(applicationContext).enqueue(myWorkRequest)
+    }
+
+    private fun scheduleTokenRefresh() {
+        val requestID = "scheduleTokenRefresh"
+        val myWorkRequest =
+            PeriodicWorkRequest.Builder(TokenRefreshWorker::class.java, 15, TimeUnit.MINUTES)
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                )
+                .setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS
+                )
+                .addTag(requestID)
+                .build()
+        WorkManager.getInstance(applicationContext)
+            .enqueueUniquePeriodicWork(requestID, ExistingPeriodicWorkPolicy.REPLACE, myWorkRequest)
     }
 
     private fun checkPermission(): Boolean {

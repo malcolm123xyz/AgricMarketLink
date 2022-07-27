@@ -24,8 +24,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
-import com.google.api.client.extensions.android.json.AndroidJsonFactory
-import com.google.api.client.http.javanet.NetHttpTransport
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_send_ann.*
 import mx.mobile.solution.nabia04.R
@@ -33,7 +31,6 @@ import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager.CallBack
 import mx.mobile.solution.nabia04.databinding.ActivitySendAnnBinding
 import mx.mobile.solution.nabia04.utilities.*
-import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Announcement
 import java.io.File
 import java.io.FileNotFoundException
@@ -63,8 +60,10 @@ class ActivitySendAnnouncement : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        endpoint = endpointObject
-        fabSendAnn.setOnClickListener { doSend() }
+        fabSendAnn.setOnClickListener {
+            doSend()
+            //sendNotificationTask()
+        }
         changePicture.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
                     this@ActivitySendAnnouncement,
@@ -280,7 +279,7 @@ class ActivitySendAnnouncement : AppCompatActivity() {
 
             override fun doInBackground() {
                 try {
-                    val res = endpoint!!.insertAnnouncement(announcement).execute()
+                    val res = endpoint.insertAnnouncement(announcement).execute()
                     if (res.status == Status.ERROR.toString()) {
                         response = res.message
                     }
@@ -300,6 +299,35 @@ class ActivitySendAnnouncement : AppCompatActivity() {
         }.execute()
     }
 
+//    private fun sendNotificationTask() {
+//
+//        val alert = MyAlertDialog(
+//            this, "ANNOUNCEMENT",
+//            "Sending Announcement... Please wait", false
+//        )
+//
+//        object : BackgroundTasks() {
+//            var response = ""
+//            override fun onPreExecute() {
+//                alert.show()
+//            }
+//
+//            override fun doInBackground() {
+//                try {
+//                    endpoint.sendNotification().execute()
+//                } catch (ex: IOException) {
+//                    ex.printStackTrace()
+//                    response =
+//                        "An error occurred while sending the Announcement. Please try again"
+//                }
+//            }
+//
+//            override fun onPostExecute() {
+//                alert.dismiss()
+//            }
+//        }.execute()
+//    }
+
     private fun showDialog(t: String, s: String) {
         AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle)
             .setTitle(t)
@@ -312,16 +340,5 @@ class ActivitySendAnnouncement : AppCompatActivity() {
     companion object {
         private const val MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 87
         private const val TAG = "ActivitySendAnn"
-        private var endpoint: MainEndpoint? = null
-        val endpointObject: MainEndpoint?
-            get() {
-                if (endpoint == null) {
-                    val builder =
-                        MainEndpoint.Builder(NetHttpTransport(), AndroidJsonFactory(), null)
-                            .setRootUrl(Cons.ROOT_URL)
-                    endpoint = builder.build()
-                }
-                return endpoint
-            }
     }
 }

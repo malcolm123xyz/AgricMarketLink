@@ -24,7 +24,7 @@ import mx.mobile.solution.nabia04.ui.activities.ActivitySendAnnouncement
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
 import mx.mobile.solution.nabia04.ui.adapters.NoticeBoardChildFragmentStateAdapter
-import mx.mobile.solution.nabia04.utilities.Cons
+import mx.mobile.solution.nabia04.utilities.Const
 import mx.mobile.solution.nabia04.utilities.ExcelHelper
 import javax.inject.Inject
 
@@ -87,8 +87,8 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
             }
         }.attach()
 
-        if (clearance == Cons.PRO || clearance == Cons.PRESIDENT
-            || clearance == Cons.VICE_PRESIDENT || userFolioNumber == "13786"
+        if (clearance == Const.PRO || clearance == Const.PRESIDENT
+            || clearance == Const.VICE_PRESIDENT || userFolioNumber == "13786"
         ) {
             vb?.fabSendAnn?.visibility = View.VISIBLE
             vb?.fabSendAnn?.setOnClickListener {

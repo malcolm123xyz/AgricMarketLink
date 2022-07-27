@@ -15,7 +15,7 @@ import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.MainDataBase
 import mx.mobile.solution.nabia04.ui.activities.MainActivity
 import mx.mobile.solution.nabia04.utilities.BackgroundTasks
-import mx.mobile.solution.nabia04.utilities.Cons
+import mx.mobile.solution.nabia04.utilities.Const
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, i: Intent) {
@@ -71,7 +71,8 @@ class AlarmReceiver : BroadcastReceiver() {
         val notificationManager = (context.getSystemService(Context.NOTIFICATION_SERVICE)
                 as NotificationManager?)
 
-        val builder: NotificationCompat.Builder = NotificationCompat.Builder(context, Cons.BIRTHDAY_CHANNEL_ID)
+        val builder: NotificationCompat.Builder =
+            NotificationCompat.Builder(context, Const.BIRTHDAY_CHANNEL_ID)
 
         val intent1 = Intent(context, MainActivity::class.java)
         intent1.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -107,7 +108,8 @@ class AlarmReceiver : BroadcastReceiver() {
         val notificationManager = (context.getSystemService(Context.NOTIFICATION_SERVICE)
                     as NotificationManager?)
 
-        val builder: NotificationCompat.Builder = NotificationCompat.Builder(context, Cons.EVENT_CHANNEL_ID)
+        val builder: NotificationCompat.Builder =
+            NotificationCompat.Builder(context, Const.EVENT_CHANNEL_ID)
 
         val intent1 = Intent(context, MainActivity::class.java)
         intent1.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP

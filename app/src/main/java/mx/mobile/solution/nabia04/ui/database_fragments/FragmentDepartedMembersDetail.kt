@@ -3,7 +3,6 @@ package mx.mobile.solution.nabia04.ui.database_fragments
 import android.app.AlertDialog
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -71,8 +70,8 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
 
         selectedFolio = arguments?.getString("folio") ?: ""
 
-        if (clearance == Cons.PRO || clearance == Cons.PRESIDENT ||
-            clearance == Cons.VICE_PRESIDENT || userFolioNumber == "13786"
+        if (clearance == Const.PRO || clearance == Const.PRESIDENT ||
+            clearance == Const.VICE_PRESIDENT || userFolioNumber == "13786"
         ) {
             editBiography.visibility = View.VISIBLE
             editBiography.setOnClickListener { showBioEditor() }
@@ -92,7 +91,7 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
             menuInflater.inflate(R.menu.details_menu1, menu)
 
             val redoMenu = menu.findItem(R.id.redo)
-            if (clearance == Cons.PRO || userFolioNumber == "13786") {
+            if (clearance == Const.PRO || userFolioNumber == "13786") {
                 redoMenu.isVisible = true
             }
         }
@@ -108,7 +107,7 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
     }
 
     private fun showSetDeceasedDial() {
-        if (clearance != Cons.PRO && userFolioNumber != "13786") {
+        if (clearance != Const.PRO && userFolioNumber != "13786") {
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("LIE LIE!!!")
                 .setMessage("Masa only the PRO can do this ooo. Hahahahahah")
@@ -192,7 +191,8 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
             val name = shared.getString(SessionManager.USER_FULL_NAME, "").toString()
             try {
                 var tributes: MutableList<Map<String, String>> = ArrayList()
-                if (userData?.tributes != null) {
+                val newTribute = userData?.tributes ?: ""
+                if (newTribute.isNotEmpty()) {
                     tributes = convertMap(userData!!.tributes)
                 }
                 val tributeMap: MutableMap<String, String> = HashMap()
@@ -255,8 +255,7 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
     }
 
     private fun showDetails(data: EntityUserData) {
-        var nickName = ""
-        nickName = " (" + data.nickName + ")"
+        val nickName = " (" + data.nickName + ")"
         val name: String = data.fullName + nickName
         fullNameTv_Nickname.text = name
         folio_number_Tv.text = data.folioNumber
@@ -283,16 +282,16 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
         val s = "Died on: " + data.dateDeparted
         departed_on.text = s
 
-        Log.i("TAG", "BIOGRAPHY = " + data.biography)
-
         biography.text = data.biography
 
-        val tbs = convertMap(data.tributes)
-        for (tribute in tbs) {
-            val view = layoutInflater.inflate(R.layout.tribute, null)
-            view.findViewById<TextView>(R.id.tribute).text = tribute["tribute"].toString()
-            view.findViewById<TextView>(R.id.sender).text = "By: " + tribute["from"].toString()
-            tribute_holder.addView(view)
+        if (data.tributes.isNotEmpty()) {
+            val tbs = convertMap(data.tributes)
+            for (tribute in tbs) {
+                val view = layoutInflater.inflate(R.layout.tribute, null)
+                view.findViewById<TextView>(R.id.tribute).text = tribute["tribute"].toString()
+                view.findViewById<TextView>(R.id.sender).text = "By: " + tribute["from"].toString()
+                tribute_holder.addView(view)
+            }
         }
     }
 

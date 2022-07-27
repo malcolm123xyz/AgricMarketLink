@@ -1,6 +1,8 @@
 package mx.mobile.solution.nabia04.utilities
 
-object Cons {
+object Const {
+    val TOKEN_REFRESH_NOTIFY_CHANNEL = "token Refresh Notification"
+    const val FCM_TOKEN = "fcm_token"
     const val HAS_STORAGE_MANAGEMENT_PERM = "hasStoragePermission"
     const val DUES_NUM_SHEET: Int = 5
     const val DUES_TOTAL_MONTHS: Int = 5
@@ -17,6 +19,7 @@ object Cons {
     const val ROOT_URL = "https://nabia04.appspot.com/_ah/api/"
     const val CONTRIBUTION_BACKEND_ID = "Nabia04_contr"
     const val EVENT_CHANNEL_ID = "Event_Notification_Id"
+    const val GENERAL_CHANNEL_ID = "General_Notification_Id"
     const val BIRTHDAY_CHANNEL_ID = "Birthday_Notification_Id"
     const val REGISTRATION_TOKEN = "reg_token"
     const val ANN_REFRESH = "annRefresh"

@@ -31,7 +31,7 @@ import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
-import mx.mobile.solution.nabia04.utilities.Cons
+import mx.mobile.solution.nabia04.utilities.Const
 import mx.mobile.solution.nabia04.utilities.GlideApp
 import mx.mobile.solution.nabia04.utilities.MyAlertDialog
 import mx.mobile.solution.nabia04.utilities.Status
@@ -74,7 +74,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
         }
 
         if (selectedFolio == userFolioNumber ||
-            clearance == Cons.PRO ||
+            clearance == Const.PRO ||
             userFolioNumber == "13786"
         ) {
             fabEdit.visibility = View.VISIBLE
@@ -93,7 +93,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
             val clearanceMenu = menu.findItem(R.id.set_clearance)
             val setaliveMen = menu.findItem(R.id.living_status)
             val delete = menu.findItem(R.id.delete)
-            if (clearance == Cons.PRO || userFolioNumber == "13786") {
+            if (clearance == Const.PRO || userFolioNumber == "13786") {
                 clearanceMenu.isVisible = true
                 setaliveMen.isVisible = true
                 delete.isVisible = true
@@ -117,7 +117,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     }
 
     private fun showClearanceSettingDial() {
-        if (clearance == Cons.PRO || userFolioNumber == "13786") {
+        if (clearance == Const.PRO || userFolioNumber == "13786") {
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("WARNING!!!").setMessage(getString(R.string.warning_1))
                 .setPositiveButton("Continue") { dialog, id ->
@@ -128,12 +128,15 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
                             .setView(v)
                             .show()
                     v.findViewById<View>(R.id.none)
-                        .setOnClickListener(OnClearanceItemClick(Cons.POSITION_NONE, alert))
+                        .setOnClickListener(OnClearanceItemClick(Const.POSITION_NONE, alert))
                     v.findViewById<View>(R.id.president)
-                        .setOnClickListener(OnClearanceItemClick(Cons.POSITION_PRESIDENT, alert))
-                    v.findViewById<View>(R.id.vice_president).setOnClickListener(OnClearanceItemClick(Cons.POSITION_VICE_PRES,alert))
-                    v.findViewById<View>(R.id.treasurer).setOnClickListener(OnClearanceItemClick(Cons.POSITION_TREASURER, alert))
-                    v.findViewById<View>(R.id.secretary).setOnClickListener(OnClearanceItemClick(Cons.POSITION_SEC, alert))
+                        .setOnClickListener(OnClearanceItemClick(Const.POSITION_PRESIDENT, alert))
+                    v.findViewById<View>(R.id.vice_president)
+                        .setOnClickListener(OnClearanceItemClick(Const.POSITION_VICE_PRES, alert))
+                    v.findViewById<View>(R.id.treasurer)
+                        .setOnClickListener(OnClearanceItemClick(Const.POSITION_TREASURER, alert))
+                    v.findViewById<View>(R.id.secretary)
+                        .setOnClickListener(OnClearanceItemClick(Const.POSITION_SEC, alert))
                 }
                 .setNegativeButton("Cancel") { dialog, id -> dialog.dismiss() }.show()
         } else {
@@ -175,7 +178,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     }
 
     private fun showSetDeceasedDial() {
-        if (clearance != Cons.PRO && userFolioNumber != "13786") {
+        if (clearance != Const.PRO && userFolioNumber != "13786") {
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("LIE LIE!!!")
                 .setMessage("Masa only the PRO can do this ooo. Hahahahahah")
@@ -243,7 +246,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     }
 
     private fun showDeleteConfirmDial() {
-        if (clearance != Cons.PRO && userFolioNumber != "13786") {
+        if (clearance != Const.PRO && userFolioNumber != "13786") {
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("LIE LIE!!!")
                 .setMessage("Masa only the PRO can do this ooo. Hahahahahah")

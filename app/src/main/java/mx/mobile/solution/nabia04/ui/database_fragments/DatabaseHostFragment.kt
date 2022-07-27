@@ -92,13 +92,11 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     private val workRegion: MutableList<String> = ArrayList()
     private val workDistrict: MutableList<String> = ArrayList()
 
+    var animationCounter = 0
+
     private var animationJob: Job? = null
 
     override fun getLayoutRes(): Int = R.layout.database_viewpager_container
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -141,8 +139,8 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
             startActivity(i)
         }
 
-        if (clearance == Cons.PRO || clearance == Cons.PRESIDENT || clearance == Cons.VICE_PRESIDENT ||
-            clearance == Cons.TREASURER ||
+        if (clearance == Const.PRO || clearance == Const.PRESIDENT || clearance == Const.VICE_PRESIDENT ||
+            clearance == Const.TREASURER ||
             userFolioNumber == "13786"
         ) {
             vb?.fabAddUser?.visibility = View.VISIBLE
@@ -159,7 +157,7 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
                 upDateStats(list)
                 getFilterData(list)
                 this.cancel()
-                initiateJob(list)
+                //initiateJob(list)
             }
         }
     }
@@ -218,23 +216,11 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     }
 
     private fun animationTask(isBirthDay: Boolean, birthdayPersonName: String) {
-        var animationCounter = 1
-
-        when (animationCounter++) {
-            1 -> vb?.imageswitcher?.setImageDrawable(
-                getTxtDrawable(isBirthDay, animationCounter, birthdayPersonName, "HAPPY")
-            )
-            2 -> vb?.imageswitcher?.setImageDrawable(
-                getTxtDrawable(isBirthDay, animationCounter, birthdayPersonName, "BIRTHDAY")
-            )
-            3 -> vb?.imageswitcher?.setImageDrawable(
-                getTxtDrawable(isBirthDay, animationCounter, birthdayPersonName, "TO")
-            )
-            4 -> vb?.imageswitcher?.setImageDrawable(
-                getTxtDrawable(isBirthDay, animationCounter, birthdayPersonName, "TO")
-            )
-        }
+        vb?.imageswitcher?.setImageDrawable(
+            getTxtDrawable(isBirthDay, animationCounter, birthdayPersonName)
+        )
         animationCounter %= 5
+        animationCounter++
     }
 
     override fun onResume() {
@@ -384,11 +370,12 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     private fun getTxtDrawable(
         isBirthDay: Boolean,
         index: Int,
-        birthdayPersonName: String,
-        txt: String
+        birthdayPersonName: String
     ): Drawable? {
+        val str = arrayOf("HAPPY", "BIRTHDAY", "TO")
+
         if (isBirthDay) {
-            return if (index == 5) {
+            return if (index == 4) {
                 birthdayDrawable ?: TextDrawable.Builder()
                     .setColor(generator.randomColor)
                     .setShape(TextDrawable.SHAPE_RECT)
@@ -399,7 +386,7 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
                 TextDrawable.Builder()
                     .setColor(generator.randomColor)
                     .setShape(TextDrawable.SHAPE_RECT)
-                    .setText(txt)
+                    .setText(str[animationCounter])
                     .setFontSize(50)
                     .build()
             }
@@ -424,9 +411,9 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
 
         for (i in 0 until listSize) {
             val person = filteredData[i]
-            if (person.sex != null && person.sex == "Male") {
+            if (person.sex == "Male") {
                 maleCount++
-            } else if (person.sex != null && person.sex == "Female") {
+            } else if (person.sex == "Female") {
                 femaleCount++
             } else {
                 noneCount++
@@ -472,33 +459,33 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     private fun getFilterData(list: List<EntityUserData>) {
         for (user in list) {
             if (!user.districtOfResidence.equals("SELECT DISTRICT") &&
-                !user.districtOfResidence.isNullOrEmpty() &&
+                user.districtOfResidence.isNotEmpty() &&
                 !hometownDistrict.contains(user.districtOfResidence)
             ) {
                 hometownDistrict.add(user.districtOfResidence)
             }
             if (!user.regionOfResidence.equals("SELECT REGION") &&
-                !user.regionOfResidence.isNullOrEmpty() &&
+                user.regionOfResidence.isNotEmpty() &&
                 !hometownReg.contains(user.regionOfResidence)
             ) {
                 hometownReg.add(user.regionOfResidence)
             }
-            if (!user.employmentSector.isNullOrEmpty() &&
+            if (!user.employmentSector.isEmpty() &&
                 !employmentSector.contains(user.employmentSector)
             ) {
                 employmentSector.add(user.employmentSector)
             }
-            if (!user.specificOrg.isNullOrEmpty() && !specificOrg.contains(user.specificOrg)) {
+            if (!user.specificOrg.isEmpty() && !specificOrg.contains(user.specificOrg)) {
                 specificOrg.add(user.specificOrg)
             }
             if (!user.establishmentRegion.equals("SELECT REGION") &&
-                !user.establishmentRegion.isNullOrEmpty() &&
+                user.establishmentRegion.isNotEmpty() &&
                 !workRegion.contains(user.establishmentRegion)
             ) {
                 workRegion.add(user.establishmentRegion)
             }
             if (!user.districtOfResidence.equals("SELECT DISTRICT") &&
-                !user.establishmentDist.isNullOrEmpty() && !workDistrict.contains(user.establishmentDist)
+                user.establishmentDist.isNotEmpty() && !workDistrict.contains(user.establishmentDist)
             ) {
                 workDistrict.add(user.establishmentDist)
             }
