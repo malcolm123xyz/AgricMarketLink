@@ -54,17 +54,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     "Event"
                 }
                 notifyNewAnn(annType, heading)
-            } else if (type == Const.NOTIFY_NEW_ANN) {
-                //scheduleAnnouncementUpdate()
-                RateLimiter.allow(sharedP, "announcement")
-                val heading = data["heading"] as String
-                val t = data["annType"]?.toInt()
-                val annType = if (t == 0) {
-                    "General"
-                } else {
-                    "Event"
-                }
-                notifyNewAnn(annType, heading)
+            } else if (type == Const.NOTIFY_DATABASE_UPDATE) {
+                RateLimiter.allow(sharedP, "User_data")
             }
 
 
