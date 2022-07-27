@@ -57,6 +57,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             } else if (type == Const.NOTIFY_DATABASE_UPDATE) {
                 RateLimiter.allow(sharedP, "User_data")
             }
+            else if (NOTIFICATION_TYPE.equals(GlobalFields.NOTIFY_CLEARANCE)) {
+                        if (data.get("folio").equals(userFolio)) {
+                            sharedP.edit().putString(GlobalFields.CLEARANCE, (String) data.get("msg")).apply();
+                        }
+                    }
 
 
 
