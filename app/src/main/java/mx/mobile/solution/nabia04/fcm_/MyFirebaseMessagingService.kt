@@ -44,7 +44,19 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
             val type = data["NOTIFICATION_TYPE"] as String
             if (type == Const.NOTIFY_NEW_ANN) {
-                scheduleAnnouncementUpdate()
+                //scheduleAnnouncementUpdate()
+                RateLimiter.allow(sharedP, "announcement")
+                val heading = data["heading"] as String
+                val t = data["annType"]?.toInt()
+                val annType = if (t == 0) {
+                    "General"
+                } else {
+                    "Event"
+                }
+                notifyNewAnn(annType, heading)
+            } else if (type == Const.NOTIFY_NEW_ANN) {
+                //scheduleAnnouncementUpdate()
+                RateLimiter.allow(sharedP, "announcement")
                 val heading = data["heading"] as String
                 val t = data["annType"]?.toInt()
                 val annType = if (t == 0) {
