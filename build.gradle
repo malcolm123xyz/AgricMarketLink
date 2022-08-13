@@ -5,6 +5,7 @@ buildscript {
             url 'https://maven.google.com/'
             name 'Google'
         }
+        maven { url 'https://developer.huawei.com/repo/' } // HUAWEI Maven repository
     }
     dependencies {
         classpath 'com.google.cloud.tools:endpoints-framework-gradle-plugin:2.1.0'
@@ -12,6 +13,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:7.2.0'
         classpath 'com.google.gms:google-services:4.3.13'
         classpath "com.google.dagger:hilt-android-gradle-plugin:2.42"
+        classpath 'com.huawei.agconnect:agcp:1.4.1.300'  // HUAWEI agcp plugin
     }
 }
 plugins {

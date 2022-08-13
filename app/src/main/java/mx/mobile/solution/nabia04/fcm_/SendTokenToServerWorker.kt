@@ -54,7 +54,7 @@ class SendTokenToServerWorker(appContext: Context, workerParams: WorkerParameter
                     sharedP.edit().putString(Const.FCM_TOKEN, strObj).apply()
                     if (fcmToken.sent) {
                         Log.i(TAG, "TOKEN SENT TO SERVER SUCCESSFUL")
-                        RateLimiter.reset(sharedP, "Token_Refresh")
+                        RateLimiter.reset("Token_Refresh")
                         onSuccess()
                     } else {
                         Log.i(TAG, "FAILED TO SEND TOKEN TO SERVER")

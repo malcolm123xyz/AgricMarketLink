@@ -25,23 +25,7 @@
                         android:layout_width="match_parent"
                         android:background="@color/blue_light"
                         android:orientation="vertical"
-                        android:padding="10dp"
                         android:layout_height="wrap_content">
-
-                        <com.google.android.material.card.MaterialCardView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
-                            app:cardCornerRadius="100dp"
-                            android:layout_marginTop="?attr/actionBarSize"
-                            android:layout_gravity="center_horizontal">
-
-                            <ImageView
-                                android:layout_width="70dp"
-                                android:layout_height="70dp"
-                                android:layout_gravity="center"
-                                android:src="@mipmap/cedis_symbol" />
-
-                        </com.google.android.material.card.MaterialCardView>
 
 
                         <com.google.android.material.textview.MaterialTextView
@@ -49,6 +33,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_horizontal"
+                            android:paddingTop="60dp"
                             android:layout_marginTop="10dp"
                             android:textSize="20sp"
                             android:text="NABIA04 DUES DETAILS"
@@ -85,6 +70,32 @@
                             android:text="Last update: 10th July, 2020"
                             android:textColor="@color/white" />
 
+                        <LinearLayout
+                            android:id="@+id/l1"
+                            android:layout_width="200dp"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginLeft="5dp"
+                            android:padding="5dp"
+                            android:layout_height="wrap_content"
+                            android:background="@color/pink"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <TextView
+                                android:layout_width="200dp"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/black"
+                                android:layout_alignParentRight="true"
+                                android:text="This Update is not published. Users do not have this update" />
+
+                            <Button
+                                android:id="@+id/publish"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Publish" />
+
+                        </LinearLayout>
+
                     </LinearLayout>
 
                     <LinearLayout
@@ -95,6 +106,7 @@
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="40dp"
+                            android:layout_marginTop="5dp"
                             android:layout_marginLeft="5dp"
                             android:layout_marginRight="5dp"
                             android:layout_marginBottom="5dp"
@@ -231,8 +243,8 @@
 
             <ProgressBar
                 android:id="@+id/progressBar"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="100dp"
                 android:foregroundGravity="center"
                 app:layout_constraintBottom_toBottomOf="parent"

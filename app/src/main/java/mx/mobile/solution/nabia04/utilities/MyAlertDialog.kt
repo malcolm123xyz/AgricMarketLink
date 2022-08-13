@@ -9,9 +9,11 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import mx.mobile.solution.nabia04.R
 
 
 open class MyAlertDialog(val context: Context, title: String, txt: String, cancelable: Boolean) {
+    private lateinit var tvText: TextView
     private var dialog: AlertDialog
 
     init {
@@ -45,16 +47,16 @@ open class MyAlertDialog(val context: Context, title: String, txt: String, cance
             ViewGroup.LayoutParams.WRAP_CONTENT
         )
         llParam.gravity = Gravity.CENTER
-        val tvText = TextView(context)
+        tvText = TextView(context)
         tvText.text = message
-        tvText.setTextColor(Color.parseColor("#000000"))
+        tvText.setTextColor(Color.parseColor("#ffffff"))
         tvText.textSize = 20.toFloat()
         tvText.layoutParams = llParam
 
         ll.addView(progressBar)
         ll.addView(tvText)
 
-        val builder = AlertDialog.Builder(context)
+        val builder = AlertDialog.Builder(context, R.style.AppCompatAlertDialogStyle)
         builder.setTitle(title)
         builder.setCancelable(cancelable)
         builder.setView(ll)
@@ -78,5 +80,9 @@ open class MyAlertDialog(val context: Context, title: String, txt: String, cance
     open fun show(): MyAlertDialog {
         dialog.show()
         return this
+    }
+
+    open fun setMessage(message: String) {
+        tvText.text = message
     }
 }

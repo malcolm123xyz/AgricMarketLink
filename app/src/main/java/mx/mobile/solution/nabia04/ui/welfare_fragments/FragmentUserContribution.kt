@@ -23,7 +23,7 @@ import mx.mobile.solution.nabia04.databinding.FragmentContributionsBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.adapters.ContListAdapter
 import mx.mobile.solution.nabia04.utilities.GlideApp
-import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.ContributionData
@@ -108,10 +108,10 @@ class FragmentUserContribution : BaseFragment<FragmentContributionsBinding>() {
             .build()
     }
 
-    private fun getContributions(): Resource<ContributionData>? {
+    private fun getContributions(): Response<ContributionData>? {
         return try {
             val response = endpoint.contributions.execute()
-            Resource.success(response.data)
+            Response.success(response.data)
         } catch (ex: IOException) {
             val erMsg = if (ex is SocketTimeoutException ||
                 ex is SSLHandshakeException ||
@@ -121,7 +121,7 @@ class FragmentUserContribution : BaseFragment<FragmentContributionsBinding>() {
             } else {
                 ex.localizedMessage ?: ""
             }
-            Resource.error(erMsg, null)
+            Response.error(erMsg, null)
         }
     }
 

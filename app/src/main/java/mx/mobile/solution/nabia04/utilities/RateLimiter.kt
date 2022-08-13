@@ -18,42 +18,45 @@ package mx.mobile.solution.nabia04.utilities
 
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.preference.PreferenceManager
+import mx.mobile.solution.nabia04.App.Companion.applicationContext
 import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.inject.Inject
 
 /**
  * Utility class that decides whether we should fetch some data or not.
  */
 
-class RateLimiter @Inject constructor(var sharedP: SharedPreferences) {
-
-    fun shouldFetch(key: String, tOut: Int, tUnit: TimeUnit): Boolean {
-        val timeout = tUnit.toMillis(tOut.toLong())
-        val lastFetched = sharedP.getLong(key, 0L)
-        val now = now()
-        if (lastFetched == 0L) {
-            sharedP.edit().putLong(key, now).apply()
-            return true
-        }
-        if (now - lastFetched > timeout) {
-            sharedP.edit().putLong(key, now).apply()
-            return true
-        }
-        return false
-    }
-
+class RateLimiter() {
     companion object {
+        val sharedP: SharedPreferences =
+            PreferenceManager.getDefaultSharedPreferences(applicationContext())
+
+        fun shouldFetch(key: String, tOut: Int, tUnit: TimeUnit): Boolean {
+            val timeout = tUnit.toMillis(tOut.toLong())
+            val lastFetched = sharedP.getLong(key, 0L)
+            val now = now()
+            if (lastFetched == 0L) {
+                sharedP.edit().putLong(key, now).apply()
+                return true
+            }
+            if (now - lastFetched > timeout) {
+                sharedP.edit().putLong(key, now).apply()
+                return true
+            }
+            return false
+        }
+
         private fun now() = System.currentTimeMillis()
-        fun reset(sharedP: SharedPreferences, key: String) {
+        fun reset(key: String) {
             sharedP.edit().putLong(key, now()).apply()
             Log.i("RateLimiter", "$key reset to : ${Date(now())}")
         }
-        
-      fun allow(sharedP: SharedPreferences, key: String) {
-            sharedP.edit().putLong(key, 0L).apply()
-            Log.i("RateLimiter", "$key reset to : ${Date(0L)}")
+
+        fun allow(key: String) {
+            sharedP.edit().putLong(key, 0).apply()
+            Log.i("RateLimiter", "$key Allowed to : ${Date(0)}")
         }
-        
+
     }
 }

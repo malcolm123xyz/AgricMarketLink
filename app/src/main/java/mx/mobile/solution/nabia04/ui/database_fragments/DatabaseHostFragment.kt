@@ -139,8 +139,8 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
             startActivity(i)
         }
 
-        if (clearance == Const.PRO || clearance == Const.PRESIDENT || clearance == Const.VICE_PRESIDENT ||
-            clearance == Const.TREASURER ||
+        if (clearance == Const.POS_PRO || clearance == Const.POS_PRESIDENT || clearance == Const.POS_VICE_PRESIDENT ||
+            clearance == Const.POS_TREASURER ||
             userFolioNumber == "13786"
         ) {
             vb?.fabAddUser?.visibility = View.VISIBLE

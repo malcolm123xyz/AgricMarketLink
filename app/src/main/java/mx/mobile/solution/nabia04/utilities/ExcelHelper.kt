@@ -1,75 +1,175 @@
 package mx.mobile.solution.nabia04.utilities
 
+import android.content.SharedPreferences
 import android.os.Environment
 import android.util.Log
-import kotlinx.coroutines.DelicateCoroutinesApi
+import android.widget.Toast
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import mx.mobile.solution.nabia04.App.Companion.applicationContext
+import mx.mobile.solution.nabia04.data.dao.DuesBackupDao
 import mx.mobile.solution.nabia04.data.entities.EntityDues
+import mx.mobile.solution.nabia04.data.entities.EntityDuesBackup
 import org.apache.poi.ss.usermodel.*
 import org.apache.poi.ss.util.CellReference
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
+import java.io.*
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.math.ceil
-import kotlin.time.ExperimentalTime
-import kotlin.time.measureTime
 
 
-@OptIn(DelicateCoroutinesApi::class)
 @Singleton
-class ExcelHelper @Inject constructor() {
+class ExcelHelper @Inject constructor(
+    val sharedP: SharedPreferences,
+    val duesBackupDao: DuesBackupDao
+) {
 
-    private val LETTERS_IN_EN_ALFABET = 26.toChar()
-    private val BASE = LETTERS_IN_EN_ALFABET
-    private val A_LETTER = 65.toChar()
+    init {
+        Log.i("TAG", "ExcelHelper Init: ${this.hashCode()}")
+    }
 
-    var numNumYears = 0
-    private val ourAppFileDirectory = File(Environment.getExternalStorageDirectory().absolutePath)
+    private var excelFile: File? = null
+    private var numNumYears = 0
     private var formatter = DataFormatter()
-    private lateinit var workbook: Workbook
-    var totalNumMonths = 0.00
-    private var isCreated = false
+    private var workbook: Workbook? = null
+    var isCreated = false
     var members: MutableList<Member> = ArrayList()
     var names: MutableList<String> = ArrayList()
 
-    @OptIn(ExperimentalTime::class)
-    fun createExcel() {
+
+    fun initialize() {
         if (!isCreated) {
-            Log.i("TAG", "Creating excel...")
-            val time = measureTime {
-                createWorkBook()
-                getPaidMembers()
-                val calendar = Calendar.getInstance()
-                val month = calendar.get(Calendar.MONTH)
-                val currYearMonths = 12 - month
-                numNumYears = getNumYears()
-                totalNumMonths = ((12 * numNumYears) - (7 + currYearMonths)).toDouble()
-                isCreated = true
+            showToast("Initializing excel document...")
+            excelFile = getExcelFile()
+            Log.i("TAG", "File lenght: ${excelFile!!.length()}")
+            if (excelFile!!.length() == 0L) {
+                Log.i("TAG", "Excel file does not exist. Downloading it..")
+                excelFile = downloadFile()
             }
-            Log.i("TAG", "Excel created, (took $time ms)")
-        } else {
-            Log.i("TAG", "Excel already created...")
+            if (excelFile == null) {
+                Log.i("TAG", "Failed to download it. Returning")
+                return
+            }
+            Log.i("TAG", "File downloaded. Creating workbook...")
+            showToast("File downloaded creating workbook")
+            isCreated = createWorkBook(excelFile!!)
+            if (isCreated) {
+                getPaidMembers()
+            }
         }
     }
 
-    fun reload() {
-        createWorkBook()
-        getPaidMembers()
-        val calendar = Calendar.getInstance()
-        val month = calendar.get(Calendar.MONTH)
-        val currYearMonths = 12 - month
-        numNumYears = getNumYears()
-        totalNumMonths = ((12 * numNumYears) - (7 + currYearMonths)).toDouble()
-        isCreated = true
+    private fun showToast(str: String) {
+        val scope = CoroutineScope(Dispatchers.Main)
+        scope.launch {
+            Toast.makeText(
+                applicationContext(), str, Toast.LENGTH_SHORT
+            ).show()
+        }
     }
 
-    private fun getNumYears(): Int {
-        val row = workbook.getSheetAt(0).getRow(0)
-        return row.lastCellNum - 4
+    fun initializeTemp(filePath: String) {
+        val file = File(filePath)
+        if (file.exists()) {
+            createWorkBook(file)
+            isCreated = false
+        }
+    }
+
+    private fun downloadFile(): File? {
+        val duesDir = File(applicationContext().filesDir, "Dues")
+        Log.i("TAG", "Downloading file")
+        var excelFile: File? = null
+        var urlConnection: HttpURLConnection? = null
+        try {
+            val url = URL(Const.EXCEL_URL)
+            urlConnection = url.openConnection() as HttpURLConnection
+            urlConnection.requestMethod = "GET"
+            urlConnection.doOutput = false
+            urlConnection.connect()
+
+            if (!duesDir.exists()) {
+                duesDir.mkdirs()
+            }
+            excelFile = File(duesDir, "Nabiadues.xlsx")
+            if (!excelFile.exists()) {
+                excelFile.createNewFile()
+            }
+            val inputStream: InputStream = urlConnection.inputStream
+            val totalSize: Int = urlConnection.contentLength
+            val outPut = FileOutputStream(excelFile)
+            var downloadedSize = 0
+            val buffer = ByteArray(2024)
+            var bufferLength = 0
+            while (inputStream.read(buffer).also { bufferLength = it } > 0) {
+                outPut.write(buffer, 0, bufferLength)
+                downloadedSize += bufferLength
+                Log.e(
+                    "Progress:",
+                    "downloadedSize:" + Math.abs(downloadedSize * 100 / totalSize)
+                )
+            }
+            outPut.close()
+            Log.i("TAG", "File downloaded")
+        } catch (e: IOException) {
+            excelFile = null
+            e.printStackTrace()
+            Log.e("checkException:-", "" + e)
+        }
+        return excelFile
+    }
+
+    private fun getPaidMembers() {
+        members.clear()
+        names.clear()
+        members.add(Member("", "", 0.00))
+        names.add("Select member")
+        val sheet = workbook?.getSheetAt(0)
+        if (sheet != null) {
+            for (i in 1 until sheet.lastRowNum) {
+                val name: String = formatter.formatCellValue(sheet.getRow(i).getCell(1))
+                val folio: String = formatter.formatCellValue(sheet.getRow(i).getCell(2))
+                val amount =
+                    sheet.getRow(i).getCell(sheet.getRow(i).lastCellNum - 1).numericCellValue
+                members.add(Member(folio, name, amount))
+                names.add(name)
+            }
+        }
+        Log.i("TAG", "Members = ${members.size}")
+    }
+
+    val totalNumMonths: Double
+        get() {
+            val calendar = Calendar.getInstance()
+            val month = calendar.get(Calendar.MONTH)
+            val currYearMonths = 12 - month
+            return ((12 * numNumYears) - (7 + currYearMonths)).toDouble()
+        }
+
+    private fun createWorkBook(excelFile: File): Boolean {
+        try {
+            val workbookStream = FileInputStream(excelFile)
+            workbook = WorkbookFactory.create(workbookStream)
+            if (workbook != null) {
+                numNumYears = workbook!!.getSheetAt(0).getRow(0).lastCellNum - 4
+            }
+            return true
+        } catch (e: Exception) {
+//            if (e is EmptyFileException) {
+//            }
+            e.printStackTrace()
+        }
+        return false
+    }
+
+    fun getExcelFile(): File {
+        val duesDir = File(applicationContext().filesDir, "Dues")
+        return File(duesDir, "Nabiadues.xlsx")
     }
 
     private fun getUserRowFolio(folio: String, sheet: Sheet): Row? {
@@ -96,26 +196,28 @@ class ExcelHelper @Inject constructor() {
     suspend fun getDues(): List<EntityDues> {
         return withContext(Dispatchers.Default) {
             val duesList: MutableList<EntityDues> = ArrayList()
-            val sheet = workbook.getSheetAt(0)
-            for (i in 1 until sheet.lastRowNum) {
-                val row = sheet.getRow(i)
-                val dues = EntityDues()
+            val sheet = workbook?.getSheetAt(0)
+            if (sheet != null) {
+                for (i in 1 until sheet.lastRowNum) {
+                    val row = sheet.getRow(i)
+                    val dues = EntityDues()
 
-                dues.index = formatter.formatCellValue(row.getCell(0))
-                dues.name = formatter.formatCellValue(row.getCell(1))
-                dues.folio = formatter.formatCellValue(row.getCell(2))
+                    dues.index = formatter.formatCellValue(row.getCell(0))
+                    dues.name = formatter.formatCellValue(row.getCell(1))
+                    dues.folio = formatter.formatCellValue(row.getCell(2))
 
-                val duesArray: MutableList<String> = ArrayList()
-                for (t in 0 until numNumYears) {
-                    val v = formatter.formatCellValue(row.getCell(t + 3))
-                    duesArray.add(v)
+                    val duesArray: MutableList<String> = ArrayList()
+                    for (t in 0 until numNumYears) {
+                        val v = formatter.formatCellValue(row.getCell(t + 3))
+                        duesArray.add(v)
+                    }
+
+                    duesArray.add(row.getCell(row.lastCellNum - 1).numericCellValue.toString())
+
+                    dues.payments = duesArray.toTypedArray()
+
+                    duesList.add(dues)
                 }
-
-                duesArray.add(row.getCell(row.lastCellNum - 1).numericCellValue.toString())
-
-                dues.payments = duesArray.toTypedArray()
-
-                duesList.add(dues)
             }
             return@withContext duesList
         }
@@ -125,15 +227,15 @@ class ExcelHelper @Inject constructor() {
         return formatter.formatCellValue(cell)
     }
 
-    private fun upDatePayment(amnt: Double, folio: String): Resource<String> {
+    private fun upDatePayment(amnt: Double, folio: String): Response<String> {
         val errMsg: String
         var amount = amnt
-        val sheet = workbook.getSheetAt(0)
-        val row = getUserRowFolio(folio, sheet)
-            ?: return Resource.error("Could not find the a member with folio number: $folio", "")
+        val sheet = workbook?.getSheetAt(0)
+        val row = sheet?.let { getUserRowFolio(folio, it) }
+            ?: return Response.error("Could not find the a member with folio number: $folio", "")
         val emptyCellIndex = getEmptyCellIndex(sheet, folio)
         val startCell = row.getCell(emptyCellIndex - 1)
-        var spillOver = (getCellvalue(startCell).toDouble() + amount) - 60.0
+        val spillOver = (getCellvalue(startCell).toDouble() + amount) - 60.0
         Log.i("TAG", "Spill over: $spillOver")
 
         try {
@@ -163,20 +265,65 @@ class ExcelHelper @Inject constructor() {
                 amount -= amountToAdd
                 Log.i("TAG", "Ammount added = $amountToAdd")
             }
-
-            workbook.creationHelper.createFormulaEvaluator().evaluateAll()
-            val out = FileOutputStream(File(ourAppFileDirectory, "Nabiadues.xlsx"))
-            workbook.write(out)
-            out.close()
             Log.i("TAG", "Payment update made successfully")
-            return Resource.success("")
+            return Response.success("")
         } catch (e: Exception) {
             e.printStackTrace()
             errMsg =
                 e.localizedMessage ?: "An Unknown Error occurred while Doing the payment update."
         }
 
-        return Resource.error(errMsg, "")
+        return Response.error(errMsg, "")
+    }
+
+    fun saveUpdate() {
+        val duesDir = File(applicationContext().filesDir, "Dues")
+        try {
+            workbook?.creationHelper?.createFormulaEvaluator()?.evaluateAll()
+            val out = FileOutputStream(File(duesDir, "Nabiadues.xlsx"))
+            workbook?.write(out)
+            out.close()
+            sharedP.edit().putBoolean(Const.EXCEL_PUBLISHED, false).apply()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun backup() {
+        val backupDir =
+            File(Environment.getExternalStorageDirectory().absolutePath, "Nabia04_Dues_backups")
+
+        val time = System.currentTimeMillis()
+        val fileName = "${time}.xlsx"
+
+        try {
+            workbook?.creationHelper?.createFormulaEvaluator()?.evaluateAll()
+            if (!backupDir.exists()) {
+                backupDir.mkdir()
+            }
+            val file = File(backupDir, fileName)
+            if (!file.exists()) {
+                file.createNewFile()
+            }
+            val out = FileOutputStream(file)
+            workbook?.write(out)
+            out.close()
+            val backup = EntityDuesBackup(time)
+            backup.fileFullPath = file.absolutePath
+            backup.filePath = backupDir.absolutePath
+            backup.fileName = fileName
+            backup.published = false
+            backup.totalAmount = getGrandTotal().toString()
+            val scope = CoroutineScope(Dispatchers.Default)
+            scope.launch {
+                duesBackupDao.insert(backup)
+                sharedP.edit().putBoolean(Const.EXCEL_PUBLISHED, false).apply()
+                Log.i("TAG", "Backup saved")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
     private fun getEmptyCellIndex(sheet: Sheet, folio: String): Int {
@@ -207,19 +354,19 @@ class ExcelHelper @Inject constructor() {
 
     private fun addColumns(colIndex: Int, numCol: Int) {
         var columnIndex = colIndex
-        val evaluator = workbook.creationHelper
-            .createFormulaEvaluator()
-        evaluator.clearAllCachedResultValues()
-        val sheet = workbook.getSheetAt(0)
+        val evaluator = workbook?.creationHelper
+            ?.createFormulaEvaluator()
+        evaluator?.clearAllCachedResultValues()
+        val sheet = workbook?.getSheetAt(0)
 
         Log.i("TAG", "$numCol Culomns to Insert")
 
         for (i in 0 until numCol) {
-            val nrRows: Int = sheet.lastRowNum + 1
-            val nrCols: Int = sheet.getRow(0).lastCellNum.toInt()
+            val nrRows: Int = (sheet?.lastRowNum ?: 0) + 1
+            val nrCols: Int = sheet?.getRow(0)?.lastCellNum?.toInt() ?: 0
             Log.i("TAG", "Inserting new column at $columnIndex")
             for (row in 0 until nrRows) {
-                val r = sheet.getRow(row) ?: continue
+                val r = sheet?.getRow(row) ?: continue
                 // shift to right
                 for (col in nrCols downTo columnIndex + 1) {
                     val rightCell = r.getCell(col)
@@ -234,9 +381,9 @@ class ExcelHelper @Inject constructor() {
                             if (newCell.cellTypeEnum == CellType.FORMULA) {
                                 newCell.cellFormula =
                                     updateFormula(newCell.cellFormula, columnIndex - 1)
-                                evaluator.notifySetFormula(newCell)
-                                val cellValue = evaluator.evaluate(newCell)
-                                evaluator.evaluateFormulaCell(newCell)
+                                evaluator?.notifySetFormula(newCell)
+                                val cellValue = evaluator?.evaluate(newCell)
+                                evaluator?.evaluateFormulaCell(newCell)
                                 println(cellValue)
                             }
                         }
@@ -244,8 +391,8 @@ class ExcelHelper @Inject constructor() {
                             if (newCell.cellTypeEnum == CellType.FORMULA) {
                                 newCell.cellFormula =
                                     updateFormula(newCell.cellFormula, columnIndex)
-                                evaluator.notifySetFormula(newCell)
-                                evaluator.evaluateFormulaCell(newCell)
+                                evaluator?.notifySetFormula(newCell)
+                                evaluator?.evaluateFormulaCell(newCell)
                             }
                         }
                     }
@@ -272,7 +419,7 @@ class ExcelHelper @Inject constructor() {
         name: String,
         folio: String,
         pos: Int
-    ): Resource<String> {
+    ): Response<String> {
 
         return withContext(Dispatchers.Default) {
             if (pos > 0) {
@@ -282,57 +429,37 @@ class ExcelHelper @Inject constructor() {
             if (response.status == Status.SUCCESS) {
                 upDatePayment(amount.toDouble(), folio)
             } else {
-                Resource.error(response.message.toString(), "")
+                Response.error(response.message.toString(), "")
             }
         }
     }
 
-    private fun createNewPaymentRow(name: String, folio: String): Resource<String> {
+    private fun createNewPaymentRow(name: String, folio: String): Response<String> {
         val errMsg: String
-        val sheet = workbook.getSheetAt(0)
-        val lastCellNum = sheet.getRow(0).lastCellNum
-        val row = sheet.createRow(sheet.lastRowNum - 1)
-        row.createCell(0).setCellValue(row.rowNum.toString())
-        row.createCell(1).setCellValue(name)
-        row.createCell(2).setCellValue(folio.toDouble())
+        val sheet = workbook?.getSheetAt(0)
+        val lastCellNum = sheet?.getRow(0)?.lastCellNum
+        val row = sheet?.createRow(sheet.lastRowNum - 1)
+        row?.createCell(0)?.setCellValue(row.rowNum.toString())
+        row?.createCell(1)?.setCellValue(name)
+        row?.createCell(2)?.setCellValue(folio.toDouble())
 
-        for (n in 3 until lastCellNum) {
-            row.createCell(n).setCellValue(0.0)
+        for (n in 3 until lastCellNum!!) {
+            if (row != null) {
+                row.createCell(n).setCellValue(0.0)
+            }
         }
 
         val lastColName = CellReference.convertNumToColString(lastCellNum - 2)
-        val formula = "SUM(D${row.rowNum + 1}:$lastColName${row.rowNum + 1})"
-        row.createCell(lastCellNum - 1).cellFormula = formula
+        val formula = "SUM(D${(row?.rowNum ?: 0) + 1}:$lastColName${(row?.rowNum ?: 0) + 1})"
+        if (row != null) {
+            row.createCell(lastCellNum - 1).cellFormula = formula
+        }
 
         members.add(Member(folio, name, 0.0))
+        return Response.success("DONE")
 
-        workbook.creationHelper.createFormulaEvaluator().evaluateAll()
-        try {
-            val out = FileOutputStream(File(ourAppFileDirectory, "Nabiadues.xlsx"))
-            workbook.write(out)
-            out.close()
-            Log.i("TAG", "New payment made successfully")
-            return Resource.success("DONE")
-        } catch (e: Exception) {
-            e.printStackTrace()
-            errMsg =
-                e.localizedMessage ?: "An Unknown Error occurred while Creating new Row for member"
-        }
-        return Resource.error(errMsg, "")
     }
 
-    private fun getPaidMembers() {
-        members.add(Member("", "", 0.00))
-        names.add("Select member")
-        val sheet = workbook.getSheetAt(0)
-        for (i in 1 until sheet.lastRowNum) {
-            val name: String = formatter.formatCellValue(sheet.getRow(i).getCell(1))
-            val folio: String = formatter.formatCellValue(sheet.getRow(i).getCell(2))
-            val amount = sheet.getRow(i).getCell(sheet.getRow(i).lastCellNum - 1).numericCellValue
-            members.add(Member(folio, name, amount))
-            names.add(name)
-        }
-    }
 
     fun getRank(index: Int): Int? {
         val amount = members[index].totalAmount
@@ -350,48 +477,36 @@ class ExcelHelper @Inject constructor() {
         return null
     }
 
-    private fun getExcelFile(): File? {
-        ourAppFileDirectory.let {
-            //Check if file exists or not
-            if (it.exists()) {
-                return File(ourAppFileDirectory, "Nabiadues.xlsx")
-            }
-        }
-        return null
-    }
-
-    private fun createWorkBook() {
-        getExcelFile()?.let {
-            try {
-                val workbookStream = FileInputStream(it)
-                workbook = WorkbookFactory.create(workbookStream)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-
     fun getUserTotal(rowIndex: Int): Double {
-        val row = workbook.getSheetAt(0).getRow(rowIndex)
-        return row.getCell(row.lastCellNum - 1).numericCellValue
+        Log.i("TAG", "Row index: $rowIndex")
+        val row = workbook?.getSheetAt(0)?.getRow(rowIndex)
+        if (row != null) {
+            return row.getCell(row.lastCellNum - 1).numericCellValue
+        }
+        return 0.0
     }
 
     fun getUserTotalByName(n: String): Double? {
-        val sheet = workbook.getSheetAt(0)
-        for (i in 1..sheet.lastRowNum) {
-            val row = sheet.getRow(i)
-            val name: String = formatter.formatCellValue(row.getCell(1))
-            if (name == n) {
-                return row.getCell(row.lastCellNum - 1).numericCellValue
+        val sheet = workbook?.getSheetAt(0)
+        if (sheet != null) {
+            for (i in 1..sheet.lastRowNum) {
+                val row = sheet.getRow(i)
+                val name: String = formatter.formatCellValue(row.getCell(1))
+                if (name == n) {
+                    return row.getCell(row.lastCellNum - 1).numericCellValue
+                }
             }
         }
         return null
     }
 
     fun getGrandTotal(): Double {
-        val sheet = workbook.getSheetAt(0)
-        val row = sheet.getRow(sheet.lastRowNum)
-        return row.getCell(row.lastCellNum - 1).numericCellValue
+        val sheet = workbook?.getSheetAt(0)
+        val row = sheet?.getRow(sheet.lastRowNum)
+        if (row != null) {
+            return row.getCell(row.lastCellNum - 1).numericCellValue
+        }
+        return 0.0
     }
 
 
@@ -454,36 +569,16 @@ class ExcelHelper @Inject constructor() {
 
     fun getHeader(): List<String> {
         val list: MutableList<String> = ArrayList()
-        val sheet = workbook.getSheetAt(0)
-        val row = sheet.getRow(0)
-        val i = row.lastCellNum - 6
-        for (item in i..row.lastCellNum - 2) {
-            list.add(formatter.formatCellValue(row.getCell(item)))
+        val sheet = workbook?.getSheetAt(0)
+        val row = sheet?.getRow(0)
+        val i = (row?.lastCellNum ?: 0) - 6
+        if (row != null) {
+            for (item in i..row.lastCellNum - 2) {
+                list.add(formatter.formatCellValue(row.getCell(item)))
+            }
         }
         return list
     }
 
-    fun restoreWorkBook() {
-        var workbook1: Workbook? = null
-        var file: File? = null
-
-        try {
-            ourAppFileDirectory.let {
-                //Check if file exists or not
-                if (it.exists()) {
-                    file = File(ourAppFileDirectory, "Nabiadues_backup.xlsx")
-                }
-            }
-
-            val workbookStream = FileInputStream(file)
-            workbook1 = WorkbookFactory.create(workbookStream)
-            val out = FileOutputStream(File(ourAppFileDirectory, "Nabiadues.xlsx"))
-            workbook1?.write(out)
-            out.close()
-            Log.i("TAG", "Workbook restored")
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 }
 

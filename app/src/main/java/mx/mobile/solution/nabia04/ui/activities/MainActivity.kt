@@ -38,6 +38,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import mx.mobile.solution.nabia04.App
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.authentication.AuthenticationActivity
 import mx.mobile.solution.nabia04.data.view_models.*
@@ -48,9 +49,12 @@ import mx.mobile.solution.nabia04.util.Event
 import mx.mobile.solution.nabia04.utilities.Const
 import mx.mobile.solution.nabia04.utilities.ExcelHelper
 import mx.mobile.solution.nabia04.utilities.SessionManager
+import mx.mobile.solution.nabia04.workManager.ExcelDownloadWorker
 import mx.mobile.solution.nabia04.workManager.TokenRefreshWorker
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 
 /*
@@ -112,34 +116,55 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private lateinit var drawerLayout: DrawerLayout
 
+    @OptIn(ExperimentalTime::class)
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        val n = measureTime {
 
-        dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+            dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
+            val toolbar = findViewById<Toolbar>(R.id.toolbar)
+            setSupportActionBar(toolbar)
 
-        userFolioNumber = sharedP.getString(SessionManager.FOLIO_NUMBER, "") ?: ""
-        clearance = sharedP.getString(Const.CLEARANCE, "") ?: ""
+            userFolioNumber = sharedP.getString(SessionManager.FOLIO_NUMBER, "") ?: ""
+            clearance = sharedP.getString(Const.CLEARANCE, "") ?: ""
+            Log.i("TAG", "USER CLEARANCE = $clearance")
 
-        drawerLayout = dataBinding.drawerLayout
+            drawerLayout = dataBinding.drawerLayout
 
-        val navigationView = findViewById<NavigationView>(R.id.nav_view)
-        navigationView.setNavigationItemSelectedListener(this)
+            val navigationView = findViewById<NavigationView>(R.id.nav_view)
+            navigationView.setNavigationItemSelectedListener(this)
 
-        if (savedInstanceState == null) {
-            setupBottomNavigationBar()
+            if (savedInstanceState == null) {
+                setupBottomNavigationBar()
+            }
+
+            scheduleSendingTokenToServer()
+
+            if (checkPermission()) {
+                lifecycleScope.launch {
+                    initializeExcel()
+                    scheduleExcelDownloader()
+                }
+            } else {
+                requestPermission()
+            }
+
         }
+        Log.i("TAG", "Activity onCreate() took: $n")
+    }
 
-        lifecycleScope.launch {
-            initializeExcel()
+    private fun checkPermission(): Boolean {
+        return if (SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
+        } else {
+            val result =
+                ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE)
+            val result1 =
+                ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
+            result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED
         }
-
-        scheduleSendingTokenToServer()
-
-        //scheduleTokenRefresh()
     }
 
     private fun scheduleSendingTokenToServer() {
@@ -157,6 +182,79 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 )
                 .build()
         WorkManager.getInstance(applicationContext).enqueue(myWorkRequest)
+    }
+
+    private fun requestPermission() {
+        if (SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                intent.addCategory("android.intent.category.DEFAULT")
+                intent.data =
+                    Uri.parse(String.format("package:%s", App.applicationContext().packageName))
+                startActivityForResult(intent, 2296)
+            } catch (e: Exception) {
+                val intent = Intent()
+                intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
+                startActivityForResult(intent, 2296)
+            }
+        } else {
+            //below android 11
+            ActivityCompat.requestPermissions(
+                this, arrayOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE),
+                PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, @Nullable data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 2296) {
+            if (SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    Log.i("TAG", "Permission Granted")
+                    lifecycleScope.launch {
+                        initializeExcel()
+                    }
+                } else {
+                    Log.i("TAG", "Permission not Granted")
+                    Toast.makeText(this, "Allow permission for storage access!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty()) {
+                val READ_EXTERNAL_STORAGE = grantResults[0] == PackageManager.PERMISSION_GRANTED
+                val WRITE_EXTERNAL_STORAGE = grantResults[1] == PackageManager.PERMISSION_GRANTED
+                if (READ_EXTERNAL_STORAGE && WRITE_EXTERNAL_STORAGE) {
+                    Log.i("TAG", "Permission Granted")
+                    lifecycleScope.launch {
+                        initializeExcel()
+                    }
+                } else {
+                    Log.i("TAG", "Permission not Granted")
+                    Toast.makeText(this, "Allow permission for storage access!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    @OptIn(ExperimentalTime::class)
+    private suspend fun initializeExcel() {
+        withContext(Dispatchers.Default) {
+            val n = measureTime {
+                excelHelper.initialize()
+            }
+            Log.i("TAG", "Excel innitialization took: $n")
+        }
     }
 
     private fun scheduleTokenRefresh() {
@@ -179,88 +277,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .enqueueUniquePeriodicWork(requestID, ExistingPeriodicWorkPolicy.REPLACE, myWorkRequest)
     }
 
-    private fun checkPermission(): Boolean {
-        return if (SDK_INT >= Build.VERSION_CODES.R) {
-            Environment.isExternalStorageManager()
-        } else {
-            val result =
-                ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE)
-            val result1 =
-                ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
-            result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED
-        }
-    }
-
-    private fun requestPermission() {
-        if (SDK_INT >= Build.VERSION_CODES.R) {
-            try {
-                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                intent.addCategory("android.intent.category.DEFAULT")
-                intent.data = Uri.parse(String.format("package:%s", applicationContext.packageName))
-                startActivityForResult(intent, 2296)
-            } catch (e: Exception) {
-                val intent = Intent()
-                intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
-                startActivityForResult(intent, 2296)
-            }
-        } else {
-            //below android 11
-            ActivityCompat.requestPermissions(
-                this, arrayOf(WRITE_EXTERNAL_STORAGE),
-                PERMISSION_REQUEST_CODE
-            )
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, @Nullable data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 2296) {
-            if (SDK_INT >= Build.VERSION_CODES.R) {
-                if (Environment.isExternalStorageManager()) {
-                    Log.i("TAG", "Permission Granted")
-                    excelHelper.createExcel()
-                } else {
-                    Log.i("TAG", "Permission not Granted")
-                    Toast.makeText(this, "Allow permission for storage access!", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        when (requestCode) {
-            PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty()) {
-                val READ_EXTERNAL_STORAGE = grantResults[0] == PackageManager.PERMISSION_GRANTED
-                val WRITE_EXTERNAL_STORAGE = grantResults[1] == PackageManager.PERMISSION_GRANTED
-                if (READ_EXTERNAL_STORAGE && WRITE_EXTERNAL_STORAGE) {
-                    Log.i("TAG", "Permission Granted")
-                    excelHelper.createExcel()
-                } else {
-                    Log.i("TAG", "Permission not Granted")
-                    Toast.makeText(this, "Allow permission for storage access!", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    private suspend fun initializeExcel() {
-        val hasPermission = checkPermission()
-        Log.i("TAG", "hasPermission: $hasPermission")
-        if (checkPermission()) {
-            withContext(Dispatchers.IO) {
-                excelHelper.createExcel()
-            }
-        } else {
-            Log.i("TAG", "Requesting permissions")
-            requestPermission()
-        }
-
+    private fun scheduleExcelDownloader() {
+        val requestID = "scheduleExcelDownloader"
+        val myWorkRequest =
+            PeriodicWorkRequest.Builder(ExcelDownloadWorker::class.java, 1, TimeUnit.DAYS)
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                )
+                .setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS
+                )
+                .addTag(requestID)
+                .build()
+        WorkManager.getInstance(applicationContext)
+            .enqueueUniquePeriodicWork(requestID, ExistingPeriodicWorkPolicy.KEEP, myWorkRequest)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {

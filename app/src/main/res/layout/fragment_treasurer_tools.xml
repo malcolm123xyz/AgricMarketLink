@@ -26,13 +26,6 @@
                 android:text="VIEW DUES PAYMENT DETAILS" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/upDateDuesPayment"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="UPDATE DUES PAYMENT" />
-
-            <com.google.android.material.button.MaterialButton
                 android:id="@+id/sendContRequest"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -45,6 +38,22 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
                 android:text="UPDATE CONTIBUTION PAYMENT" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/uploadMasterExcelSheet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal"
+                android:text="UPLOAD MASTER EXCEL" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/manageBackups"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_gravity="center_horizontal"
+                android:text="MANAGE BACKUPS" />
 
         </LinearLayout>
 

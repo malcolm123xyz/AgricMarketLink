@@ -2,6 +2,7 @@ package mx.mobile.solution.nabia04.ui.activities
 
 import android.Manifest
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -13,11 +14,11 @@ import android.view.View
 import android.widget.CheckBox
 import android.widget.EditText
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.GetContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -49,6 +50,10 @@ class ActivitySendAnnouncement : AppCompatActivity() {
     private var contentLauncher: ActivityResultLauncher<String>? = null
     private lateinit var vbinding: ActivitySendAnnBinding
 
+    private var PERMISSIONS = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
+
     @Inject
     lateinit var sharedP: SharedPreferences
 
@@ -65,20 +70,12 @@ class ActivitySendAnnouncement : AppCompatActivity() {
             //sendNotificationTask()
         }
         changePicture.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(
-                    this@ActivitySendAnnouncement,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                )
-                != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this@ActivitySendAnnouncement,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE
-                )
-            } else {
+            if (hasPermissions(this, PERMISSIONS)) {
                 contentLauncher!!.launch("image/*")
+            } else {
+                permReqLauncher.launch(PERMISSIONS)
             }
+
         }
         eventDateTv.setOnClickListener {
             MyAlarmManager(this).showDateTimePicker(object : CallBack {
@@ -91,6 +88,20 @@ class ActivitySendAnnouncement : AppCompatActivity() {
         }
         registerPicturePickerActivityResults()
     }
+
+    private val permReqLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val granted = permissions.entries.all { it.value }
+            if (granted) {
+                contentLauncher!!.launch("image/*")
+            }
+        }
+
+    private fun hasPermissions(context: Context, permissions: Array<String>): Boolean =
+        permissions.all {
+            ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
+        }
+
 
     private fun registerPicturePickerActivityResults() {
         contentLauncher = registerForActivityResult(
@@ -298,35 +309,6 @@ class ActivitySendAnnouncement : AppCompatActivity() {
             }
         }.execute()
     }
-
-//    private fun sendNotificationTask() {
-//
-//        val alert = MyAlertDialog(
-//            this, "ANNOUNCEMENT",
-//            "Sending Announcement... Please wait", false
-//        )
-//
-//        object : BackgroundTasks() {
-//            var response = ""
-//            override fun onPreExecute() {
-//                alert.show()
-//            }
-//
-//            override fun doInBackground() {
-//                try {
-//                    endpoint.sendNotification().execute()
-//                } catch (ex: IOException) {
-//                    ex.printStackTrace()
-//                    response =
-//                        "An error occurred while sending the Announcement. Please try again"
-//                }
-//            }
-//
-//            override fun onPostExecute() {
-//                alert.dismiss()
-//            }
-//        }.execute()
-//    }
 
     private fun showDialog(t: String, s: String) {
         AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle)

@@ -1,7 +1,11 @@
 package mx.mobile.solution.nabia04.utilities
 
 object Const {
-    val TOKEN_REFRESH_NOTIFY_CHANNEL = "token Refresh Notification"
+    const val EXCEL_STORAGE_BACKUP_REF = "dues/backup/Nabiadues.xlsx"
+    const val EXCEL_PUBLISHED = "excelPublished"
+    const val EXCEL_URL =
+        "https://firebasestorage.googleapis.com/v0/b/nabia04.appspot.com/o/dues%2FNabiadues.xlsx?alt=media&token=80785f22-12ad-40c0-92bc-c21ac175da40"
+    const val TOKEN_REFRESH_NOTIFY_CHANNEL = "token Refresh Notification"
     const val FCM_TOKEN = "fcm_token"
     const val HAS_STORAGE_MANAGEMENT_PERM = "hasStoragePermission"
     const val DUES_NUM_SHEET: Int = 5
@@ -46,11 +50,11 @@ object Const {
     const val EVENT_IMGS_REFRESH = "events_imgs_refresh"
     const val CLEARANCE = "clearance_level"
 
-    const val PRESIDENT = "President"
-    const val VICE_PRESIDENT = "Vice President"
-    const val SECRETARY = "Secretary"
-    const val TREASURER = "Treasurer"
-    const val PRO = "PRO"
+    const val POS_PRESIDENT = "President"
+    const val POS_VICE_PRESIDENT = "Vice President"
+    const val POS_SECRETARY = "Secretary"
+    const val POS_TREASURER = "Treasurer"
+    const val POS_PRO = "PRO"
 
     const val NOTIFY_USER_DELETED = "userDeleted"
     const val NOTIFY_SUSPENSE = "notifySuspense"
@@ -61,6 +65,7 @@ object Const {
     const val NOTIFY_NEW_ANN = "notifyNewAnn"
     const val NOTIFY_DATABASE_UPDATE = "notifyDatabaseUpdate"
     const val NOTIFY_NEW_PAYMENT = "notifyNewPayment"
+    const val NOTIFY_EXCEL_UPDATE = "notifyExcelUpdate"
 
     const val TRIGER_LOGOUT = "trigerLogout"
     const val ADD_NEW_MEMBER = "addNewMember"

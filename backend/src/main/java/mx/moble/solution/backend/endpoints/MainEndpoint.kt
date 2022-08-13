@@ -6,7 +6,7 @@ import com.google.api.server.spi.config.ApiNamespace
 import com.googlecode.objectify.NotFoundException
 import com.googlecode.objectify.ObjectifyService
 import mx.moble.solution.backend.model.*
-import mx.moble.solution.backend.responses.Constants
+import mx.moble.solution.backend.responses.Const
 import mx.moble.solution.backend.responses.Response
 import mx.moble.solution.backend.responses.Response.Companion.error
 import mx.moble.solution.backend.responses.Response.Companion.success
@@ -67,7 +67,7 @@ class MainEndpoint {
         ObjectifyService.ofy().save().entity(announcementData).now()
 
         val dataMap = HashMap<String, String>()
-        dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_NEW_ANN
+        dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_NEW_ANN
         dataMap["message"] = announcementData.message
         dataMap["heading"] = announcementData.heading
         dataMap["id"] = announcementData.id.toString()
@@ -78,6 +78,48 @@ class MainEndpoint {
 
         return success(null)
     }
+
+    @ApiMethod(
+        name = "notifyExcelPublish",
+        path = "notifyExcelPublish",
+        httpMethod = ApiMethod.HttpMethod.POST
+    )
+    fun notifyExcelPublish() {
+        val dataMap = HashMap<String, String>()
+        dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_EXCEL_UPDATE
+        NotificationManager("").sendNotDataOnly(dataMap)
+    }
+
+    @ApiMethod(
+        name = "deleteDuesBackup",
+        path = "deleteDuesBackup",
+        httpMethod = ApiMethod.HttpMethod.POST
+    )
+    fun deleteDuesBackup(duesBackup: DuesBackup): Response<String> {
+        return try {
+            ObjectifyService.ofy().delete().entity(duesBackup).now()
+            success(null)
+        } catch (e: IOException) {
+            error(e.localizedMessage, "")
+        }
+    }
+
+    @get:ApiMethod(
+        name = "getDuesBackups",
+        path = "getDuesBackups",
+        httpMethod = ApiMethod.HttpMethod.GET
+    )
+    val duesBackup: Response<List<DuesBackup>>
+        get() {
+            val userDataModels: List<DuesBackup> = try {
+                ObjectifyService.ofy().load().type(DuesBackup::class.java).list()
+            } catch (e: IOException) {
+                return error("Server error: ${e.localizedMessage}", null)
+            } ?: return error("Server error: Data not found", null)
+            return if (userDataModels.isEmpty()) {
+                return error("Server error: Data not found", null)
+            } else success(userDataModels)
+        }
 
     @get:ApiMethod(name = "getMembers", path = "getMembers", httpMethod = ApiMethod.HttpMethod.GET)
     val members: Response<List<DatabaseObject>>
@@ -102,10 +144,11 @@ class MainEndpoint {
     )
     fun setUserClearance(clearanceTP: ClearanceTP): Response<String> {
         logger.info("Position = $clearanceTP.position")
-        if (clearanceTP.position == "President" || clearanceTP.position == "Vice President") {
-            val records = ObjectifyService.ofy().load().type(
-                LoginData::class.java
-            ).list()
+        if (clearanceTP.position == Const.POS_PRESIDENT ||
+            clearanceTP.position == Const.POS_VICE_PRESIDENT
+            || clearanceTP.position == Const.POS_TREASURER
+        ) {
+            val records = ObjectifyService.ofy().load().type(LoginData::class.java).list()
             logger.info("Number of users found = " + records.size)
             for (user in records) {
                 logger.info("User: " + user.fullName)
@@ -139,7 +182,7 @@ class MainEndpoint {
 
         if (token.isNotEmpty()) {
             val dataMap = HashMap<String, String>()
-            dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_CLEARANCE
+            dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_CLEARANCE
             dataMap["msg"] = clearanceTP.position
             dataMap["folio"] = clearanceTP.folio
             NotificationManager(token).sendNotDataOnly(dataMap)
@@ -163,13 +206,12 @@ class MainEndpoint {
             dataBaseDataModel.dateDeparted = data.date
             ObjectifyService.ofy().save().entity(dataBaseDataModel).now()
             val dataMap = HashMap<String, String>()
-            dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_DATABASE_UPDATE
+            dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_DATABASE_UPDATE
             NotificationManager("").sendNotDataOnly(dataMap)
             return success("")
         }
         return error("The specified user was not found in the database", "")
     }
-
 
     @ApiMethod(name = "setBiography", path = "setBiography", httpMethod = ApiMethod.HttpMethod.POST)
     fun setBiography(biographyTP: BiographyTP): Response<String> {
@@ -210,7 +252,7 @@ class MainEndpoint {
             ).id(folio).safe()
             ObjectifyService.ofy().delete().entity(databaseItem).now()
             val dataMap = HashMap<String, String>()
-            dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_DATABASE_UPDATE
+            dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_DATABASE_UPDATE
             NotificationManager("").sendNotDataOnly(dataMap)
             success("")
         } catch (e: NotFoundException) {
@@ -248,7 +290,7 @@ class MainEndpoint {
             error("Server error: ${e.localizedMessage}")
         }
         val dataMap = HashMap<String, String>()
-        dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_DATABASE_UPDATE
+        dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_DATABASE_UPDATE
         NotificationManager("").sendNotDataOnly(dataMap)
 
         return success("")
@@ -266,7 +308,7 @@ class MainEndpoint {
             error("Server error: ${e.localizedMessage}")
         }
         val dataMap = HashMap<String, String>()
-        dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_NEW_CONTRIBUTION
+        dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_NEW_CONTRIBUTION
         dataMap["msg"] = contribution.message
         NotificationManager("").sendNotOnly("Silver Contribution Request", contribution.message)
 
@@ -305,7 +347,7 @@ class MainEndpoint {
             ObjectifyService.ofy().save().entity<Any>(contributionData).now()
 
             val dataMap = HashMap<String, String>()
-            dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_NEW_PAYMENT
+            dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_NEW_PAYMENT
             val title = "New Contribution Payment"
             val msg = "A user has made a contribution towards the ongoing Silver collection"
 
@@ -335,9 +377,9 @@ class MainEndpoint {
                 LoginData::class.java
             ).id(id).safe()
         } catch (e: NotFoundException) {
-            return Constants.NOT_FOUND
+            return Const.NOT_FOUND
         }
-        return Constants.ALREADY_SIGN_UP
+        return Const.ALREADY_SIGN_UP
     }
 
     @ApiMethod(name = "signUp", path = "signUp", httpMethod = ApiMethod.HttpMethod.POST)
@@ -346,7 +388,7 @@ class MainEndpoint {
 
         //Check if suspended, not found or Already login
         val loginStatus = checkLoginStatus(loginData.folioNumber)
-        if (loginStatus == Constants.NOT_FOUND) {
+        if (loginStatus == Const.NOT_FOUND) {
             loginData.accessToken = UUID.randomUUID().toString()
             ObjectifyService.ofy().save().entity(loginData).now()
             if (!alreadyInDB(loginData.folioNumber)) {
@@ -358,14 +400,14 @@ class MainEndpoint {
                 ObjectifyService.ofy().save().entity(updateModel).now()
             }
             val dataMap = HashMap<String, String>()
-            dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_DATABASE_UPDATE
+            dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_DATABASE_UPDATE
             NotificationManager("").sendNotDataOnly(dataMap)
             return success(loginData)
-        } else if (loginStatus == Constants.ALREADY_SIGN_UP) {
+        } else if (loginStatus == Const.ALREADY_SIGN_UP) {
             val resMsg =
                 "Already signed up. If you have forgotten your folio number contact the administrator"
             error(resMsg, "")
-        } else if (loginStatus == Constants.SUSPENDED) {
+        } else if (loginStatus == Const.SUSPENDED) {
             val resMsg = "Sorry You have been Suspended. Contact the PRO"
             error(resMsg, "")
         }
@@ -413,7 +455,7 @@ class MainEndpoint {
                 ObjectifyService.ofy().save().entity(updatModel).now()
 
                 val dataMap = HashMap<String, String>()
-                dataMap["NOTIFICATION_TYPE"] = Constants.NOTIFY_DATABASE_UPDATE
+                dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_DATABASE_UPDATE
                 NotificationManager("").sendNotDataOnly(dataMap)
             }
             success(loginData)

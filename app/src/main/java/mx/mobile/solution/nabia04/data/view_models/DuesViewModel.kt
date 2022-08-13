@@ -8,22 +8,22 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import mx.mobile.solution.nabia04.data.entities.EntityDues
 import mx.mobile.solution.nabia04.utilities.ExcelHelper
-import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Response
 import javax.inject.Inject
 
 @HiltViewModel
 class DuesViewModel @Inject constructor(val excelHelper: ExcelHelper) : ViewModel() {
 
-    private var data: MutableLiveData<Resource<List<EntityDues>>> = MutableLiveData()
+    private var data: MutableLiveData<Response<List<EntityDues>>> = MutableLiveData()
 
-    fun fetchAnn(): LiveData<Resource<List<EntityDues>>> {
+    fun fetchAnn(): LiveData<Response<List<EntityDues>>> {
         viewModelScope.launch {
-            data.postValue(Resource.loading(null))
+            data.postValue(Response.loading(null))
             val response = excelHelper.getDues()
             if (response.isNotEmpty()) {
-                data.postValue(Resource.success(response))
+                data.postValue(Response.success(response))
             } else {
-                data.postValue(Resource.error("Data not found", null))
+                data.postValue(Response.error("Data not found", null))
             }
         }
         return data

@@ -74,7 +74,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
         }
 
         if (selectedFolio == userFolioNumber ||
-            clearance == Const.PRO ||
+            clearance == Const.POS_PRO ||
             userFolioNumber == "13786"
         ) {
             fabEdit.visibility = View.VISIBLE
@@ -93,7 +93,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
             val clearanceMenu = menu.findItem(R.id.set_clearance)
             val setaliveMen = menu.findItem(R.id.living_status)
             val delete = menu.findItem(R.id.delete)
-            if (clearance == Const.PRO || userFolioNumber == "13786") {
+            if (clearance == Const.POS_PRO || userFolioNumber == "13786") {
                 clearanceMenu.isVisible = true
                 setaliveMen.isVisible = true
                 delete.isVisible = true
@@ -117,7 +117,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     }
 
     private fun showClearanceSettingDial() {
-        if (clearance == Const.PRO || userFolioNumber == "13786") {
+        if (clearance == Const.POS_PRO || userFolioNumber == "13786") {
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("WARNING!!!").setMessage(getString(R.string.warning_1))
                 .setPositiveButton("Continue") { dialog, id ->
@@ -178,7 +178,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     }
 
     private fun showSetDeceasedDial() {
-        if (clearance != Const.PRO && userFolioNumber != "13786") {
+        if (clearance != Const.POS_PRO && userFolioNumber != "13786") {
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("LIE LIE!!!")
                 .setMessage("Masa only the PRO can do this ooo. Hahahahahah")
@@ -246,7 +246,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     }
 
     private fun showDeleteConfirmDial() {
-        if (clearance != Const.PRO && userFolioNumber != "13786") {
+        if (clearance != Const.POS_PRO && userFolioNumber != "13786") {
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("LIE LIE!!!")
                 .setMessage("Masa only the PRO can do this ooo. Hahahahahah")

@@ -1,6 +1,7 @@
 package mx.moble.solution.backend.responses
 
-object Constants {
+object Const {
+    const val NOTIFY_EXCEL_UPDATE = "notifyExcelUpdate"
     const val OK = 1
     const val ALREADY_SIGN_UP = 2
     const val SUSPENDED = 3
@@ -15,4 +16,10 @@ object Constants {
     const val NOTIFY_NEW_ANN = "notifyNewAnn"
     const val NOTIFY_DATABASE_UPDATE = "notifyDatabaseUpdate"
     const val NOTIFY_NEW_PAYMENT = "notifyNewPayment"
+
+    const val POS_PRESIDENT = "President"
+    const val POS_VICE_PRESIDENT = "Vice President"
+    const val POS_SECRETARY = "Secretary"
+    const val POS_TREASURER = "Treasurer"
+    const val POS_PRO = "PRO"
 }

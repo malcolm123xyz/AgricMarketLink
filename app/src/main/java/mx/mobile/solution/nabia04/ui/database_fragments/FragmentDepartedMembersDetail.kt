@@ -70,8 +70,8 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
 
         selectedFolio = arguments?.getString("folio") ?: ""
 
-        if (clearance == Const.PRO || clearance == Const.PRESIDENT ||
-            clearance == Const.VICE_PRESIDENT || userFolioNumber == "13786"
+        if (clearance == Const.POS_PRO || clearance == Const.POS_PRESIDENT ||
+            clearance == Const.POS_VICE_PRESIDENT || userFolioNumber == "13786"
         ) {
             editBiography.visibility = View.VISIBLE
             editBiography.setOnClickListener { showBioEditor() }
@@ -91,7 +91,7 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
             menuInflater.inflate(R.menu.details_menu1, menu)
 
             val redoMenu = menu.findItem(R.id.redo)
-            if (clearance == Const.PRO || userFolioNumber == "13786") {
+            if (clearance == Const.POS_PRO || userFolioNumber == "13786") {
                 redoMenu.isVisible = true
             }
         }
@@ -107,7 +107,7 @@ class FragmentDepartedMembersDetail : BaseFragment<FragmentDepartedMembersDetail
     }
 
     private fun showSetDeceasedDial() {
-        if (clearance != Const.PRO && userFolioNumber != "13786") {
+        if (clearance != Const.POS_PRO && userFolioNumber != "13786") {
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("LIE LIE!!!")
                 .setMessage("Masa only the PRO can do this ooo. Hahahahahah")

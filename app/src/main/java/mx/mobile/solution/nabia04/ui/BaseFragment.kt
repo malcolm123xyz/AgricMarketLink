@@ -88,17 +88,17 @@ abstract class BaseFragment<ViewBinding : ViewDataBinding> : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
-//        println("💀 BaseDataBindingFragment onDetach() $this")
+        println("💀 BaseDataBindingFragment onDetach() $this")
     }
 
     override fun onResume() {
         super.onResume()
-//        println("🎃 ${this.javaClass.simpleName} #${this.hashCode()} onResume()")
+        println("🎃 ${this.javaClass.simpleName} #${this.hashCode()} onResume()")
     }
 
     override fun onPause() {
         super.onPause()
-//        println("😱 ${this.javaClass.simpleName} #${this.hashCode()} onPause()")
+        println("😱 ${this.javaClass.simpleName} #${this.hashCode()} onPause()")
     }
 
 }

@@ -8,17 +8,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.data.repositories.DBRepository
-import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
 import javax.inject.Inject
 
 @HiltViewModel
 class DBViewModel @Inject constructor(var repository: DBRepository) : ViewModel() {
-    private var data: MutableLiveData<Resource<List<EntityUserData>>> = MutableLiveData()
+    private var data: MutableLiveData<Response<List<EntityUserData>>> = MutableLiveData()
 
-    fun fetchUserDataList(): LiveData<Resource<List<EntityUserData>>> {
+    fun fetchUserDataList(): LiveData<Response<List<EntityUserData>>> {
         viewModelScope.launch {
-            data.postValue(Resource.loading(null))
+            data.postValue(Response.loading(null))
             val response = repository.fetchUserData()
             when (response.status) {
                 Status.SUCCESS -> {
@@ -26,11 +26,11 @@ class DBViewModel @Inject constructor(var repository: DBRepository) : ViewModel(
                     list?.sortWith { obj1: EntityUserData, obj2: EntityUserData ->
                         obj1.fullName.compareTo(obj2.fullName)
                     }
-                    data.postValue(Resource.success(list))
+                    data.postValue(Response.success(list))
                 }
                 else -> {
                     val e = response.message ?: ""
-                    data.postValue(Resource.error(e, null))
+                    data.postValue(Response.error(e, response.data))
                 }
             }
         }
@@ -41,17 +41,17 @@ class DBViewModel @Inject constructor(var repository: DBRepository) : ViewModel(
         return repository.getUser(folio)
     }
 
-    fun refreshDB(): LiveData<Resource<List<EntityUserData>>> {
+    fun refreshDB(): LiveData<Response<List<EntityUserData>>> {
         viewModelScope.launch {
-            data.postValue(Resource.loading(null))
+            data.postValue(Response.loading(null))
             val response = repository.refreshDB()
             when (response.status) {
                 Status.SUCCESS -> {
-                    data.postValue(Resource.success(response.data))
+                    data.postValue(Response.success(response.data))
                 }
                 else -> {
                     val e = response.message ?: ""
-                    data.postValue(Resource.error(e, null))
+                    data.postValue(Response.error(e, null))
                 }
             }
         }
@@ -66,7 +66,7 @@ class DBViewModel @Inject constructor(var repository: DBRepository) : ViewModel(
         return repository.fetchUserNames()
     }
 
-    suspend fun setUserClearance(folio: String, clearance: String): Resource<List<EntityUserData>> {
+    suspend fun setUserClearance(folio: String, clearance: String): Response<List<EntityUserData>> {
         return repository.setUserClearance(folio, clearance)
     }
 
@@ -74,25 +74,25 @@ class DBViewModel @Inject constructor(var repository: DBRepository) : ViewModel(
         folio: String,
         date: String,
         status: Int
-    ): Resource<List<EntityUserData>> {
+    ): Response<List<EntityUserData>> {
         return repository.setDeceaseStatus(folio, date, status)
     }
 
-    suspend fun deleteUser(folio: String): Resource<List<EntityUserData>> {
+    suspend fun deleteUser(folio: String): Response<List<EntityUserData>> {
         return repository.deleteUser(folio)
     }
 
     suspend fun setBiography(
         biography: String,
         selectedFolio: String
-    ): Resource<List<EntityUserData>> {
+    ): Response<List<EntityUserData>> {
         return repository.setBiography(biography, selectedFolio);
     }
 
     suspend fun sendTribute(
         selectedFolio: String,
         tribute: String
-    ): Resource<List<EntityUserData>> {
+    ): Response<List<EntityUserData>> {
         return repository.sendTribute(selectedFolio, tribute)
     }
 

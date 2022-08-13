@@ -12,7 +12,7 @@ import mx.mobile.solution.nabia04.data.view_models.DBViewModel
 import mx.mobile.solution.nabia04.databinding.ListFragmentBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.adapters.DBcurrentListAdapter
-import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
 import javax.inject.Inject
 
@@ -37,7 +37,7 @@ class FragmentCurrentMembers : BaseFragment<ListFragmentBinding>() {
     private fun setupObserver() {
 
         viewModel.fetchUserDataList()
-            .observe(viewLifecycleOwner) { users: Resource<List<EntityUserData>> ->
+            .observe(viewLifecycleOwner) { users: Response<List<EntityUserData>> ->
                 when (users.status) {
                     Status.SUCCESS -> {
                         users.data?.let { renderList(it.toMutableList()) }
@@ -50,6 +50,7 @@ class FragmentCurrentMembers : BaseFragment<ListFragmentBinding>() {
                         vb?.pb?.visibility = View.GONE
                         Toast.makeText(requireContext(), users.message, Toast.LENGTH_LONG)
                             .show()
+                        users.data?.let { renderList(it.toMutableList()) }
                     }
                 }
             }

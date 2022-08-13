@@ -13,6 +13,7 @@ class Bootstrapper : ServletContextListener {
         ObjectifyService.register(RegistrationToken::class.java)
         ObjectifyService.register(Announcement::class.java)
         ObjectifyService.register(ContributionData::class.java)
+        ObjectifyService.register(DuesBackup::class.java)
     }
 
     override fun contextDestroyed(servletContextEvent: ServletContextEvent) {}

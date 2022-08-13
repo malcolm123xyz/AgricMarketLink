@@ -28,7 +28,7 @@ import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.data.MainDataBase
 import mx.mobile.solution.nabia04.data.dao.AnnDao
 import mx.mobile.solution.nabia04.data.dao.DBdao
-import mx.mobile.solution.nabia04.data.dao.DuesDao
+import mx.mobile.solution.nabia04.data.dao.DuesBackupDao
 import mx.mobile.solution.nabia04.ui.activities.endpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import javax.inject.Singleton
@@ -52,9 +52,14 @@ object DatabaseModule {
         return database.dbDao()
     }
 
+//    @Provides
+//    fun provideUserDuesDao(database: MainDataBase): DuesDao {
+//        return database.duesDao()
+//    }
+
     @Provides
-    fun provideUserDuesDao(database: MainDataBase): DuesDao {
-        return database.duesDao()
+    fun provideDuesBackupDao(database: MainDataBase): DuesBackupDao {
+        return database.duesBackupDao()
     }
 
     @Provides

@@ -1,7 +1,6 @@
 package mx.mobile.solution.nabia04.ui.adapters
 
 import android.content.Context
-import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +16,6 @@ import com.bumptech.glide.signature.ObjectKey
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.utilities.GlideApp
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,9 +23,6 @@ import javax.inject.Singleton
 class DBdepartedListAdapter @Inject constructor(private val context: Context) :
     ListAdapter<EntityUserData,
             DBdepartedListAdapter.MyViewHolder>(DiffCallback1) {
-    private val fd = SimpleDateFormat("EEE, d MMM yyyy hh:mm", Locale.US)
-    private val fontBody: Typeface = Typeface.createFromAsset(context.assets, "text_body.ttf")
-    private val fontHeading: Typeface = Typeface.createFromAsset(context.assets, "header_font.ttf")
 
     private var list = mutableListOf<EntityUserData>()
 
@@ -54,8 +48,6 @@ class DBdepartedListAdapter @Inject constructor(private val context: Context) :
             val folio: String = userItem.folioNumber ?: ""
             val imageUri: String = userItem.imageUri ?: ""
             val imageId: String = userItem.imageId ?: ""
-            fullNameTxt.typeface = fontHeading
-            dateDepartedTXT.typeface = fontBody
             fullNameTxt.text = name
             dateDepartedTXT.text =
                 String.format("Died on:  %s", userItem.dateDeparted)

@@ -15,7 +15,7 @@ import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement
 import mx.mobile.solution.nabia04.data.entities.FcmToken
 import mx.mobile.solution.nabia04.ui.activities.endpoint
 import mx.mobile.solution.nabia04.utilities.RateLimiter
-import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Announcement
 import java.io.IOException
@@ -66,7 +66,7 @@ class AnnRefreshWorker(appContext: Context, workerParams: WorkerParameters) :
         }
     }
 
-    private fun refresh(): Resource<List<EntityAnnouncement>> {
+    private fun refresh(): Response<List<EntityAnnouncement>> {
         val erMsg: String
         try {
             val backendResponse = endpoint.noticeBoardData.execute()
@@ -74,11 +74,11 @@ class AnnRefreshWorker(appContext: Context, workerParams: WorkerParameters) :
                 val allAnnouncements = getAnnDataObjects(backendResponse.data).toList()
                 val dao = MainDataBase.getDatabase(applicationContext).annDao()
                 dao.insertAnnouncement(allAnnouncements)
-                RateLimiter.reset(sharedP, "Announcement")
+                RateLimiter.reset("Announcement")
                 MyAlarmManager(applicationContext).scheduleEventNotification(allAnnouncements)
-                return Resource.success(allAnnouncements)
+                return Response.success(allAnnouncements)
             } else {
-                return Resource.error(backendResponse.message, null)
+                return Response.error(backendResponse.message, null)
             }
 
         } catch (ex: IOException) {
@@ -92,7 +92,7 @@ class AnnRefreshWorker(appContext: Context, workerParams: WorkerParameters) :
             }
             ex.printStackTrace()
         }
-        return Resource.error(erMsg, null)
+        return Response.error(erMsg, null)
     }
 
     private fun getAnnDataObjects(list: List<Announcement>): MutableList<EntityAnnouncement> {

@@ -50,6 +50,21 @@
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
+  "deleteDuesBackup": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.deleteDuesBackup",
+   "path": "deleteDuesBackup",
+   "request": {
+    "$ref": "DuesBackup",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "Response_String"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
   "deleteFromServer": {
    "httpMethod": "POST",
    "id": "mainEndpoint.deleteFromServer",
@@ -104,6 +119,17 @@
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
+  "getDuesBackups": {
+   "httpMethod": "GET",
+   "id": "mainEndpoint.getDuesBackups",
+   "path": "getDuesBackups",
+   "response": {
+    "$ref": "Response_DuesBackupCollection"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
   "getMembers": {
    "httpMethod": "GET",
    "id": "mainEndpoint.getMembers",
@@ -152,6 +178,14 @@
    "response": {
     "$ref": "Response_String"
    },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "notifyExcelPublish": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.notifyExcelPublish",
+   "path": "notifyExcelPublish",
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]
@@ -541,6 +575,25 @@
    },
    "type": "object"
   },
+  "DuesBackup": {
+   "id": "DuesBackup",
+   "properties": {
+    "downloadUrl": {
+     "type": "string"
+    },
+    "id": {
+     "format": "int64",
+     "type": "string"
+    },
+    "published": {
+     "type": "boolean"
+    },
+    "totalAmount": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
   "LoginData": {
    "id": "LoginData",
    "properties": {
@@ -645,6 +698,24 @@
     "data": {
      "items": {
       "$ref": "DatabaseObject"
+     },
+     "type": "array"
+    },
+    "message": {
+     "type": "string"
+    },
+    "status": {
+     "$ref": "Status"
+    }
+   },
+   "type": "object"
+  },
+  "Response_DuesBackupCollection": {
+   "id": "Response_DuesBackupCollection",
+   "properties": {
+    "data": {
+     "items": {
+      "$ref": "DuesBackup"
      },
      "type": "array"
     },

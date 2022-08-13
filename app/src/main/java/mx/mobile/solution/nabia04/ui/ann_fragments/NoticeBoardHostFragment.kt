@@ -54,7 +54,6 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -87,8 +86,8 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
             }
         }.attach()
 
-        if (clearance == Const.PRO || clearance == Const.PRESIDENT
-            || clearance == Const.VICE_PRESIDENT || userFolioNumber == "13786"
+        if (clearance == Const.POS_PRO || clearance == Const.POS_PRESIDENT
+            || clearance == Const.POS_VICE_PRESIDENT || userFolioNumber == "13786"
         ) {
             vb?.fabSendAnn?.visibility = View.VISIBLE
             vb?.fabSendAnn?.setOnClickListener {

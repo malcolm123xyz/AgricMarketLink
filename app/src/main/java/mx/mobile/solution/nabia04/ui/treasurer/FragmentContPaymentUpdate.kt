@@ -21,7 +21,7 @@ import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.data.view_models.DBViewModel
 import mx.mobile.solution.nabia04.databinding.FragmentContPaymentUpdateBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
-import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.ResponseContributionData
@@ -151,7 +151,7 @@ class FragmentContPaymentUpdate : BaseFragment<FragmentContPaymentUpdateBinding>
             }.show()
     }
 
-    private fun doUpdate(amount: String, name: String, folio: String): Resource<String> {
+    private fun doUpdate(amount: String, name: String, folio: String): Response<String> {
 
         val cData: ResponseContributionData? = endpoint.contributions.execute()
 
@@ -163,7 +163,7 @@ class FragmentContPaymentUpdate : BaseFragment<FragmentContPaymentUpdateBinding>
             for (map in cData.data.contribution) {
                 val thisFolio = map["folio"]
                 if (thisFolio == folio) {
-                    return Resource.error("This person has already paid for this contribution", "")
+                    return Response.error("This person has already paid for this contribution", "")
                 }
             }
             val map: MutableMap<String, String> = HashMap()
@@ -174,12 +174,12 @@ class FragmentContPaymentUpdate : BaseFragment<FragmentContPaymentUpdateBinding>
             cData.data.contribution.add(map)
             val response = endpoint.upDateContPayment(cData.data).execute()
             return if (response.status == Status.SUCCESS.toString()) {
-                Resource.success(null)
+                Response.success(null)
             } else {
-                Resource.error(response.message, "")
+                Response.error(response.message, "")
             }
         } else {
-            return Resource.error(
+            return Response.error(
                 "Contribution item not set. Please set a contribution topic/item first",
                 ""
             )

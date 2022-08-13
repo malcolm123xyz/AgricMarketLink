@@ -19,9 +19,11 @@ import com.google.gson.reflect.TypeToken
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.authentication.AuthenticationActivity
 import mx.mobile.solution.nabia04.data.entities.FcmToken
+import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
 import mx.mobile.solution.nabia04.utilities.Const
 import mx.mobile.solution.nabia04.utilities.RateLimiter
 import mx.mobile.solution.nabia04.workManager.AnnRefreshWorker
+import mx.mobile.solution.nabia04.workManager.ExcelDownloadWorker
 import java.util.concurrent.TimeUnit
 
 /**
@@ -44,10 +46,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
             val type = data["NOTIFICATION_TYPE"] as String
             if (type == Const.NOTIFY_NEW_ANN) {
-                //scheduleAnnouncementUpdate()
-                RateLimiter.allow(sharedP, "announcement")
+                RateLimiter.allow("Announcement")
                 val heading = data["heading"] as String
-                val t = data["annType"]?.toInt()
+                val t = data["annTyp"]?.toInt()
                 val annType = if (t == 0) {
                     "General"
                 } else {
@@ -55,23 +56,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 }
                 notifyNewAnn(annType, heading)
             } else if (type == Const.NOTIFY_DATABASE_UPDATE) {
-                RateLimiter.allow(sharedP, "User_data")
-            }
-            else if (NOTIFICATION_TYPE.equals(GlobalFields.NOTIFY_CLEARANCE)) {
-                  if (data["folio"].equals(userFolioNumber)) {
-                    sharedP.edit().putString(Conts.CLEARANCE, (String) data.get("msg")).apply();
-                  }
-              }
-
-
-
-
-            if (/* Check if data needs to be processed by long running job */ true) {
-                // For long-running tasks (10 seconds or more) use WorkManager.
-                //scheduleJob()
-            } else {
-                // Handle message within 10 seconds
-                //handleNow()
+                RateLimiter.allow("User_data")
+            } else if (type == Const.NOTIFY_CLEARANCE) {
+                if (data["folio"].equals(userFolioNumber)) {
+                    val msg = data["msg"] as String
+                    sharedP.edit().putString(Const.CLEARANCE, msg).apply();
+                }
+            } else if (type == Const.NOTIFY_EXCEL_UPDATE) {
+                scheduleExcelDownloader()
             }
         }
 
@@ -79,6 +71,23 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         remoteMessage.notification?.let {
             Log.d(TAG, "Message Notification Body: ${it.body}")
         }
+    }
+
+    private fun scheduleExcelDownloader() {
+        val myWorkRequest =
+            OneTimeWorkRequest.Builder(ExcelDownloadWorker::class.java)
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                        .build()
+                )
+                .setBackoffCriteria(
+                    BackoffPolicy.LINEAR,
+                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS
+                )
+                .build()
+        WorkManager.getInstance(applicationContext).enqueue(myWorkRequest)
     }
 
     private fun notifyNewAnn(type: String, heading: String) {
@@ -142,7 +151,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val type = object : TypeToken<FcmToken?>() {}.type
         val strObj = gson.toJson(fcmToken, type)
         sharedP.edit().putString(Const.FCM_TOKEN, strObj).apply()
-        RateLimiter.reset(sharedP, "Token_Refresh")
+        RateLimiter.reset("Token_Refresh")
     }
 
     companion object {

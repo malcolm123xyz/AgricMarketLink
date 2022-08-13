@@ -51,6 +51,7 @@
                 app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                android:visibility="gone"
                 app:srcCompat="@drawable/announcement_icon" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>

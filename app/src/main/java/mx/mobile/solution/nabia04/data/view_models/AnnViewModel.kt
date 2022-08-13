@@ -8,18 +8,18 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement
 import mx.mobile.solution.nabia04.data.repositories.AnnRepository
-import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
 import javax.inject.Inject
 
 @HiltViewModel
 class AnnViewModel @Inject constructor(var repository: AnnRepository) : ViewModel() {
 
-    private var genData: MutableLiveData<Resource<List<EntityAnnouncement>>> = MutableLiveData()
+    private var genData: MutableLiveData<Response<List<EntityAnnouncement>>> = MutableLiveData()
 
-    fun fetchAnn(): LiveData<Resource<List<EntityAnnouncement>>> {
+    fun fetchAnn(): LiveData<Response<List<EntityAnnouncement>>> {
         viewModelScope.launch {
-            genData.postValue(Resource.loading(null))
+            genData.postValue(Response.loading(null))
             val response = repository.fetchAnn()
             when (response.status) {
                 Status.SUCCESS -> {
@@ -27,11 +27,11 @@ class AnnViewModel @Inject constructor(var repository: AnnRepository) : ViewMode
                     announcements?.sortWith { obj1: EntityAnnouncement, obj2: EntityAnnouncement ->
                         obj2.id.compareTo(obj1.id)
                     }
-                    genData.postValue(Resource.success(announcements))
+                    genData.postValue(Response.success(announcements))
                 }
                 else -> {
                     val e = response.message ?: ""
-                    genData.postValue(Resource.error(e, null))
+                    genData.postValue(Response.error(e, response.data))
                 }
             }
         }
@@ -42,9 +42,9 @@ class AnnViewModel @Inject constructor(var repository: AnnRepository) : ViewMode
         return repository.getAnn(id)
     }
 
-    fun refreshDB(): LiveData<Resource<List<EntityAnnouncement>>> {
+    fun refreshDB(): LiveData<Response<List<EntityAnnouncement>>> {
         viewModelScope.launch {
-            genData.postValue(Resource.loading(null))
+            genData.postValue(Response.loading(null))
             val response = repository.refreshDB()
             when (response.status) {
                 Status.SUCCESS -> {
@@ -52,11 +52,11 @@ class AnnViewModel @Inject constructor(var repository: AnnRepository) : ViewMode
                     announcements?.sortWith { obj1: EntityAnnouncement, obj2: EntityAnnouncement ->
                         obj2.id.compareTo(obj1.id)
                     }
-                    genData.postValue(Resource.success(announcements))
+                    genData.postValue(Response.success(announcements))
                 }
                 else -> {
                     val e = response.message ?: ""
-                    genData.postValue(Resource.error(e, null))
+                    genData.postValue(Response.error(e, null))
                 }
             }
         }

@@ -12,14 +12,14 @@ import androidx.room.TypeConverters;
 import mx.mobile.solution.nabia04.data.converters.DataConverter;
 import mx.mobile.solution.nabia04.data.dao.AnnDao;
 import mx.mobile.solution.nabia04.data.dao.DBdao;
-import mx.mobile.solution.nabia04.data.dao.DuesDao;
+import mx.mobile.solution.nabia04.data.dao.DuesBackupDao;
 import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement;
-import mx.mobile.solution.nabia04.data.entities.EntityDues;
+import mx.mobile.solution.nabia04.data.entities.EntityDuesBackup;
 import mx.mobile.solution.nabia04.data.entities.EntityUserData;
 
 
-@Database(entities = {EntityAnnouncement.class, EntityUserData.class, EntityDues.class},
-        version = 74, exportSchema = false)
+@Database(entities = {EntityAnnouncement.class, EntityUserData.class, EntityDuesBackup.class},
+        version = 75, exportSchema = false)
 @TypeConverters({DataConverter.class})
 public abstract class MainDataBase extends RoomDatabase {
 
@@ -27,7 +27,7 @@ public abstract class MainDataBase extends RoomDatabase {
 
     public abstract DBdao dbDao();
 
-    public abstract DuesDao duesDao();
+    public abstract DuesBackupDao duesBackupDao();
 
     private static volatile MainDataBase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;

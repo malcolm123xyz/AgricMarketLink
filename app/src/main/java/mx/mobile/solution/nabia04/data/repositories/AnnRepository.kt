@@ -8,7 +8,7 @@ import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.data.dao.AnnDao
 import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement
 import mx.mobile.solution.nabia04.utilities.RateLimiter
-import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Announcement
@@ -23,17 +23,17 @@ import javax.net.ssl.SSLHandshakeException
 @Singleton
 class AnnRepository @Inject constructor(
     var dao: AnnDao, var endpoint: MainEndpoint,
-    var sharedP: SharedPreferences, var limiter: RateLimiter,
+    var sharedP: SharedPreferences,
     var alarmManager: MyAlarmManager
 ) {
 
-    suspend fun refreshDB(): Resource<List<EntityAnnouncement>> {
+    suspend fun refreshDB(): Response<List<EntityAnnouncement>> {
         return withContext(Dispatchers.IO) {
             refresh()
         }
     }
 
-    suspend fun fetchAnn(): Resource<List<EntityAnnouncement>> {
+    suspend fun fetchAnn(): Response<List<EntityAnnouncement>> {
         return withContext(Dispatchers.IO) {
             fetch()
         }
@@ -63,18 +63,18 @@ class AnnRepository @Inject constructor(
         }
     }
 
-    private fun refresh(): Resource<List<EntityAnnouncement>> {
+    private fun refresh(): Response<List<EntityAnnouncement>> {
         val erMsg: String
         try {
             val backendResponse = endpoint.noticeBoardData.execute()
             if (backendResponse.status == Status.SUCCESS.toString()) {
                 val allAnnouncements = getAnnDataObjects(backendResponse.data).toList()
                 dao.insertAnnouncement(allAnnouncements)
-                RateLimiter.reset(sharedP, "Announcement")
+                RateLimiter.reset("Announcement")
                 alarmManager.scheduleEventNotification(allAnnouncements)
-                return Resource.success(allAnnouncements)
+                return Response.success(allAnnouncements)
             } else {
-                return Resource.error(backendResponse.message, null)
+                return Response.error(backendResponse.message, null)
             }
 
         } catch (ex: IOException) {
@@ -88,16 +88,16 @@ class AnnRepository @Inject constructor(
             }
             ex.printStackTrace()
         }
-        return Resource.error(erMsg, null)
+        return Response.error(erMsg, null)
     }
 
-    private fun fetch(): Resource<List<EntityAnnouncement>> {
+    private fun fetch(): Response<List<EntityAnnouncement>> {
         val erMsg: String
 
         val annList = dao.annList
 
         if (!shouldFetch(annList)) {
-            return Resource.success(annList)
+            return Response.success(annList)
         }
 
         try {
@@ -105,11 +105,11 @@ class AnnRepository @Inject constructor(
             return if (backendResponse.status == Status.SUCCESS.toString()) {
                 val allAnnouncements = getAnnDataObjects(backendResponse.data).toList()
                 dao.insertAnnouncement(allAnnouncements)
-                RateLimiter.reset(sharedP, "Announcement")
+                RateLimiter.reset("Announcement")
                 alarmManager.scheduleEventNotification(allAnnouncements)
-                Resource.success(allAnnouncements)
+                Response.success(allAnnouncements)
             } else {
-                Resource.error(backendResponse.message, null)
+                Response.error(backendResponse.message, null)
             }
 
         } catch (ex: IOException) {
@@ -123,7 +123,7 @@ class AnnRepository @Inject constructor(
             }
             ex.printStackTrace()
         }
-        return Resource.error(erMsg, null)
+        return Response.error(erMsg, annList)
     }
 
     private fun getAnnDataObjects(list: List<Announcement>): MutableList<EntityAnnouncement> {
@@ -155,7 +155,7 @@ class AnnRepository @Inject constructor(
     }
 
     private fun shouldFetch(data: List<EntityAnnouncement>): Boolean {
-        if (this.limiter.shouldFetch("Announcement", 12, TimeUnit.HOURS)) {
+        if (RateLimiter.shouldFetch("Announcement", 12, TimeUnit.HOURS)) {
             Log.i("TAG", "Time limit reached, ShouldFetch Announcement data")
             return true
         }

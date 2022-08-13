@@ -2,16 +2,25 @@ package mx.mobile.solution.nabia04.data.repositories
 
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.alarm.MyAlarmManager
 import mx.mobile.solution.nabia04.data.dao.DBdao
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
+import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData
+import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData.Companion.selectedFolio
 import mx.mobile.solution.nabia04.utilities.RateLimiter
-import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.*
+import java.io.File
+import java.io.FileInputStream
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
@@ -23,11 +32,11 @@ import javax.net.ssl.SSLHandshakeException
 @Singleton
 class DBRepository @Inject constructor(
     var dao: DBdao, var endpoint: MainEndpoint,
-    var sharedP: SharedPreferences, var limiter: RateLimiter,
+    var sharedP: SharedPreferences,
     var alarmManager: MyAlarmManager
 ) {
 
-    suspend fun fetchUserData(): Resource<List<EntityUserData>> {
+    suspend fun fetchUserData(): Response<List<EntityUserData>> {
         return withContext(Dispatchers.IO) {
             fetch()
         }
@@ -40,11 +49,95 @@ class DBRepository @Inject constructor(
 
     }
 
-    suspend fun refreshDB(): Resource<List<EntityUserData>> {
+    suspend fun refreshDB(): Response<List<EntityUserData>> {
         return withContext(Dispatchers.IO) {
             refresh()
         }
     }
+
+    suspend fun upDateUserData(
+        data: MutableLiveData<Response<String>>,
+        userData: EntityUserData,
+        newImageUri: String
+    ) {
+
+        return withContext(Dispatchers.IO) {
+            if (newImageUri.isEmpty()) {
+                sendToDataStore(data, userData, newImageUri)
+            } else {
+                sendImageFirst(data, userData)
+            }
+        }
+    }
+
+    private fun sendImageFirst(
+        data: MutableLiveData<Response<String>>,
+        userData: EntityUserData,
+    ) {
+        data.postValue(Response.loading("Sending Image to server..."))
+
+        val storage = Firebase.storage
+        val storageRef = storage.reference
+        val userIconRef = storageRef.child("database/$selectedFolio.jpg")
+        val stream = FileInputStream(File(ActivityUpdateUserData.newImageUri))
+        val uploadTask = userIconRef.putStream(stream)
+        uploadTask.addOnFailureListener {
+            it.printStackTrace()
+        }.addOnSuccessListener { taskSnapshot ->
+            Log.i("TAG", "Image uploaded: $taskSnapshot")
+        }
+
+        uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let { throw it }
+            }
+            userIconRef.downloadUrl
+        }.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val downloadUri = task.result
+                Log.i("TAG", "downloadUri: $downloadUri")
+                val scope = CoroutineScope(Dispatchers.IO)
+                scope.launch { sendToDataStore(data, userData, downloadUri.toString()) }
+            } else {
+                data.postValue(Response.error("Failed to send Image. Please try again", ""))
+                task.exception?.printStackTrace()
+            }
+        }
+    }
+
+    private fun sendToDataStore(
+        data: MutableLiveData<Response<String>>,
+        userData: EntityUserData,
+        imageUri: String
+    ) {
+        var erMsg = ""
+        userData.imageUri = imageUri
+        try {
+            data.postValue(Response.loading("Sending data to server..."))
+            val response = if (selectedFolio.isEmpty()) {
+                endpoint.addNewMember(getBackendModel(userData)).execute()
+            } else {
+                endpoint.insertDataModel(getBackendModel(userData)).execute()
+            }
+            if (response?.status == Status.SUCCESS.toString()) {
+                data.postValue(Response.success("Done"))
+            } else {
+                data.postValue(response?.message?.let { Response.error(it, "") })
+            }
+
+        } catch (ex: IOException) {
+            erMsg = if (ex is SocketTimeoutException || ex is SSLHandshakeException ||
+                ex is UnknownHostException
+            ) {
+                "Cause: NO INTERNET CONNECTION"
+            } else {
+                ex.localizedMessage ?: ""
+            }
+            ex.printStackTrace()
+            data.postValue(Response.error(erMsg, ""))
+        }
+    }
+
 
     suspend fun getUser(folio: String): EntityUserData? {
         return dao.userData(folio)
@@ -88,22 +181,22 @@ class DBRepository @Inject constructor(
         return entityUserDataList
     }
 
-    suspend fun setUserClearance(folio: String, clearance: String): Resource<List<EntityUserData>> {
+    suspend fun setUserClearance(folio: String, clearance: String): Response<List<EntityUserData>> {
         return withContext(Dispatchers.IO) {
             doSetClearance(folio, clearance)
         }
 
     }
 
-    private fun doSetClearance(folio: String, clearance: String): Resource<List<EntityUserData>> {
+    private fun doSetClearance(folio: String, clearance: String): Response<List<EntityUserData>> {
         val erMsg: String
         try {
             val cl = ClearanceTP().setFolio(folio).setPosition(clearance)
             val response = endpoint.setUserClearance(cl)?.execute()
             if (response?.status == Status.SUCCESS.toString()) {
-                return Resource.success(null)
+                return Response.success(null)
             }
-            return Resource.error(response?.message.toString(), null)
+            return Response.error(response?.message.toString(), null)
         } catch (ex: IOException) {
             erMsg = if (ex is SocketTimeoutException ||
                 ex is SSLHandshakeException ||
@@ -115,21 +208,21 @@ class DBRepository @Inject constructor(
             }
             ex.printStackTrace()
         }
-        return Resource.error(erMsg, null)
+        return Response.error(erMsg, null)
     }
 
-    private fun refresh(): Resource<List<EntityUserData>> {
+    private fun refresh(): Response<List<EntityUserData>> {
         val erMsg: String
         try {
             val response = endpoint.members.execute()
             return if (response?.status == Status.SUCCESS.toString()) {
                 val allData = getEntity(response.data).toList()
                 dao.insert(allData)
-                RateLimiter.reset(sharedP, "User_data")
+                RateLimiter.reset("User_data")
                 alarmManager.scheduleBirthdayNotification(allData)
-                Resource.success(allData)
+                Response.success(allData)
             } else {
-                Resource.error(response.message, null)
+                Response.error(response.message, null)
             }
         } catch (ex: IOException) {
             erMsg = if (ex is SocketTimeoutException ||
@@ -142,16 +235,16 @@ class DBRepository @Inject constructor(
             }
             ex.printStackTrace()
         }
-        return Resource.error(erMsg, null)
+        return Response.error(erMsg, null)
     }
 
-    private fun fetch(): Resource<List<EntityUserData>> {
+    private fun fetch(): Response<List<EntityUserData>> {
         var erMsg = ""
 
         val list = dao.getAllUserData
 
         if (!shouldFetch(list)) {
-            return Resource.success(list)
+            return Response.success(list)
         }
 
         try {
@@ -160,11 +253,11 @@ class DBRepository @Inject constructor(
             return if (response?.status == Status.SUCCESS.toString()) {
                 val allData = getEntity(response.data).toList()
                 dao.insert(allData)
-                RateLimiter.reset(sharedP, "User_data")
+                RateLimiter.reset("User_data")
                 alarmManager.scheduleBirthdayNotification(allData)
-                Resource.success(allData)
+                Response.success(allData)
             } else {
-                Resource.error(response.message, null)
+                Response.error(response.message, null)
             }
 
         } catch (ex: IOException) {
@@ -178,7 +271,7 @@ class DBRepository @Inject constructor(
             }
             ex.printStackTrace()
         }
-        return Resource.error(erMsg, null)
+        return Response.error(erMsg, list)
     }
 
 
@@ -186,16 +279,16 @@ class DBRepository @Inject constructor(
         folio: String,
         date: String,
         status: Int
-    ): Resource<List<EntityUserData>> {
+    ): Response<List<EntityUserData>> {
         var erMsg = ""
         try {
             val deceaseStatus = DeceaseStatusTP().setDate(date).setFolio(folio).setStatus(status)
             Log.i("TAG", "Deceased folio num: = $folio")
             val response = endpoint.setDeceaseStatus(deceaseStatus)?.execute()
             if (response?.status == Status.SUCCESS.toString()) {
-                return Resource.success(null)
+                return Response.success(null)
             }
-            return Resource.error(response?.message.toString(), null)
+            return Response.error(response?.message.toString(), null)
         } catch (ex: IOException) {
             erMsg = if (ex is SocketTimeoutException ||
                 ex is SSLHandshakeException ||
@@ -207,17 +300,17 @@ class DBRepository @Inject constructor(
             }
             ex.printStackTrace()
         }
-        return Resource.error(erMsg, null)
+        return Response.error(erMsg, null)
     }
 
-    private fun doSetDeleteUser(folio: String): Resource<List<EntityUserData>> {
+    private fun doSetDeleteUser(folio: String): Response<List<EntityUserData>> {
         var erMsg = ""
         try {
             val response = endpoint.deleteUser(folio)?.execute()
             if (response?.status == Status.SUCCESS.toString()) {
-                return Resource.success(null)
+                return Response.success(null)
             }
-            return Resource.error(response?.message.toString(), null)
+            return Response.error(response?.message.toString(), null)
         } catch (ex: IOException) {
             erMsg = if (ex is SocketTimeoutException ||
                 ex is SSLHandshakeException ||
@@ -229,18 +322,18 @@ class DBRepository @Inject constructor(
             }
             ex.printStackTrace()
         }
-        return Resource.error(erMsg, null)
+        return Response.error(erMsg, null)
     }
 
-    private fun doSetBiography(biography: String, folio: String): Resource<List<EntityUserData>> {
+    private fun doSetBiography(biography: String, folio: String): Response<List<EntityUserData>> {
         var erMsg = ""
         try {
             val bio = BiographyTP().setFolio(folio).setBio(biography)
             val response = endpoint.setBiography(bio)?.execute()
             if (response?.status == Status.SUCCESS.toString()) {
-                return Resource.success(null)
+                return Response.success(null)
             }
-            return Resource.error(response?.message.toString(), null)
+            return Response.error(response?.message.toString(), null)
         } catch (ex: IOException) {
             erMsg = if (ex is SocketTimeoutException ||
                 ex is SSLHandshakeException ||
@@ -252,18 +345,18 @@ class DBRepository @Inject constructor(
             }
             ex.printStackTrace()
         }
-        return Resource.error(erMsg, null)
+        return Response.error(erMsg, null)
     }
 
-    private fun doSendTribute(folio: String, tribute: String): Resource<List<EntityUserData>> {
+    private fun doSendTribute(folio: String, tribute: String): Response<List<EntityUserData>> {
         var erMsg = ""
         try {
             val tributeTP = TributeTP().setFolio(folio).setMsg(tribute)
             val response = endpoint.addTribute(tributeTP)?.execute()
             if (response?.status == Status.SUCCESS.toString()) {
-                return Resource.success(null)
+                return Response.success(null)
             }
-            return Resource.error(response?.message.toString(), null)
+            return Response.error(response?.message.toString(), null)
         } catch (ex: IOException) {
             ex.printStackTrace()
             erMsg =
@@ -273,20 +366,20 @@ class DBRepository @Inject constructor(
                     "UNKNOWN ERROR"
                 }
         }
-        return Resource.error(erMsg, null)
+        return Response.error(erMsg, null)
     }
 
     suspend fun setDeceaseStatus(
         folio: String,
         date: String,
         status: Int
-    ): Resource<List<EntityUserData>> {
+    ): Response<List<EntityUserData>> {
         return withContext(Dispatchers.IO) {
             doSetDeceased(folio, date, status)
         }
     }
 
-    suspend fun deleteUser(folio: String): Resource<List<EntityUserData>> {
+    suspend fun deleteUser(folio: String): Response<List<EntityUserData>> {
         return withContext(Dispatchers.IO) {
             doSetDeleteUser(folio)
         }
@@ -295,7 +388,7 @@ class DBRepository @Inject constructor(
     suspend fun setBiography(
         biography: String,
         selectedFolio: String
-    ): Resource<List<EntityUserData>> {
+    ): Response<List<EntityUserData>> {
         return withContext(Dispatchers.IO) {
             doSetBiography(biography, selectedFolio)
         }
@@ -304,14 +397,14 @@ class DBRepository @Inject constructor(
     suspend fun sendTribute(
         selectedFolio: String,
         tribute: String
-    ): Resource<List<EntityUserData>> {
+    ): Response<List<EntityUserData>> {
         return withContext(Dispatchers.IO) {
             doSendTribute(selectedFolio, tribute)
         }
     }
 
     private fun shouldFetch(data: List<EntityUserData>): Boolean {
-        if (limiter.shouldFetch("User_data", 12, TimeUnit.HOURS)) {
+        if (RateLimiter.shouldFetch("User_data", 12, TimeUnit.HOURS)) {
             Log.i("TAG", "Time limit reached, ShouldFetch User_data data")
             return true
         }
@@ -325,4 +418,37 @@ class DBRepository @Inject constructor(
         return false
     }
 
+    private fun getBackendModel(obj: EntityUserData?): DatabaseObject {
+        val u = DatabaseObject()
+        if (obj != null) {
+            u.birthDayAlarm = obj.birthDayAlarm
+            u.className = obj.className
+            u.contact = obj.contact
+            u.courseStudied = obj.courseStudied
+            u.districtOfResidence = obj.districtOfResidence
+            u.email = obj.email
+            u.folioNumber = obj.folioNumber
+            u.homeTown = obj.homeTown
+            u.house = obj.house
+            u.imageId = obj.imageId
+            u.imageUri = obj.imageUri
+            u.nickName = obj.nickName
+            u.jobDescription = obj.jobDescription
+            u.specificOrg = obj.specificOrg
+            u.employmentStatus = obj.employmentStatus
+            u.employmentSector = obj.employmentSector
+            u.nameOfEstablishment = obj.nameOfEstablishment
+            u.establishmentRegion = obj.establishmentRegion
+            u.establishmentDist = obj.establishmentDist
+            u.positionHeld = obj.positionHeld
+            u.regionOfResidence = obj.regionOfResidence
+            u.sex = obj.sex
+            u.fullName = obj.fullName
+            u.survivingStatus = obj.survivingStatus
+            u.dateDeparted = obj.dateDeparted
+            u.biography = obj.biography
+            u.tributes = obj.tributes
+        }
+        return u
+    }
 }

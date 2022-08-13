@@ -249,20 +249,20 @@ class FragmentContributionRequest : BaseFragment<
         pDial.setMessage("Sending new contribution request")
         pDial.setCancelable(false)
         pDial.show()
-        networkViewModel.getListenableData(contData, imageUri)
-            .observe(viewLifecycleOwner) { resource: Resource<String> ->
-                when (resource.status) {
+        networkViewModel.sendContribution(contData, imageUri)
+            .observe(viewLifecycleOwner) { response: Response<String> ->
+                when (response.status) {
                     Status.SUCCESS -> {
                         pDial.dismiss()
                         Toast.makeText(requireContext(), "DONE", Toast.LENGTH_SHORT).show()
                         findNavController().navigate(R.id.action_move_back)
                     }
                     Status.LOADING -> {
-                        pDial.setMessage(resource.message)
+                        pDial.setMessage(response.message)
                     }
                     Status.ERROR -> {
                         pDial.dismiss()
-                        showDialog("ERROR", "An error has occurred: ${resource.message}")
+                        showDialog("ERROR", "An error has occurred: ${response.message}")
                     }
                 }
             }

@@ -100,8 +100,8 @@ class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
 
             val serverDeleteItem = menu.findItem(R.id.delete_from_server)
 
-            if (clearance == Const.PRO || clearance == Const.PRESIDENT ||
-                clearance == Const.VICE_PRESIDENT || userFolioNumber == "13786"
+            if (clearance == Const.POS_PRO || clearance == Const.POS_PRESIDENT ||
+                clearance == Const.POS_VICE_PRESIDENT || userFolioNumber == "13786"
             ) {
                 serverDeleteItem.isVisible = true
             }

@@ -1,5 +1,6 @@
 package mx.mobile.solution.nabia04.ui.welfare_fragments
 
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -19,9 +20,11 @@ import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.databinding.FragmentWelfareSummaryBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
+import mx.mobile.solution.nabia04.utilities.Const
 import mx.mobile.solution.nabia04.utilities.ExcelHelper
 import mx.mobile.solution.nabia04.utilities.GlideApp
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class FragmentUserDuesSummary : BaseFragment<FragmentWelfareSummaryBinding>() {
@@ -30,37 +33,52 @@ class FragmentUserDuesSummary : BaseFragment<FragmentWelfareSummaryBinding>() {
     lateinit var excelHelper: ExcelHelper
 
     @Inject
-    lateinit var dao: DBdao
+    lateinit var dBdao: DBdao
+
+    @Inject
+    lateinit var sharedP: SharedPreferences
 
     private lateinit var adapter: ArrayAdapter<String>
 
     override fun getLayoutRes(): Int = R.layout.fragment_welfare_summary
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        lifecycleScope.launch {
-            excelHelper.createExcel()
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = ArrayAdapter(requireContext(), R.layout.simple_spinner_item, excelHelper.names)
-        vb?.userDuesSpinner?.adapter = adapter
-        vb?.userDuesSpinner?.onItemSelectedListener = OnSpinnerItemClick()
+        showLoading(true)
+        val selName: String = excelHelper.getName(userFolioNumber)
+        val selPos = excelHelper.names.indexOf(selName)
 
-        vb?.userDuesSpinner?.setSelection(
-            (vb?.userDuesSpinner?.adapter as ArrayAdapter<String>).getPosition(
-                excelHelper.getName(userFolioNumber)
-            )
-        )
-    }
-
-    private suspend fun CreateExcel() {
-        withContext(Dispatchers.Default) {
-            excelHelper.createExcel()
+        if (isTreasurer()) {
+            vb!!.spinnerHolder.visibility = View.VISIBLE
+            setUpSpinner(selPos)
+        } else {
+            vb!!.spinnerHolder.visibility = View.GONE
+            refreshViews(selPos)
         }
+
+        if (selName.isEmpty()) {
+            status_txt.text = "Summary not available. You have not paid any dues"
+            status_txt.setTextColor(R.color.pink)
+        }
+
+        showLoading(false)
+
     }
+
+    private fun isTreasurer(): Boolean {
+        val clearance = sharedP.getString(Const.CLEARANCE, "")
+        return clearance == Const.POS_TREASURER || userFolioNumber == "13786"
+
+    }
+
+    private fun setUpSpinner(selPos: Int) {
+        vb?.userDuesSpinner?.onItemSelectedListener = OnSpinnerItemClick()
+        adapter =
+            ArrayAdapter(requireContext(), R.layout.simple_spinner_item, excelHelper.names)
+        vb?.userDuesSpinner?.adapter = adapter
+        vb?.userDuesSpinner?.setSelection(selPos)
+    }
+
 
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
@@ -74,8 +92,6 @@ class FragmentUserDuesSummary : BaseFragment<FragmentWelfareSummaryBinding>() {
 
     private fun refreshViews(i: Int) {
         lifecycleScope.launch {
-            showLoading(true)
-
             val userTotal = excelHelper.getUserTotal(i)
             val numOfMonthsPaid = userTotal / 5
             val percentagePaged = ((numOfMonthsPaid / excelHelper.totalNumMonths) * 100).toInt()
@@ -121,7 +137,6 @@ class FragmentUserDuesSummary : BaseFragment<FragmentWelfareSummaryBinding>() {
                 .apply(RequestOptions.circleCropTransform())
                 .signature(ObjectKey(id))
                 .into(vb!!.image)
-            showLoading(false)
         }
     }
 
@@ -137,7 +152,8 @@ class FragmentUserDuesSummary : BaseFragment<FragmentWelfareSummaryBinding>() {
 
     private suspend fun loadImage(folio: String): EntityUserData? {
         return withContext(Dispatchers.IO) {
-            dao.userData(folio)
+            dBdao.userData(folio)
         }
     }
+
 }

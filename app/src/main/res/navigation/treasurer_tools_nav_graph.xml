@@ -33,6 +33,33 @@
             app:destination="@id/cont_payment_update"
             app:enterAnim="@anim/nav_anim_enter_foward"
             app:exitAnim="@anim/nav_anim_exit_forward" />
+
+        <action
+            android:id="@+id/action_move_manage_backups"
+            app:destination="@id/manage_backups"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/manage_backups"
+        android:name="mx.mobile.solution.nabia04.ui.treasurer.FragmentManageDuesBackups"
+        android:label="DUES BACKUPS"
+        tools:layout="@layout/fragment_manage_dues_backups">
+
+        <action
+            android:id="@+id/action_move_to_dues_payment_view"
+            app:destination="@id/fragment_payment_view"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+
+        <!--        <action-->
+        <!--            android:id="@+id/action_move_back"-->
+        <!--            app:destination="@id/fragment1"-->
+        <!--            app:popUpTo="@id/fragment1"-->
+        <!--            app:popUpToInclusive="true"-->
+        <!--            app:enterAnim="@anim/nav_anim_enter_back"-->
+        <!--            app:exitAnim="@anim/nav_anim_exit_back" />-->
     </fragment>
 
     <fragment

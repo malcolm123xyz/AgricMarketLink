@@ -63,7 +63,7 @@ class TokenRefreshWorker(val appContext: Context, workerParams: WorkerParameters
                     sharedP.edit().putString(Const.FCM_TOKEN, strObj).apply()
                     if (fcmToken.sent) {
                         Log.i(tag, "TOKEN SENT TO SERVER SUCCESSFUL")
-                        RateLimiter.reset(sharedP, "Token_Refresh")
+                        RateLimiter.reset("Token_Refresh")
                         showTokenRefreshNotification(
                             System.currentTimeMillis(),
                             "Token Sent success"
@@ -113,7 +113,7 @@ class TokenRefreshWorker(val appContext: Context, workerParams: WorkerParameters
     }
 
     private fun shouldRefreshData(): Boolean {
-        val rateLimiter = RateLimiter(sharedP).shouldFetch("Token_Refresh", 2, TimeUnit.MINUTES)
+        val rateLimiter = RateLimiter.shouldFetch("Token_Refresh", 2, TimeUnit.MINUTES)
         Log.i(tag, "RateLimiter = $rateLimiter")
         if (rateLimiter) {
             return true
@@ -158,12 +158,13 @@ class TokenRefreshWorker(val appContext: Context, workerParams: WorkerParameters
         return gson.fromJson(strFcmToken, type)
     }
 
-    private fun getNextCount(): Int {
-        var curVal = sharedP.getInt("Int_Count", 0)
-        curVal++
-        sharedP.edit().putInt("Int_Count", curVal).apply()
-        return curVal
-    }
+    private val index: Int
+        get() {
+            var curVal = sharedP.getInt("Int_Count", 0)
+            curVal++
+            sharedP.edit().putInt("Int_Count", curVal).apply()
+            return curVal
+        }
 
     private fun showTokenRefreshNotification(time: Long, content: String) {
         val notificationManager = (appContext.getSystemService(Context.NOTIFICATION_SERVICE)
@@ -180,7 +181,7 @@ class TokenRefreshWorker(val appContext: Context, workerParams: WorkerParameters
         builder.priority = NotificationCompat.PRIORITY_DEFAULT
         builder.setAutoCancel(true)
         builder.setVibrate(longArrayOf(100, 100, 100, 100, 100))
-        notificationManager?.notify(getNextCount(), builder.build())
+        notificationManager?.notify(index, builder.build())
         Log.i("MyAlarmManager", "Notification fired.")
     }
 

@@ -1,5 +1,8 @@
 package mx.mobile.solution.nabia04.ui.treasurer
 
+import android.app.AlertDialog
+import android.content.DialogInterface
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -12,6 +15,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -24,25 +28,33 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import mx.mobile.solution.nabia04.App
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.entities.EntityDues
 import mx.mobile.solution.nabia04.data.view_models.DuesViewModel
+import mx.mobile.solution.nabia04.data.view_models.NetworkViewModel
 import mx.mobile.solution.nabia04.databinding.FragmentYearlyPaymentBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.treasurer.TreasurerPaymentDetailHost.Companion.SORT
-import mx.mobile.solution.nabia04.utilities.ExcelHelper
-import mx.mobile.solution.nabia04.utilities.Resource
-import mx.mobile.solution.nabia04.utilities.Status
+import mx.mobile.solution.nabia04.utilities.*
+import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DuesBackup
+import java.io.File
 import java.util.*
 import javax.inject.Inject
-import kotlin.time.ExperimentalTime
 
 @AndroidEntryPoint
 class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
     SearchView.OnQueryTextListener {
 
+    private var excelFilePath = ""
+
     @Inject
     lateinit var excelHelper: ExcelHelper
+
+    @Inject
+    lateinit var sharedP: SharedPreferences
+
+    private val networkViewModel by viewModels<NetworkViewModel>()
 
     private lateinit var adapter: ListAdapter1
 
@@ -66,11 +78,18 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[DuesViewModel::class.java]
         adapter = ListAdapter1()
+        excelFilePath = arguments?.getString("temp_file") ?: ""
+        Log.i("TAG", "Excel to view path: $excelFilePath")
     }
 
-    @OptIn(ExperimentalTime::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val duesDir = File(App.applicationContext().filesDir, "Dues")
+        val isPublish = sharedP.getBoolean(Const.EXCEL_PUBLISHED, false)
+        if (excelHelper.getExcelFile().exists() && !isPublish) {
+            vb!!.l1.visibility = View.VISIBLE
+            vb!!.publish.setOnClickListener { showPublishWarning() }
+        }
 
         requireActivity().addMenuProvider(
             MyMenuProvider(),
@@ -88,9 +107,70 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
         }
     }
 
+    private fun showPublishWarning() {
+        AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+            .setTitle("WARNING")
+            .setMessage(
+                "Publishing the current excel document will make it accessible other users. " +
+                        "Make sure it has the latest updates. \n\n" +
+                        "DO YOU WANT TO CONTINUE?"
+            )
+            .setPositiveButton("YES") { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+                publish()
+            }.setNegativeButton("NO") { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+            }.show()
+    }
+
+    private fun publish() {
+
+        val excelFile = excelHelper.getExcelFile()
+
+        val excelUri = excelFile.absolutePath
+        val backup = DuesBackup()
+        backup.totalAmount = excelHelper.getGrandTotal().toString()
+        val pDial = MyAlertDialog(requireContext(), "SENDING EXCEL", "", false).show()
+        networkViewModel.publishExcel("dues/Nabiadues.xlsx", excelUri)
+            .observe(viewLifecycleOwner) { response: Response<String> ->
+                when (response.status) {
+                    Status.SUCCESS -> {
+                        pDial.dismiss()
+                        Toast.makeText(requireContext(), "DONE", Toast.LENGTH_SHORT).show()
+                        sharedP.edit().putBoolean(Const.EXCEL_PUBLISHED, true).apply()
+                        findNavController().navigate(R.id.action_move_back)
+                    }
+                    Status.LOADING -> {
+                        pDial.setMessage(response.data.toString())
+                    }
+                    Status.ERROR -> {
+                        pDial.dismiss()
+                        showDialog("ERROR", "An error has occurred: ${response.message}")
+                    }
+                }
+            }
+    }
+
+    private fun showDialog(t: String, s: String) {
+        AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+            .setTitle(t)
+            .setMessage(s)
+            .setPositiveButton(
+                "OK"
+            ) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
+    }
+
+    private fun showExelFileNotExistDial() {
+        AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+            .setTitle("ERROR")
+            .setMessage("The excel file does not exist. Make sure it is created first")
+            .setPositiveButton("OK") { dialog: DialogInterface, _: Int ->
+                dialog.dismiss()
+            }.show()
+    }
 
     private suspend fun setUpListener() {
-        viewModel.fetchAnn().observe(viewLifecycleOwner) { users: Resource<List<EntityDues>> ->
+        viewModel.fetchAnn().observe(viewLifecycleOwner) { users: Response<List<EntityDues>> ->
             when (users.status) {
                 Status.SUCCESS -> {
                     selectedList = users.data?.toMutableList() ?: ArrayList()
@@ -120,18 +200,24 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
 
     private suspend fun loadExcel() {
         withContext(Dispatchers.IO) {
-            excelHelper.reload()
+            if (excelFilePath.isEmpty()) {
+                excelHelper.initialize()
+            } else {
+                excelHelper.initializeTemp(excelFilePath)
+            }
+
         }
     }
 
     private fun showHeader() {
         val headerItems = excelHelper.getHeader()
-        vb?.y1?.text = headerItems[0]
-        vb?.y2?.text = headerItems[1]
-        vb?.y3?.text = headerItems[2]
-        vb?.y4?.text = headerItems[3]
-        vb?.y5?.text = headerItems[4]
-
+        if (headerItems.isNotEmpty()) {
+            vb?.y1?.text = headerItems[0]
+            vb?.y2?.text = headerItems[1]
+            vb?.y3?.text = headerItems[2]
+            vb?.y4?.text = headerItems[3]
+            vb?.y5?.text = headerItems[4]
+        }
     }
 
     private suspend fun sortData() {
@@ -198,6 +284,23 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
 
                 R.id.upDateDuesPayment -> {
                     findNavController().navigate(R.id.action_move_dues_update)
+                    true
+                }
+
+                R.id.publish -> {
+                    AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+                        .setTitle("WARNING")
+                        .setMessage(
+                            "Publishing the current excel document will make it accessible other users. " +
+                                    "Make sure it has the latest updates. \n\n" +
+                                    "DO YOU WANT TO CONTINUE?"
+                        )
+                        .setPositiveButton("YES") { dialog: DialogInterface, _: Int ->
+                            dialog.dismiss()
+                            publish()
+                        }.setNegativeButton("NO") { dialog: DialogInterface, _: Int ->
+                            dialog.dismiss()
+                        }.show()
                     true
                 }
                 else -> true

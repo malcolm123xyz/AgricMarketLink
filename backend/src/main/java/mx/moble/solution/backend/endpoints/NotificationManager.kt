@@ -58,7 +58,7 @@ class NotificationManager(val token: String) {
         return registrationTokens
     }
 
-    fun send(message: MulticastMessage) {
+    private fun send(message: MulticastMessage) {
         val options = FirebaseOptions.Builder()
             .setCredentials(GoogleCredentials.getApplicationDefault())
             .setDatabaseUrl("https://nabia04.firebaseio.com")
@@ -69,13 +69,11 @@ class NotificationManager(val token: String) {
         }
         try {
             val response = FirebaseMessaging.getInstance().sendMulticast(message)
-            if (response.failureCount > 0) {
-                val responses = response.responses
-                for (i in responses.indices) {
-                    if (!responses[i].isSuccessful) {
-                        //The order of responses corresponds to the order of the registration tokens.
-                        println("Sending failed: ${responses.get(i).exception}")
-                    }
+            val responses = response.responses
+            for (i in responses.indices) {
+                if (responses[i].isSuccessful) {
+                    //The order of responses corresponds to the order of the registration tokens.
+                    println("Sending is successfull")
                 }
             }
         } catch (e: FirebaseMessagingException) {

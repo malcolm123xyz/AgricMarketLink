@@ -18,7 +18,7 @@ import mx.mobile.solution.nabia04.databinding.ListFragmentBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.adapters.AnnListAdapter
 import mx.mobile.solution.nabia04.util.Event
-import mx.mobile.solution.nabia04.utilities.Resource
+import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
 import javax.inject.Inject
 
@@ -50,10 +50,10 @@ class FragmentEventsNot : BaseFragment<ListFragmentBinding>() {
 
         viewModel.fetchAnn().observe(
             viewLifecycleOwner,
-        ) { users: Resource<List<EntityAnnouncement>> ->
+        ) { users: Response<List<EntityAnnouncement>> ->
             when (users.status) {
                 Status.SUCCESS -> {
-                    lifecycleScope.launch { users.data?.let { renderData(it) } }
+                    lifecycleScope.launch { users.data?.let { renderList(it) } }
                     vb?.pb?.visibility = View.GONE
                 }
                 Status.LOADING -> {
@@ -62,12 +62,13 @@ class FragmentEventsNot : BaseFragment<ListFragmentBinding>() {
                 Status.ERROR -> {
                     vb?.pb?.visibility = View.GONE
                     Toast.makeText(requireContext(), users.message, Toast.LENGTH_LONG).show()
+                    lifecycleScope.launch { users.data?.let { renderList(it) } }
                 }
             }
         }
     }
 
-    private fun renderData(list: List<EntityAnnouncement>) {
+    private fun renderList(list: List<EntityAnnouncement>) {
         val announcements: MutableList<EntityAnnouncement> = ArrayList()
         for (event in list) {
             if (event.annType == 1) {

@@ -48,15 +48,12 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-<!--    <style name="Theme.Nabia04.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">-->
-<!--        <item name="android:textColor">@color/black</item>-->
-<!--    </style>-->
 
     <style name="Theme.Nabia04.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
     <style name="AppCompatAlertDialogStyle" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <item name="colorAccent">@color/blue_light</item>
         <item name="android:textColorPrimary">#FFFFFFFF</item>
-        <item name="android:background">@color/pink</item>
+        <item name="android:background">@color/blue_light_variant</item>
     </style>
 </resources>
