@@ -5,14 +5,14 @@
     <item
         android:id="@+id/set_clearance"
         android:orderInCategory="100"
-        android:title="Authorization"
+        android:title="Set role"
         app:showAsAction="never"
         android:visible="false"/>
 
     <item
         android:id="@+id/living_status"
         android:orderInCategory="100"
-        android:title="Living"
+        android:title="Living/Dead"
         app:showAsAction="never"
         android:visible="false"/>
 

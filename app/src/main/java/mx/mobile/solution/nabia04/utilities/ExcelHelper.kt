@@ -435,7 +435,6 @@ class ExcelHelper @Inject constructor(
     }
 
     private fun createNewPaymentRow(name: String, folio: String): Response<String> {
-        val errMsg: String
         val sheet = workbook?.getSheetAt(0)
         val lastCellNum = sheet?.getRow(0)?.lastCellNum
         val row = sheet?.createRow(sheet.lastRowNum - 1)

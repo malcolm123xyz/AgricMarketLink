@@ -50,6 +50,21 @@
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
+  "changePassword": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.changePassword",
+   "path": "changePassword",
+   "request": {
+    "$ref": "PasswordChangeTP",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "Response_String"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
   "deleteDuesBackup": {
    "httpMethod": "POST",
    "id": "mainEndpoint.deleteDuesBackup",
@@ -80,6 +95,21 @@
     }
    },
    "path": "deleteFromServer",
+   "response": {
+    "$ref": "Response_String"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "deleteQuestion": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.deleteQuestion",
+   "path": "deleteQuestion",
+   "request": {
+    "$ref": "Question",
+    "parameterName": "resource"
+   },
    "response": {
     "$ref": "Response_String"
    },
@@ -152,6 +182,17 @@
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
+  "getQuestions": {
+   "httpMethod": "GET",
+   "id": "mainEndpoint.getQuestions",
+   "path": "getQuestions",
+   "response": {
+    "$ref": "Response_QuestionCollection"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
   "insertAnnouncement": {
    "httpMethod": "POST",
    "id": "mainEndpoint.insertAnnouncement",
@@ -182,10 +223,61 @@
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
+  "insertQuestion": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.insertQuestion",
+   "path": "insertQuestion",
+   "request": {
+    "$ref": "Question",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "Response_String"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
   "notifyExcelPublish": {
    "httpMethod": "POST",
    "id": "mainEndpoint.notifyExcelPublish",
    "path": "notifyExcelPublish",
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "qVote": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.qVote",
+   "path": "qVote",
+   "request": {
+    "$ref": "Question",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "Response_String"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "resetPassword": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.resetPassword",
+   "parameterOrder": [
+    "folio"
+   ],
+   "parameters": {
+    "folio": {
+     "location": "query",
+     "required": true,
+     "type": "string"
+    }
+   },
+   "path": "resetPassword",
+   "response": {
+    "$ref": "Response_LoginData"
+   },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]
@@ -640,6 +732,63 @@
    "id": "Map_String_String",
    "type": "object"
   },
+  "PasswordChangeTP": {
+   "id": "PasswordChangeTP",
+   "properties": {
+    "folio": {
+     "type": "string"
+    },
+    "newP": {
+     "type": "string"
+    },
+    "oldP": {
+     "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "Question": {
+   "id": "Question",
+   "properties": {
+    "area": {
+     "type": "string"
+    },
+    "downVote": {
+     "type": "string"
+    },
+    "folio": {
+     "type": "string"
+    },
+    "from": {
+     "type": "string"
+    },
+    "id": {
+     "type": "string"
+    },
+    "imageUrl": {
+     "type": "string"
+    },
+    "numReply": {
+     "type": "string"
+    },
+    "question": {
+     "type": "string"
+    },
+    "replyList": {
+     "type": "string"
+    },
+    "time": {
+     "type": "string"
+    },
+    "upVote": {
+     "type": "string"
+    },
+    "visibility": {
+     "type": "boolean"
+    }
+   },
+   "type": "object"
+  },
   "RegistrationToken": {
    "id": "RegistrationToken",
    "properties": {
@@ -733,6 +882,24 @@
    "properties": {
     "data": {
      "$ref": "LoginData"
+    },
+    "message": {
+     "type": "string"
+    },
+    "status": {
+     "$ref": "Status"
+    }
+   },
+   "type": "object"
+  },
+  "Response_QuestionCollection": {
+   "id": "Response_QuestionCollection",
+   "properties": {
+    "data": {
+     "items": {
+      "$ref": "Question"
+     },
+     "type": "array"
     },
     "message": {
      "type": "string"

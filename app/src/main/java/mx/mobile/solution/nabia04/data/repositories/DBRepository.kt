@@ -139,7 +139,7 @@ class DBRepository @Inject constructor(
     }
 
 
-    suspend fun getUser(folio: String): EntityUserData? {
+    suspend fun getUser(folio: String): EntityUserData {
         return dao.userData(folio)
     }
 

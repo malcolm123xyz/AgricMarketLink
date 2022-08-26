@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/blue_light_variant">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardBackgroundColor="@color/blue_light"
+        android:layout_margin="2dp"
+        app:cardCornerRadius="5dp">
+
+        <LinearLayout
+            android:id="@+id/uyyt"
+            android:layout_marginTop="1dp"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/areaCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    app:cardBackgroundColor="@color/blue_light_variant"
+                    app:cardElevation="5dp">
+
+                    <TextView
+                        android:id="@+id/area"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:padding="5dp"
+                        android:text="AREA"
+                        android:textSize="17sp" />
+
+                    <ImageView
+                        android:id="@+id/menu"
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_action_menu"
+                        android:layout_gravity="right|center_vertical" />
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <ImageView
+                    android:id="@+id/icon"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_below="@+id/areaCard"
+                    android:layout_marginTop="10dp"
+                    android:padding="5dp"
+                    android:src="@drawable/user_icon" />
+
+                <LinearLayout
+                    android:id="@+id/l1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_toEndOf="@id/icon"
+                    android:layout_alignTop="@+id/icon"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/from"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginLeft="5dp"
+                        android:text="Manlcolm Asekabta"
+                        android:textSize="15sp"
+                        android:textColor="@color/white" />
+
+                    <TextView
+                        android:id="@+id/date"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginLeft="5dp"
+                        android:text="Manlcolm Asekabta"
+                        android:textSize="12sp"
+                        android:textColor="@color/black" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/question"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/icon"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:text="Question"
+                    android:textColor="@color/white"
+                    android:textSize="15sp" />
+
+                <LinearLayout
+                    android:id="@+id/l2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/question"
+                    android:layout_marginTop="10dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/upVote"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:layout_gravity="center_vertical"
+                        android:textColor="@color/black"
+                        android:background="@drawable/vote_background"
+                        app:drawableLeftCompat="@drawable/up_vote" />
+
+                    <TextView
+                        android:id="@+id/downVote"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_gravity="center_vertical"
+                        android:text="0"
+                        android:textColor="@color/black"
+                        android:textStyle="bold"
+                        android:background="@drawable/vote_background"
+                        app:drawableLeftCompat="@drawable/down_vote" />
+
+                    <ProgressBar
+                        android:id="@+id/progressBar"
+                        android:layout_width="20dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_vertical"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/copy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginStart="20dp"
+                        android:padding="5dp"
+                        android:src="@drawable/copy" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/msgIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignTop="@id/l2"
+                    android:layout_marginEnd="10dp"
+                    android:drawableLeft="@drawable/msg_icon"
+                    android:padding="5dp"
+                    android:text="0" />
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</RelativeLayout>

@@ -37,7 +37,7 @@ class DBViewModel @Inject constructor(var repository: DBRepository) : ViewModel(
         return data
     }
 
-    suspend fun getUser(folio: String): EntityUserData? {
+    suspend fun getUser(folio: String): EntityUserData {
         return repository.getUser(folio)
     }
 

@@ -93,7 +93,7 @@ class ExcelDownloadWorker(val appContext: Context, workerParams: WorkerParameter
     }
 
     private fun downloader(callback: MyCallback) {
-        var urlConnection: HttpURLConnection? = null
+        var urlConnection: HttpURLConnection?
         try {
             val url = URL(Const.EXCEL_URL)
             urlConnection = url.openConnection() as HttpURLConnection
@@ -113,7 +113,7 @@ class ExcelDownloadWorker(val appContext: Context, workerParams: WorkerParameter
             val outPut = FileOutputStream(excelFile)
             var downloadedSize = 0
             val buffer = ByteArray(2024)
-            var bufferLength = 0
+            var bufferLength: Int
             while (inputStream.read(buffer).also { bufferLength = it } > 0) {
                 outPut.write(buffer, 0, bufferLength)
                 downloadedSize += bufferLength

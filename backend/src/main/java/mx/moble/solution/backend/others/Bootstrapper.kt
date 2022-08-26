@@ -14,6 +14,7 @@ class Bootstrapper : ServletContextListener {
         ObjectifyService.register(Announcement::class.java)
         ObjectifyService.register(ContributionData::class.java)
         ObjectifyService.register(DuesBackup::class.java)
+        ObjectifyService.register(Question::class.java)
     }
 
     override fun contextDestroyed(servletContextEvent: ServletContextEvent) {}

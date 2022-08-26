@@ -15,7 +15,7 @@ import mx.mobile.solution.nabia04.data.view_models.AnnViewModel
 import mx.mobile.solution.nabia04.data.view_models.MainAppbarViewModel
 import mx.mobile.solution.nabia04.databinding.ListFragmentBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
-import mx.mobile.solution.nabia04.ui.adapters.AnnListAdapter
+import mx.mobile.solution.nabia04.ui.adapters.GenAnnAdapter
 import mx.mobile.solution.nabia04.util.Event
 import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class FragmentGeneralNot : BaseFragment<ListFragmentBinding>() {
 
     @Inject
-    lateinit var adapter: AnnListAdapter
+    lateinit var adapter: GenAnnAdapter
 
     private val mainAppbarViewModel by activityViewModels<MainAppbarViewModel>()
 

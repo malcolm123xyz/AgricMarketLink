@@ -122,7 +122,6 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
 
         vb?.employmentStatusSpinner?.onItemSelectedListener = OnEmploymentStatusClickListener()
 
-
         listenOnBackPressed()
     }
 

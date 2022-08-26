@@ -181,7 +181,7 @@ class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
         val msg = """ANNOUNCEMENT!!!${announcement.heading} ${announcement.message} 
             
             Download the Nabia04 social App at: Http://nabia04.app.com"""
-        val clip = ClipData.newPlainText("label", msg)
+        val clip = ClipData.newPlainText("announcement", msg)
                     clipboard.setPrimaryClip(clip)
                     Toast.makeText(requireContext(), "Copied", Toast.LENGTH_SHORT).show()
     }

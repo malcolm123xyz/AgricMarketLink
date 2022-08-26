@@ -2,21 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-    <uses-permission android:name="android.permission.STORAGE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28" />
-
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -24,26 +9,24 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/logo"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MainTheme"
         tools:replace="android:fullBackupContent"
-        android:requestLegacyExternalStorage="true"
         tools:targetApi="31">
-
-        <!--        <meta-data-->
-        <!--            android:name="com.google.firebase.messaging.default_notification_icon"-->
-        <!--            android:resource="@drawable/announcement_icon" />-->
-        <!--        &lt;!&ndash; Set color used with incoming notification messages. This is used when no color is set for the incoming-->
-        <!--             notification message. See README(https://goo.gl/6BKBk7) for more. &ndash;&gt;-->
-        <!--        <meta-data-->
-        <!--            android:name="com.google.firebase.messaging.default_notification_color"-->
-        <!--            android:resource="@color/pink" />-->
-
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id" />
-
+        <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_settings" />
+        <!-- <meta-data -->
+        <!-- android:name="com.google.firebase.messaging.default_notification_icon" -->
+        <!-- android:resource="@drawable/announcement_icon" /> -->
+        <!-- &lt;!&ndash; Set color used with incoming notification messages. This is used when no color is set for the incoming -->
+        <!-- notification message. See README(https://goo.gl/6BKBk7) for more. &ndash;&gt; -->
+        <!-- <meta-data -->
+        <!-- android:name="com.google.firebase.messaging.default_notification_color" -->
+        <!-- android:resource="@color/pink" /> -->
         <activity
             android:name=".authentication.AuthenticationActivity"
             android:exported="true"
@@ -54,30 +37,41 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ui.activities.MainActivity"
             android:exported="true"
             android:label="Main" />
         <activity
-            android:name=".ui.activities.ActivitySendAnnouncement"
-            android:windowSoftInputMode="adjustPan"
+            android:name=".ui.activities.ActivityProTools"
             android:exported="true"
-            android:label="New Announcement" />
+            android:label="PRO TOOLS" />
+        <activity
+            android:name=".ui.activities.ActivitySendAnnouncement"
+            android:exported="true"
+            android:label="New Announcement"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.activities.ActivityUpdateUserData"
-            android:windowSoftInputMode="adjustPan"
             android:exported="true"
-            android:label="Database Update" />
-
+            android:label="Database Update"
+            android:windowSoftInputMode="adjustPan" />
+        <activity
+            android:name=".ui.activities.SettingsActivity"
+            android:exported="true"
+            android:label="Settings" />
         <activity
             android:name=".ui.activities.ActivityTreasurerTools"
             android:exported="true"
             android:label="Treasurer Tools" />
 
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="@string/default_notification_channel_id" />
+
         <receiver
             android:name="mx.mobile.solution.nabia04.alarm.AlarmReceiver"
             android:enabled="true" />
-
         <receiver
             android:name="mx.mobile.solution.nabia04.alarm.BootCompleteReceiver"
             android:enabled="true"
@@ -96,5 +90,19 @@
             </intent-filter>
         </service>
     </application>
+
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.STORAGE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>

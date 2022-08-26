@@ -2,7 +2,6 @@ package mx.mobile.solution.nabia04.ui.activities
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-import android.app.AlertDialog
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -14,7 +13,6 @@ import android.os.Environment
 import android.provider.Settings
 import android.util.Log
 import android.view.MenuItem
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.annotation.Nullable
@@ -40,7 +38,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.App
 import mx.mobile.solution.nabia04.R
-import mx.mobile.solution.nabia04.authentication.AuthenticationActivity
 import mx.mobile.solution.nabia04.data.view_models.*
 import mx.mobile.solution.nabia04.databinding.ActivityMainBinding
 import mx.mobile.solution.nabia04.fcm_.SendTokenToServerWorker
@@ -150,20 +147,22 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             } else {
                 requestPermission()
             }
-
         }
         Log.i("TAG", "Activity onCreate() took: $n")
     }
 
     private fun checkPermission(): Boolean {
-        return if (SDK_INT >= Build.VERSION_CODES.R) {
-            Environment.isExternalStorageManager()
+        if (SDK_INT >= Build.VERSION_CODES.R) {
+            return Environment.isExternalStorageManager()
         } else {
             val result =
                 ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE)
             val result1 =
                 ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
-            result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED
+
+            Log.i("TAG", "Permission results: Result1 = $result, Result2 = $result1")
+
+            return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED
         }
     }
 
@@ -185,6 +184,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun requestPermission() {
+        Log.i("TAG", "requestPermissions")
+
         if (SDK_INT >= Build.VERSION_CODES.R) {
             try {
                 val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
@@ -198,6 +199,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 startActivityForResult(intent, 2296)
             }
         } else {
+            Log.i("TAG", "requestPermissions beow android 11")
             //below android 11
             ActivityCompat.requestPermissions(
                 this, arrayOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE),
@@ -349,54 +351,51 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         Log.i("TAG", "onNavigationItemSelected")
         when (item.itemId) {
 
+            R.id.pro -> {
+
+                if (isPro()) {
+                    val i = Intent(this, ActivityProTools::class.java)
+                    startActivity(i)
+                } else {
+                    Toast.makeText(this, "Only the Pro can access this section", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+            }
+
             R.id.treasurer -> {
-                Log.i("TAG", "onNavigationItemSelected treasurer")
-                val i = Intent(this, ActivityTreasurerTools::class.java)
+
+                if (isTreasurer()) {
+                    val i = Intent(this, ActivityTreasurerTools::class.java)
+                    startActivity(i)
+                } else {
+                    Toast.makeText(
+                        this,
+                        "Only the Treasurer can access this section",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+            }
+
+            R.id.settings -> {
+                val i = Intent(this, SettingsActivity::class.java)
                 startActivity(i)
             }
 
-            R.id.nav_logout -> {
-                AlertDialog.Builder(this, R.style.AppCompatAlertDialogStyle)
-                    .setMessage("LOGOUT")
-                    .setTitle("Are you sure you want to logout?")
-                    .setPositiveButton("YES") { dialog, _ ->
-                        dialog.dismiss()
-                        logoutUser()
-                    }.setNegativeButton("NO") { dialog, _ ->
-                        dialog.dismiss()
-                    }.show()
-            }
-//
-//            R.id.nav_privacy_policy -> {
-//                //navController.navigate(Uri.parse("loveletter://agreement/privacy-policy"))
-//            }
-//
-//            R.id.nav_terms_of_service -> {
-//                //navController.navigate(Uri.parse("loveletter://agreement/terms-of-service"))
-//            }
         }
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
 
-    private fun logoutUser() {
+    private fun isTreasurer(): Boolean {
+        val clearance = sharedP.getString(Const.CLEARANCE, "")
+        return clearance == Const.POS_TREASURER || userFolioNumber == "13786"
+    }
 
-        getWindow().setFlags(
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-            WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-        );
-
-        SessionManager.clearData()
-
-        deleteDatabase("main_database");
-
-        val i = Intent(this, AuthenticationActivity::class.java)
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        i.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-
-        finishAffinity()
-
-        startActivity(i)
+    private fun isPro(): Boolean {
+        val clearance = sharedP.getString(Const.CLEARANCE, "")
+        return clearance == Const.POS_PRO || userFolioNumber == "13786"
     }
 
 }

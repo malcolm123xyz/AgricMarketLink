@@ -65,7 +65,6 @@ class MainEndpoint {
     @Throws(IOException::class)
     fun insertAnnouncement(announcementData: Announcement): Response<String> {
         ObjectifyService.ofy().save().entity(announcementData).now()
-
         val dataMap = HashMap<String, String>()
         dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_NEW_ANN
         dataMap["message"] = announcementData.message
@@ -73,11 +72,74 @@ class MainEndpoint {
         dataMap["id"] = announcementData.id.toString()
         dataMap["annTyp"] = announcementData.annType.toString()
         dataMap["alarm"] = announcementData.eventDate.toString()
-
         NotificationManager("").sendNotDataOnly(dataMap)
-
         return success(null)
     }
+
+    @ApiMethod(
+        name = "qVote",
+        path = "qVote",
+        httpMethod = ApiMethod.HttpMethod.POST
+    )
+    fun qVote(question: Question): Response<String> {
+        return try {
+
+
+            ObjectifyService.ofy().save().entity(question).now()
+            val dataMap = HashMap<String, String>()
+            dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_QUESTION_CHANGE
+            dataMap["question"] = question.question
+            dataMap["visibility"] = question.visibility.toString()
+            dataMap["area"] = question.area
+            dataMap["id"] = question.id
+            NotificationManager("").sendNotDataOnly(dataMap)
+            success(null)
+        } catch (e: IOException) {
+            error("Server error: ${e.localizedMessage}", "")
+        }
+    }
+
+    @ApiMethod(
+        name = "insertQuestion",
+        path = "insertQuestion",
+        httpMethod = ApiMethod.HttpMethod.POST
+    )
+    fun insertQuestion(question: Question): Response<String> {
+        return try {
+            ObjectifyService.ofy().save().entity(question).now()
+            val dataMap = HashMap<String, String>()
+            dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_QUESTION_CHANGE
+            dataMap["question"] = question.question
+            dataMap["visibility"] = question.visibility.toString()
+            dataMap["area"] = question.area
+            dataMap["id"] = question.id
+            NotificationManager("").sendNotDataOnly(dataMap)
+            success(null)
+        } catch (e: IOException) {
+            error("Server error: ${e.localizedMessage}", "")
+        }
+    }
+
+    @get:ApiMethod(
+        name = "getQuestions",
+        path = "getQuestions",
+        httpMethod = ApiMethod.HttpMethod.GET
+    )
+    val questions: Response<List<Question>>
+        get() {
+            return try {
+                val questions = ObjectifyService.ofy().load().type(
+                    Question::class.java
+                ).list()
+                if (questions.isNotEmpty()) {
+                    success(questions)
+                } else {
+                    error("No Questions found", null)
+                }
+            } catch (e: Exception) {
+                error("An error occurred: ${e.localizedMessage}", null)
+            }
+        }
 
     @ApiMethod(
         name = "notifyExcelPublish",
@@ -98,6 +160,25 @@ class MainEndpoint {
     fun deleteDuesBackup(duesBackup: DuesBackup): Response<String> {
         return try {
             ObjectifyService.ofy().delete().entity(duesBackup).now()
+            success(null)
+        } catch (e: IOException) {
+            error(e.localizedMessage, "")
+        }
+    }
+
+    @ApiMethod(
+        name = "deleteQuestion",
+        path = "deleteQuestion",
+        httpMethod = ApiMethod.HttpMethod.POST
+    )
+    fun deleteQuestion(question: Question): Response<String> {
+        return try {
+            ObjectifyService.ofy().delete().entity(question).now()
+            val dataMap = HashMap<String, String>()
+            dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_QUESTION_CHANGE
+            NotificationManager("").sendNotDataOnly(dataMap)
+            success(null)
+
             success(null)
         } catch (e: IOException) {
             error(e.localizedMessage, "")
@@ -382,6 +463,32 @@ class MainEndpoint {
         return Const.ALREADY_SIGN_UP
     }
 
+    @ApiMethod(
+        name = "changePassword",
+        path = "changePassword",
+        httpMethod = ApiMethod.HttpMethod.POST
+    )
+
+    fun changePassword(ptp: PasswordChangeTP): Response<String> {
+
+        try {
+            val loginData =
+                ObjectifyService.ofy().load().type(LoginData::class.java).id(ptp.folio).now()
+            if (loginData == null) {
+                return error("User information found", null)
+            } else {
+                if (ptp.oldP == loginData.password) {
+                    loginData.password = ptp.newP
+                    ObjectifyService.ofy().save().entity(loginData).now()
+                    return success("")
+                }
+                return error("Wrong Password. Please enter the current password", "")
+            }
+        } catch (e: IOException) {
+            return error("Server error: ${e.localizedMessage}", "")
+        }
+    }
+
     @ApiMethod(name = "signUp", path = "signUp", httpMethod = ApiMethod.HttpMethod.POST)
 
     fun signUp(loginData: LoginData): Response<LoginData> {
@@ -413,6 +520,7 @@ class MainEndpoint {
         }
         error("Unknown Error: Unknown error. Please try again")
     }
+
 
     @ApiMethod(name = "upDateToken", path = "upDateToken", httpMethod = ApiMethod.HttpMethod.POST)
     fun upDateToken(regToken: RegistrationToken): Response<String> {
@@ -463,6 +571,20 @@ class MainEndpoint {
             error("Invalide password or Folio number", null)
         }
     }
+
+    @ApiMethod(
+        name = "resetPassword",
+        path = "resetPassword",
+        httpMethod = ApiMethod.HttpMethod.POST
+    )
+    fun resetPassword(@Named("folio") folio: String?): Response<LoginData> {
+        val loginData = ObjectifyService.ofy().load().type(LoginData::class.java).id(folio).now()
+            ?: return error("Not found. User is not signup or not login", null)
+        loginData.password = "1234"
+        ObjectifyService.ofy().save().entity(loginData).now()
+        return success(null)
+    }
+
 
     @ApiMethod(
         name = "deleteFromServer",

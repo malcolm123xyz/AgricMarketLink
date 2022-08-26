@@ -45,6 +45,7 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.preference:preference:1.1.1'
     endpointsServer project(path: ':backend', configuration: 'endpoints')
 
     //test

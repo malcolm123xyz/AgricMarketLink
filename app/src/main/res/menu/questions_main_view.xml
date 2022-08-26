@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/filter"
+        android:icon="@mipmap/filter_white"
+        android:orderInCategory="100"
+        android:title="Filter"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/search"
+        android:title="@string/search"
+        android:icon="@mipmap/search_white"
+        app:showAsAction="always"
+        app:actionViewClass="androidx.appcompat.widget.SearchView" />
+
+    <item
+        android:id="@+id/refresh"
+        android:icon="@drawable/refresh"
+        android:orderInCategory="100"
+        android:title="Refresh"
+        app:showAsAction="always" />
+
+</menu>

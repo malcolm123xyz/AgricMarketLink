@@ -1,5 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <string-array name="empty_array"></string-array>
+
+    <string-array name="empty_values"></string-array>
+
+
+    <string-array name="alarm_offset_entries">
+        <item>30 mins</item>
+        <item>1 Hr</item>
+        <item>1Hr 30 mins</item>
+        <item>2Hrs</item>
+        <item>2Hrs 30 mins</item>
+        <item>3Hrs</item>
+    </string-array>
+
+    <string-array name="alarm_offset_vals">
+        <item>30 mins</item>
+        <item>1 Hr</item>
+        <item>1Hr 30 mins</item>
+        <item>2Hrs</item>
+        <item>2Hrs 30 mins</item>
+        <item>3Hrs</item>
+    </string-array>
+
+    <!-- Reply Preference -->
+    <string-array name="reply_entries">
+        <item>Reply</item>
+        <item>Reply to all</item>
+    </string-array>
+
+    <string-array name="reply_values">
+        <item>reply</item>
+        <item>reply_all</item>
+    </string-array>
+
     <string-array name="sex">
         <item>SELECT SEX</item>
         <item>Male</item>

@@ -16,19 +16,6 @@
         </menu>
     </item>
 
-    <item android:title="Communicate">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_share_white_24dp"
-                android:title="Share" />
-            <item
-                android:id="@+id/nav_send"
-                android:icon="@drawable/send_white"
-                android:title="Send" />
-        </menu>
-    </item>
-
     <item android:title="About">
         <menu>
             <item
@@ -48,17 +35,30 @@
         </menu>
     </item>
 
-    <group android:checkableBehavior="single">
+    <!--    <item android:title="Authentication">-->
+    <!--        <menu>-->
+    <!--            <item-->
+    <!--                android:id="@+id/nav_logout"-->
+    <!--                android:icon="@mipmap/logout_black"-->
+    <!--                android:title="Log out" />-->
+    <!--            <item-->
+    <!--                android:id="@+id/changePassword"-->
+    <!--                android:icon="@mipmap/logout_black"-->
+    <!--                android:title="Change password" />-->
+    <!--        </menu>-->
+    <!--    </item>-->
 
-        <item
-            android:id="@+id/nav_logout"
-            android:icon="@mipmap/logout_black"
-            android:title="Log out" />
+    <group android:checkableBehavior="single">
 
         <item
             android:id="@+id/settings"
             android:icon="@drawable/ic_settings"
             android:title="Settings" />
+
+        <item
+            android:id="@+id/share"
+            android:icon="@drawable/ic_share_white_24dp"
+            android:title="Share" />
     </group>
 
 </menu>

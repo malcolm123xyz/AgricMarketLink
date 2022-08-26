@@ -91,52 +91,54 @@ class FragmentUserDuesSummary : BaseFragment<FragmentWelfareSummaryBinding>() {
     }
 
     private fun refreshViews(i: Int) {
-        lifecycleScope.launch {
-            val userTotal = excelHelper.getUserTotal(i)
-            val numOfMonthsPaid = userTotal / 5
-            val percentagePaged = ((numOfMonthsPaid / excelHelper.totalNumMonths) * 100).toInt()
+        if (i > -1) {
+            lifecycleScope.launch {
+                val userTotal = excelHelper.getUserTotal(i)
+                val numOfMonthsPaid = userTotal / 5
+                val percentagePaged = ((numOfMonthsPaid / excelHelper.totalNumMonths) * 100).toInt()
 
-            vb?.totalAmountTv?.text = "Ghc $userTotal"
-            vb?.numMonths?.text = numOfMonthsPaid.toString()
-            vb?.percentageContribution?.text = "${percentagePaged}%"
-            vb?.numMonthsOwed?.text = (excelHelper.totalNumMonths - numOfMonthsPaid).toString()
-            vb?.rank?.text = excelHelper.getRank(i).toString()
+                vb?.totalAmountTv?.text = "Ghc $userTotal"
+                vb?.numMonths?.text = numOfMonthsPaid.toString()
+                vb?.percentageContribution?.text = "${percentagePaged}%"
+                vb?.numMonthsOwed?.text = (excelHelper.totalNumMonths - numOfMonthsPaid).toString()
+                vb?.rank?.text = excelHelper.getRank(i).toString()
 
-            if (percentagePaged <= 29) {
-                vb?.headerHolder?.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.bad_standing
+                if (percentagePaged <= 29) {
+                    vb?.headerHolder?.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.bad_standing
+                        )
                     )
-                )
-                vb?.goodStandingTv?.text = "Not in Good Standing"
-            } else if (percentagePaged in 30..69) {
-                vb?.headerHolder?.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.average_standing
+                    vb?.goodStandingTv?.text = "Not in Good Standing"
+                } else if (percentagePaged in 30..69) {
+                    vb?.headerHolder?.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.average_standing
+                        )
                     )
-                )
-                vb?.goodStandingTv?.text = "Average Good Standing"
-            } else {
-                vb?.headerHolder?.setBackgroundColor(
-                    ContextCompat.getColor(
-                        requireContext(),
-                        R.color.good_standing
+                    vb?.goodStandingTv?.text = "Average Good Standing"
+                } else {
+                    vb?.headerHolder?.setBackgroundColor(
+                        ContextCompat.getColor(
+                            requireContext(),
+                            R.color.good_standing
+                        )
                     )
-                )
-                vb?.goodStandingTv?.text = "Good Standing"
+                    vb?.goodStandingTv?.text = "Good Standing"
+                }
+                val folio = excelHelper.members[i].folio
+                val user = loadImage(folio)
+                val uri = user?.imageUri ?: ""
+                val id = user?.imageId ?: ""
+                GlideApp.with(requireContext())
+                    .load(uri)
+                    .placeholder(R.drawable.listitem_image_holder)
+                    .apply(RequestOptions.circleCropTransform())
+                    .signature(ObjectKey(id))
+                    .into(vb!!.image)
             }
-            val folio = excelHelper.members[i].folio
-            val user = loadImage(folio)
-            val uri = user?.imageUri ?: ""
-            val id = user?.imageId ?: ""
-            GlideApp.with(requireContext())
-                .load(uri)
-                .placeholder(R.drawable.listitem_image_holder)
-                .apply(RequestOptions.circleCropTransform())
-                .signature(ObjectKey(id))
-                .into(vb!!.image)
         }
     }
 

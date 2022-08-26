@@ -24,21 +24,23 @@ import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
-class AnnListAdapter @Inject constructor(private val context: Context) :
+class EventsAnnAdapter @Inject constructor(private val context: Context) :
     ListAdapter<EntityAnnouncement,
-            AnnListAdapter.MyViewHolder>(DiffCallback()) {
+            EventsAnnAdapter.MyViewHolder>(DiffCallback()) {
     private val fd = SimpleDateFormat("EEE, d MMM yyyy hh:mm", Locale.US)
 
     inner class MyViewHolder(val parent: View) : RecyclerView.ViewHolder(parent) {
         private val topic: TextView = itemView.findViewById(R.id.heading)
         val time: TextView = itemView.findViewById(R.id.time)
+        val venu: TextView = itemView.findViewById(R.id.venue)
         val annPicture: ImageView = itemView.findViewById(R.id.ann_picture)
 
         fun bind(annItem: EntityAnnouncement) {
             val topic = annItem.heading
-            val date = getDate(annItem.id)
+            val date = getDate(annItem.eventDate)
             this.topic.text = topic
-            time.text = date
+            time.text = "Date: $date"
+            venu.text = "Venue: ${annItem.venue}"
 
             val imageUri: String = annItem.imageUri ?: ""
 
@@ -77,7 +79,7 @@ class AnnListAdapter @Inject constructor(private val context: Context) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.announcement_list_item, parent, false)
+            .inflate(R.layout.events_list_item, parent, false)
         return MyViewHolder(view)
     }
 

@@ -16,7 +16,7 @@ import mx.mobile.solution.nabia04.data.view_models.AnnViewModel
 import mx.mobile.solution.nabia04.data.view_models.MainAppbarViewModel
 import mx.mobile.solution.nabia04.databinding.ListFragmentBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
-import mx.mobile.solution.nabia04.ui.adapters.AnnListAdapter
+import mx.mobile.solution.nabia04.ui.adapters.EventsAnnAdapter
 import mx.mobile.solution.nabia04.util.Event
 import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
@@ -31,7 +31,7 @@ class FragmentEventsNot : BaseFragment<ListFragmentBinding>() {
     override fun getLayoutRes(): Int = R.layout.list_fragment
 
     @Inject
-    lateinit var adapter: AnnListAdapter
+    lateinit var adapter: EventsAnnAdapter
 
     private val mainAppbarViewModel by activityViewModels<MainAppbarViewModel>()
 

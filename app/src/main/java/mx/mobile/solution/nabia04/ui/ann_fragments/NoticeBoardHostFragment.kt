@@ -52,10 +52,6 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
     @Inject
     lateinit var excelHelper: ExcelHelper
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 

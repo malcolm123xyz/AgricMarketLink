@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/fragment1">
+
+    <fragment
+        android:id="@+id/fragment1"
+        android:name="mx.mobile.solution.nabia04.ui.pro.FragmentProTools"
+        android:label="TREASURER MENU"
+        tools:layout="@layout/fragment_pro_tools">
+        <action
+            android:id="@+id/action_move_to_manage_users"
+            app:destination="@id/fragment_manage_users"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_manage_users"
+        android:name="mx.mobile.solution.nabia04.ui.pro.FragmentManageUser"
+        android:label="Manage Users"
+        tools:layout="@layout/fragment_manage_users">
+
+        <action
+            android:id="@+id/action_move_detail_view"
+            app:destination="@id/fragment_detail_view"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+
+        <action
+            android:id="@+id/action_move_back"
+            app:destination="@id/fragment1"
+            app:popUpTo="@id/fragment1"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
+
+    </fragment>
+
+
+    <fragment
+        android:id="@+id/fragment_detail_view"
+        android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentCurrentMembersDetail"
+        android:label="Details"
+        tools:layout="@layout/fragment_database_detail">
+
+        <action
+            android:id="@+id/action_move_back"
+            app:destination="@id/fragment1"
+            app:popUpTo="@id/fragment1"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
+
+    </fragment>
+
+
+</navigation>

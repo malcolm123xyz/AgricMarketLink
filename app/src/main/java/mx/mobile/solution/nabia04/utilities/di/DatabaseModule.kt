@@ -29,6 +29,7 @@ import mx.mobile.solution.nabia04.data.MainDataBase
 import mx.mobile.solution.nabia04.data.dao.AnnDao
 import mx.mobile.solution.nabia04.data.dao.DBdao
 import mx.mobile.solution.nabia04.data.dao.DuesBackupDao
+import mx.mobile.solution.nabia04.data.dao.ProfMainViewDao
 import mx.mobile.solution.nabia04.ui.activities.endpoint
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.MainEndpoint
 import javax.inject.Singleton
@@ -40,6 +41,11 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext appContext: Context): MainDataBase {
         return MainDataBase.getDatabase(appContext)
+    }
+
+    @Provides
+    fun provideProfMainViewDao(database: MainDataBase): ProfMainViewDao {
+        return database.profMainViewDao()
     }
 
     @Provides

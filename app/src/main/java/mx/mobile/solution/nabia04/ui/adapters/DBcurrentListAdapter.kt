@@ -165,6 +165,7 @@ object DiffCallbackCurrList : DiffUtil.ItemCallback<EntityUserData>() {
         oldItem: EntityUserData,
         newItem: EntityUserData
     ): Boolean {
-        return oldItem.imageUri == newItem.imageUri
+        return oldItem.imageUri == newItem.imageUri ||
+                oldItem.survivingStatus == newItem.survivingStatus
     }
 }

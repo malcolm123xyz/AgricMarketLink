@@ -33,7 +33,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:menu="@menu/home_bottom_nav_menu"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="50dp" />
 
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -58,6 +58,7 @@
             android:id="@+id/nav_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:background="@color/blue_light"
             android:layout_gravity="start"
             android:fitsSystemWindows="true"
             app:headerLayout="@layout/nav_header_home"

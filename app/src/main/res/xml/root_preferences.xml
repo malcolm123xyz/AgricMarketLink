@@ -1,0 +1,54 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--    <PreferenceCategory app:title="@string/messages_header">-->
+
+    <!--        <EditTextPreference-->
+    <!--            app:key="signature"-->
+    <!--            app:title="@string/signature_title"-->
+    <!--            app:useSimpleSummaryProvider="true" />-->
+
+    <!--        <ListPreference-->
+    <!--            app:defaultValue="reply"-->
+    <!--            app:entries="@array/reply_entries"-->
+    <!--            app:entryValues="@array/reply_values"-->
+    <!--            app:key="reply"-->
+    <!--            app:title="@string/reply_title"-->
+    <!--            app:useSimpleSummaryProvider="true" />-->
+
+    <!--    </PreferenceCategory>-->
+
+
+    <PreferenceCategory app:title="Notifications">
+
+
+        <SwitchPreferenceCompat
+            app:key="event_notification"
+            app:title="Show event notification"
+            app:defaultValue="true" />
+
+        <ListPreference
+            app:dependency="event_notification"
+            app:defaultValue="3"
+            app:dialogTitle="Alarm offset time"
+            app:entries="@array/alarm_offset_entries"
+            app:entryValues="@array/alarm_offset_vals"
+            app:key="alarm_offset_time"
+            app:summary="Alarm offset time"
+            app:title="Alarm offset time" />
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Authentication">
+
+        <Preference
+            app:key="logout"
+            app:title="Logout" />
+
+        <Preference
+            app:key="changePass"
+            app:title="Change password" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

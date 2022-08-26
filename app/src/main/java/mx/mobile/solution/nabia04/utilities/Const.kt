@@ -1,6 +1,7 @@
 package mx.mobile.solution.nabia04.utilities
 
 object Const {
+    const val Q_FROM_ANANYMOUS = "qFromAnanymous"
     const val EXCEL_STORAGE_BACKUP_REF = "dues/backup/Nabiadues.xlsx"
     const val EXCEL_PUBLISHED = "excelPublished"
     const val EXCEL_URL =
