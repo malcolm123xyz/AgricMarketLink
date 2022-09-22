@@ -7,45 +7,25 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import androidx.core.view.MenuProvider
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
-import androidx.navigation.NavController
-import androidx.viewpager2.adapter.FragmentStateAdapter
-import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.view_models.AnnViewModel
-import mx.mobile.solution.nabia04.databinding.FragmentViewpagerContainerBinding
+import mx.mobile.solution.nabia04.databinding.FragmentNoticeboardHostBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.ActivitySendAnnouncement
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
-import mx.mobile.solution.nabia04.ui.adapters.NoticeBoardChildFragmentStateAdapter
 import mx.mobile.solution.nabia04.utilities.Const
 import mx.mobile.solution.nabia04.utilities.ExcelHelper
 import javax.inject.Inject
 
-
-/**
- * Fragment that contains [ViewPager2] and [TabLayout]. If this fragments get replaced and [Fragment.onDestroyView]
- * is called there are things to be considered
- *
- * * [FragmentStateAdapter] that is not null after [Fragment.onDestroy] cause memory leak, so assign null to it
- *
- * * [TabLayoutMediator] cause memory leak if not detached after [Fragment.onDestroy] of this fragment is called.
- *
- * * Data-binding which is not null after [Fragment.onDestroy]  causes memory leak
- *
- * *[MainAppbarViewModel] that has a [NavController] that belong to a NavHostFragment that is to be destroyed
- * also causes memory leak.
- */
 @AndroidEntryPoint
-class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>() {
+class NoticeBoardHostFragment : BaseFragment<FragmentNoticeboardHostBinding>() {
 
-    override fun getLayoutRes(): Int = R.layout.fragment_viewpager_container
+    override fun getLayoutRes(): Int = R.layout.fragment_noticeboard_host
 
     private val viewModel by activityViewModels<AnnViewModel>()
 
@@ -68,7 +48,7 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
             Set Adapter for ViewPager inside this fragment using this Fragment,
             more specifically childFragmentManager as param
          */
-        viewPager.adapter = NoticeBoardChildFragmentStateAdapter(childFragmentManager, lifecycle)
+        viewPager.adapter = FragmentsAdapter(childFragmentManager, lifecycle)
 
         // TabLayout
         val tabLayout = vb!!.tabLayout
@@ -100,8 +80,7 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
         }
 
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            val id = menuItem.itemId
-            return when (id) {
+            return when (menuItem.itemId) {
                 R.id.refresh -> {
                     viewModel.refreshDB()
                     true
@@ -125,4 +104,6 @@ class NoticeBoardHostFragment : BaseFragment<FragmentViewpagerContainerBinding>(
 
         super.onDestroyView()
     }
+
+
 }

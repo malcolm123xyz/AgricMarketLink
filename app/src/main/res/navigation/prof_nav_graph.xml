@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/prof_nav_host_fragment"
-    app:startDestination="@id/prof_fragment1">
+    app:startDestination="@id/fragment_main_view_nav">
 
     <fragment
-        android:id="@+id/prof_fragment1"
+        android:id="@+id/fragment_main_view_nav"
         android:name="mx.mobile.solution.nabia04.ui.prof_fragments.FragmentProfMainView"
         android:label="PROF. HELP CENTER"
         tools:layout="@layout/fragment_prof_main">

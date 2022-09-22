@@ -16,6 +16,10 @@ data class Response<out T>(val status: Status, val data: T?, val message: String
             return Response(Status.LOADING, data, null)
         }
 
+        fun <T> emitEvent(event: String): Response<T> {
+            return Response(Status.EVENT, null, event)
+        }
+
     }
 
 }

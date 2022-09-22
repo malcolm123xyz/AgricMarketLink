@@ -2,6 +2,7 @@ package mx.mobile.solution.nabia04.utilities
 
 import android.content.SharedPreferences
 import android.os.Environment
+import android.os.FileObserver
 import android.util.Log
 import android.widget.Toast
 import kotlinx.coroutines.CoroutineScope
@@ -29,10 +30,6 @@ class ExcelHelper @Inject constructor(
     val duesBackupDao: DuesBackupDao
 ) {
 
-    init {
-        Log.i("TAG", "ExcelHelper Init: ${this.hashCode()}")
-    }
-
     private var excelFile: File? = null
     private var numNumYears = 0
     private var formatter = DataFormatter()
@@ -46,7 +43,7 @@ class ExcelHelper @Inject constructor(
         if (!isCreated) {
             showToast("Initializing excel document...")
             excelFile = getExcelFile()
-            Log.i("TAG", "File lenght: ${excelFile!!.length()}")
+            Log.i("TAG", "File length: ${excelFile!!.length()}")
             if (excelFile!!.length() == 0L) {
                 Log.i("TAG", "Excel file does not exist. Downloading it..")
                 excelFile = downloadFile()
@@ -57,10 +54,17 @@ class ExcelHelper @Inject constructor(
             }
             Log.i("TAG", "File downloaded. Creating workbook...")
             showToast("File downloaded creating workbook")
-            isCreated = createWorkBook(excelFile!!)
+            isCreated = loadWorkBook(excelFile!!)
             if (isCreated) {
                 getPaidMembers()
             }
+        }
+    }
+
+    fun reloadExcel() {
+        isCreated = loadWorkBook(excelFile!!)
+        if (isCreated) {
+            getPaidMembers()
         }
     }
 
@@ -76,7 +80,7 @@ class ExcelHelper @Inject constructor(
     fun initializeTemp(filePath: String) {
         val file = File(filePath)
         if (file.exists()) {
-            createWorkBook(file)
+            loadWorkBook(file)
             isCreated = false
         }
     }
@@ -151,7 +155,7 @@ class ExcelHelper @Inject constructor(
             return ((12 * numNumYears) - (7 + currYearMonths)).toDouble()
         }
 
-    private fun createWorkBook(excelFile: File): Boolean {
+    private fun loadWorkBook(excelFile: File): Boolean {
         try {
             val workbookStream = FileInputStream(excelFile)
             workbook = WorkbookFactory.create(workbookStream)
@@ -160,8 +164,6 @@ class ExcelHelper @Inject constructor(
             }
             return true
         } catch (e: Exception) {
-//            if (e is EmptyFileException) {
-//            }
             e.printStackTrace()
         }
         return false
@@ -237,8 +239,10 @@ class ExcelHelper @Inject constructor(
         val startCell = row.getCell(emptyCellIndex - 1)
         val spillOver = (getCellvalue(startCell).toDouble() + amount) - 60.0
         Log.i("TAG", "Spill over: $spillOver")
-
+        val initialGrandTotal = getGrandTotal().toString()
+        val userTotal = getUserTotal(row.rowNum)
         try {
+
             if (spillOver > 0) {
                 if ((row.lastCellNum - 1) - emptyCellIndex == 0) {
                     Log.i("TAG", "Moving to next cell, cell: ${startCell.columnIndex + 1}")
@@ -266,38 +270,64 @@ class ExcelHelper @Inject constructor(
                 Log.i("TAG", "Ammount added = $amountToAdd")
             }
             Log.i("TAG", "Payment update made successfully")
+
+            workbook?.creationHelper?.createFormulaEvaluator()?.evaluateAll()
+
+            var isCorrectGrandT = false
+            var isCorrectUserT = false
+
+            var errorMsg = ""
+
+            val grandTotal = getGrandTotal()
+            val expT = amnt + initialGrandTotal.toDouble()
+            val expUT = amnt + userTotal
+            val userT = getUserTotal(row.rowNum)
+
+            if (expT != grandTotal) {
+                errorMsg = "Final Grand Total did not equal Expected Grand Total\n\n" +
+                        "Expected Grand Total = ${amnt + initialGrandTotal.toDouble()}\n" +
+                        "Final Grand total = $grandTotal\n\n" +
+                        "CLOSE THE APP AND TRY AGAIN"
+            }
+
+            if (expUT != userT) {
+                errorMsg = "User final total did not equal expected User final total\n\n" +
+                        "Expected User Total = ${amnt + userTotal}\n" +
+                        "Final User Total = ${getUserTotal(row.rowNum)}\n\n" +
+                        "CLOSE THE APP AND TRY AGAIN"
+            }
+
+            if (errorMsg.isNotEmpty()) {
+                return Response.error(errorMsg, "")
+            }
             return Response.success("")
         } catch (e: Exception) {
             e.printStackTrace()
             errMsg =
                 e.localizedMessage ?: "An Unknown Error occurred while Doing the payment update."
         }
-
         return Response.error(errMsg, "")
     }
 
-    fun saveUpdate() {
+    fun saveFile() {
         val duesDir = File(applicationContext().filesDir, "Dues")
         try {
-            workbook?.creationHelper?.createFormulaEvaluator()?.evaluateAll()
-            val out = FileOutputStream(File(duesDir, "Nabiadues.xlsx"))
-            workbook?.write(out)
-            out.close()
-            sharedP.edit().putBoolean(Const.EXCEL_PUBLISHED, false).apply()
+            val out1 = FileOutputStream(File(duesDir, "Nabiadues.xlsx"))
+            workbook?.write(out1)
+            out1.close()
+            Log.i("TAG", "File saved")
         } catch (e: Exception) {
             e.printStackTrace()
         }
+        reloadExcel()
     }
 
-    fun backup() {
-        val backupDir =
-            File(Environment.getExternalStorageDirectory().absolutePath, "Nabia04_Dues_backups")
-
-        val time = System.currentTimeMillis()
-        val fileName = "${time}.xlsx"
-
+    fun saveToTemporalStorage() {
         try {
-            workbook?.creationHelper?.createFormulaEvaluator()?.evaluateAll()
+            val backupDir =
+                File(Environment.getExternalStorageDirectory().absolutePath, "Nabia04_Dues_backups")
+            val fileName = "temp_save.xlsx"
+
             if (!backupDir.exists()) {
                 backupDir.mkdir()
             }
@@ -305,25 +335,47 @@ class ExcelHelper @Inject constructor(
             if (!file.exists()) {
                 file.createNewFile()
             }
-            val out = FileOutputStream(file)
-            workbook?.write(out)
-            out.close()
+            val out2 = FileOutputStream(file)
+            workbook?.write(out2)
+            out2.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    fun backupDues() {
+        val time = System.currentTimeMillis()
+        try {
+            val backupDir =
+                File(Environment.getExternalStorageDirectory().absolutePath, "Nabia04_Dues_backups")
+            val fileName = "$time.xlsx"
+
+            if (!backupDir.exists()) {
+                backupDir.mkdir()
+            }
+            val file = File(backupDir, fileName)
+            if (!file.exists()) {
+                file.createNewFile()
+            }
+            val out2 = FileOutputStream(file)
+            workbook?.write(out2)
+            out2.close()
+
             val backup = EntityDuesBackup(time)
             backup.fileFullPath = file.absolutePath
             backup.filePath = backupDir.absolutePath
             backup.fileName = fileName
-            backup.published = false
             backup.totalAmount = getGrandTotal().toString()
+
             val scope = CoroutineScope(Dispatchers.Default)
             scope.launch {
                 duesBackupDao.insert(backup)
-                sharedP.edit().putBoolean(Const.EXCEL_PUBLISHED, false).apply()
                 Log.i("TAG", "Backup saved")
             }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
-
     }
 
     private fun getEmptyCellIndex(sheet: Sheet, folio: String): Int {
@@ -459,7 +511,6 @@ class ExcelHelper @Inject constructor(
 
     }
 
-
     fun getRank(index: Int): Int? {
         val amount = members[index].totalAmount
 
@@ -577,6 +628,19 @@ class ExcelHelper @Inject constructor(
             }
         }
         return list
+    }
+
+    private fun observeFile() {
+        val duesDir = File(applicationContext().filesDir, "Dues")
+        object : FileObserver(duesDir, ALL_EVENTS) {
+            override fun onEvent(event: Int, path: String?) {
+                when (event) {
+                    32 -> Log.d("TAG", "File created, Event: $event")
+                    2 -> Log.d("TAG", "File modified, Event: $event")
+                }
+                Log.d("TAG", "event: $event")
+            }
+        }.startWatching()
     }
 
 }

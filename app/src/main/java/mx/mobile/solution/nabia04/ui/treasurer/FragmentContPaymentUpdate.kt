@@ -115,7 +115,7 @@ class FragmentContPaymentUpdate : BaseFragment<FragmentContPaymentUpdateBinding>
             userDataList = list.toMutableList()
             userDataList.add(0, EntityUserData())
             for (item in userDataList) {
-                val name = item.fullName ?: "New Payment"
+                val name = item.fullName
                 mutableList.add(name)
             }
         }

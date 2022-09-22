@@ -4,11 +4,13 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -17,6 +19,7 @@ import kotlinx.android.synthetic.main.fragment_payment_update.*
 import kotlinx.coroutines.launch
 import mx.mobile.solution.nabia04.App
 import mx.mobile.solution.nabia04.R
+import mx.mobile.solution.nabia04.data.view_models.DuesViewModel
 import mx.mobile.solution.nabia04.data.view_models.NetworkViewModel
 import mx.mobile.solution.nabia04.databinding.FragmentPaymentUpdateBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
@@ -30,6 +33,8 @@ class FragmentPaymentUpdate : BaseFragment<FragmentPaymentUpdateBinding>() {
     override fun getLayoutRes(): Int = R.layout.fragment_payment_update
 
     private val networkViewModel by viewModels<NetworkViewModel>()
+
+    private val viewModel by activityViewModels<DuesViewModel>()
 
     @Inject
     lateinit var excelHelper: ExcelHelper
@@ -83,6 +88,21 @@ class FragmentPaymentUpdate : BaseFragment<FragmentPaymentUpdateBinding>() {
                 showDialog("WARNING", "Name cannot be empty")
                 return@setOnClickListener
             }
+
+
+            if (amount.toInt() % 5 != 0) {
+                showDialog("WARNING", "Invalide amount. Amount should be a multiple of 5")
+                return@setOnClickListener
+            }
+
+            if (amount.toInt() > 200) {
+                showDialog(
+                    "WARNING",
+                    "Invalide amount. You cannot update more than Ghc 200 at a go"
+                )
+                return@setOnClickListener
+            }
+
             if (amount.isEmpty()) {
                 showDialog("WARNING", "Amount cannot be empty")
                 return@setOnClickListener
@@ -98,6 +118,7 @@ class FragmentPaymentUpdate : BaseFragment<FragmentPaymentUpdateBinding>() {
             .setPositiveButton("YES") { dialog: DialogInterface, _: Int ->
                 dialog.dismiss()
                 lifecycleScope.launch {
+                    excelHelper.saveToTemporalStorage()
                     doUpdate(amount, name, folio)
                 }
             }.setNegativeButton("NO") { dialog: DialogInterface, _: Int ->
@@ -110,35 +131,93 @@ class FragmentPaymentUpdate : BaseFragment<FragmentPaymentUpdateBinding>() {
             requireContext(), "",
             "Updating the payment sheet... Please wait", false
         ).show()
-        excelHelper.backup()
         val response =
             excelHelper.insertNewPayment(amount.toInt(), name, folio, spinner.selectedItemPosition)
         p.dismiss()
         if (response.status == Status.SUCCESS) {
-            excelHelper.saveUpdate()
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("IMPORTANT")
                 .setMessage(
-                    "Payment updated successfully\n\n" +
-                            "Note that, users will not see this changes until you publish this excel file.\n\n" +
-                            "To publish this file: \n\n" +
-                            "1. Go to Dues detail view\n" +
-                            "2. Select Options and \n" +
-                            "3. Publish file\n\n" +
-                            "You can also go to: Manage Dues Backup to publish a backup file\n\n" +
-                            "DO YOU WANT TO PUBLISH THIS FILE?"
-                )
-                .setPositiveButton("YES") { dialog: DialogInterface, _: Int ->
+                    "${response.data}\n\nPayment updated successfully\n\n" +
+
+                            "Review the list and make sure that the expected total is met before saving\n\n" +
+                            "Note that, users will not see this changes until you publish the document.\n\n" +
+
+                            "DO YOU WANT TO SAVE THIS CHANGES?"
+                ).setPositiveButton("YES") { dialog: DialogInterface, _: Int ->
                     dialog.dismiss()
-                    publishExcel()
+                    excelHelper.saveFile()
+                    findNavController().navigateUp()
                 }.setNegativeButton("NO") { dialog: DialogInterface, _: Int ->
                     dialog.dismiss()
+                    deleteTemporalFile()
+                    excelHelper.reloadExcel()
+                    findNavController().navigateUp()
+                }.setNeutralButton("View list") { dialog: DialogInterface, _: Int ->
+                    dialog.dismiss()
+                    sharedP.edit().putBoolean(Const.EXCEL_SHOW_SAVE, true).apply()
+                    findNavController().navigateUp()
                 }.show()
         } else {
+            deleteTemporalFile()
+            excelHelper.reloadExcel()
+            findNavController().navigateUp()
             showDialog("PAYMENT UPDATE", response.message.toString())
         }
-
     }
+
+    private fun deleteTemporalFile() {
+
+        val backupDir =
+            File(Environment.getExternalStorageDirectory().absolutePath, "Nabia04_Dues_backups")
+
+        val fileName = "temp_save.xlsx"
+
+        if (!backupDir.exists()) {
+            backupDir.mkdir()
+        }
+        val file = File(backupDir, fileName)
+        if (file.exists()) {
+            val b = file.delete()
+            Log.i("TAG", "File deleted: $b")
+        }
+    }
+
+//    private fun showPassWordDialog() {
+//        val linf = LayoutInflater.from(requireContext())
+//        val v = linf.inflate(R.layout.request_passwrd, null)
+//        val passEdit = v.findViewById<EditText>(R.id.password_edit)
+//        AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+//            .setTitle("Enter Password")
+//            .setView(v)
+//            .setCancelable(false)
+//            .setPositiveButton(
+//                "OK"
+//            ) { dialog: DialogInterface, _: Int ->
+//                val p = passEdit.text.toString()
+//                if (p == sharedP.getString(SessionManager.PASSWORD, "")) {
+//                    dialog.dismiss()
+//                    excelHelper.saveFile(name, folio, amount, "Ghc $amount for $name")
+//                    viewModel.fetchDues()
+//                    viewModel.notifyFileChange()
+//                    val fragment = arguments?.get("fragment") as String
+//                    if (fragment == "FragmentDuesDetailView") {
+//                        findNavController().navigate(R.id.action_move_dues_detail_view)
+//                    } else {
+//                        findNavController().navigate(R.id.action_move_treasurer_tools)
+//                    }
+//                } else {
+//                    val fragment = arguments?.get("fragment") as String
+//                    if (fragment == "FragmentDuesDetailView") {
+//                        findNavController().navigate(R.id.action_move_dues_detail_view)
+//                    } else {
+//                        findNavController().navigate(R.id.action_move_treasurer_tools)
+//                    }
+//                    showDialog("ERROR", "Wrong password")
+//                }
+//            }.setNegativeButton("CANCEL") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
+//            .show()
+//    }
 
     private fun showExelFileNotExistDial() {
         AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
@@ -175,6 +254,7 @@ class FragmentPaymentUpdate : BaseFragment<FragmentPaymentUpdateBinding>() {
                         pDial.dismiss()
                         showDialog("ERROR", "An error has occurred: ${response.message}")
                     }
+                    else -> {}
                 }
             }
     }

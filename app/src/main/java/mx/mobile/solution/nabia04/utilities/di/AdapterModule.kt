@@ -22,7 +22,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import mx.mobile.solution.nabia04.ui.adapters.*
+import mx.mobile.solution.nabia04.ui.ann_fragments.EventsAnnAdapter
+import mx.mobile.solution.nabia04.ui.ann_fragments.GenAnnAdapter
+import mx.mobile.solution.nabia04.ui.database_fragments.DBcurrentListAdapter
+import mx.mobile.solution.nabia04.ui.database_fragments.DBdepartedListAdapter
+import mx.mobile.solution.nabia04.ui.treasurer.MyListAdapter
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -52,8 +56,8 @@ object AdapterModule {
 
     @Provides
     @Singleton
-    fun provideContListAdapter(@ApplicationContext appContext: Context): ContListAdapter {
-        return ContListAdapter(appContext)
+    fun provideContListAdapter(@ApplicationContext appContext: Context): MyListAdapter {
+        return MyListAdapter(appContext)
     }
 
 }

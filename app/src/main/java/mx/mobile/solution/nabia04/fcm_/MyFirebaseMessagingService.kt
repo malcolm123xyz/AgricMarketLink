@@ -16,23 +16,34 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.authentication.AuthenticationActivity
+import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.data.entities.FcmToken
+import mx.mobile.solution.nabia04.data.repositories.DBRepository
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
 import mx.mobile.solution.nabia04.utilities.Const
 import mx.mobile.solution.nabia04.utilities.RateLimiter
 import mx.mobile.solution.nabia04.workManager.AnnRefreshWorker
 import mx.mobile.solution.nabia04.workManager.ExcelDownloadWorker
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 /**
  * Created by MALCOLM on 11/3/2017.
  */
 
+@AndroidEntryPoint
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     private lateinit var sharedP: SharedPreferences
+
+    @Inject
+    lateinit var repository: DBRepository
 
     override fun onCreate() {
         super.onCreate()
@@ -62,6 +73,49 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     val msg = data["msg"] as String
                     sharedP.edit().putString(Const.CLEARANCE, msg).apply();
                 }
+            } else if (type == Const.NEW_QUESTION) {
+                val from = data["sendFrom"] ?: ""
+                val area = data["area"] ?: ""
+                var question = data["question"] ?: ""
+                if (question.length > 40) {
+                    question = question.substring(0, 40)
+                }
+                RateLimiter.allow("Questions")
+
+                val scope = CoroutineScope(Dispatchers.IO)
+                scope.launch {
+                    val user = getUser()
+                    if (user?.employmentSector == area) {
+                        notifyQuestionChange(
+                            "New Question",
+                            " from $from asked a question in $area",
+                            "This question is related to your area of expertice: $question",
+                            NotificationCompat.PRIORITY_MAX
+                        )
+                    } else {
+                        notifyQuestionChange(
+                            "New Question",
+                            " from $from asked a question in $area", question,
+                            NotificationCompat.PRIORITY_MAX
+                        )
+                    }
+                }
+
+            } else if (type == Const.NEW_QUESTION_REPLY) {
+                RateLimiter.allow("Questions")
+                val from = data["sendFrom"] ?: ""
+                val area = data["area"] ?: ""
+                var question = data["question"] ?: ""
+                if (question.length > 40) {
+                    question = question.substring(0, 40)
+                }
+                notifyQuestionChange(
+                    "New Reply!",
+                    "Someone has replied to $from question in $area",
+                    question, NotificationCompat.PRIORITY_DEFAULT
+                )
+            } else if (type == Const.NOTIFY_QUESTION_CHANGE) {
+                RateLimiter.allow("Questions")
             } else if (type == Const.NOTIFY_EXCEL_UPDATE) {
                 scheduleExcelDownloader()
             }
@@ -71,6 +125,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         remoteMessage.notification?.let {
             Log.d(TAG, "Message Notification Body: ${it.body}")
         }
+    }
+
+    private suspend fun getUser(): EntityUserData? {
+        return repository.getUser(userFolioNumber)
     }
 
     private fun scheduleExcelDownloader() {
@@ -88,6 +146,40 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 )
                 .build()
         WorkManager.getInstance(applicationContext).enqueue(myWorkRequest)
+    }
+
+    private fun notifyQuestionChange(
+        title: String,
+        content: String,
+        bitTxt: String,
+        priority: Int
+    ) {
+
+        val flag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.FLAG_IMMUTABLE
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
+
+        val notificationManager = (getSystemService(Context.NOTIFICATION_SERVICE)
+                as NotificationManager?)
+
+        val builder: NotificationCompat.Builder =
+            NotificationCompat.Builder(this, Const.GENERAL_CHANNEL_ID)
+
+        val intent1 = Intent(this, AuthenticationActivity::class.java)
+        intent1.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        val pendingIntent = PendingIntent.getActivity(this, 0, intent1, flag)
+        builder.setSmallIcon(R.drawable.logo)
+        builder.setContentTitle(title)
+        builder.setContentText(content)
+        builder.setStyle(NotificationCompat.BigTextStyle().bigText(bitTxt))
+        builder.priority = priority
+        builder.setContentIntent(pendingIntent)
+        builder.setAutoCancel(true)
+        builder.setVibrate(longArrayOf(100, 100, 100, 100, 100))
+        builder.setSound(alarmUri)
+        notificationManager?.notify(index, builder.build())
     }
 
     private fun notifyNewAnn(type: String, heading: String) {

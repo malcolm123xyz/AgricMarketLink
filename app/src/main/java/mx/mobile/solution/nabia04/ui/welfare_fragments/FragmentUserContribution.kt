@@ -21,7 +21,7 @@ import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.databinding.FragmentContributionsBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
-import mx.mobile.solution.nabia04.ui.adapters.ContListAdapter
+import mx.mobile.solution.nabia04.ui.treasurer.MyListAdapter
 import mx.mobile.solution.nabia04.utilities.GlideApp
 import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
@@ -44,7 +44,7 @@ class FragmentUserContribution : BaseFragment<FragmentContributionsBinding>() {
     lateinit var endpoint: MainEndpoint
 
     @Inject
-    lateinit var adapter: ContListAdapter
+    lateinit var adapter: MyListAdapter
 
     private lateinit var imv: ImageView
     private lateinit var tv: TextView

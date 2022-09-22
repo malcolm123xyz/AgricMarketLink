@@ -3,16 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/fragment1">
+    app:startDestination="@+id/fragment_treasuer_tools">
 
     <fragment
-        android:id="@+id/fragment1"
+        android:id="@+id/fragment_treasuer_tools"
         android:name="mx.mobile.solution.nabia04.ui.treasurer.FragmentTreasurerTools"
         android:label="TREASURER MENU"
         tools:layout="@layout/fragment_treasurer_tools">
+
         <action
             android:id="@+id/action_move_to_dues_payment_view"
-            app:destination="@id/fragment_manage_users"
+            app:destination="@id/fragment_dues_detail_view"
             app:enterAnim="@anim/nav_anim_enter_foward"
             app:exitAnim="@anim/nav_anim_exit_forward" />
 
@@ -49,7 +50,7 @@
 
         <action
             android:id="@+id/action_move_to_dues_payment_view"
-            app:destination="@id/fragment_manage_users"
+            app:destination="@id/fragment_dues_detail_view"
             app:enterAnim="@anim/nav_anim_enter_foward"
             app:exitAnim="@anim/nav_anim_exit_forward" />
 
@@ -63,10 +64,10 @@
     </fragment>
 
     <fragment
-        android:id="@+id/fragment_manage_users"
+        android:id="@+id/fragment_dues_detail_view"
         android:name="mx.mobile.solution.nabia04.ui.treasurer.FragmentDuesDetailView"
         android:label="DUES (ALL)"
-        tools:layout="@layout/fragment_yearly_payment">
+        tools:layout="@layout/fragment_dues_detail_view">
 
         <action
             android:id="@+id/action_move_dues_update"
@@ -76,8 +77,8 @@
 
         <action
             android:id="@+id/action_move_back"
-            app:destination="@id/fragment1"
-            app:popUpTo="@id/fragment1"
+            app:destination="@id/fragment_treasuer_tools"
+            app:popUpTo="@id/fragment_treasuer_tools"
             app:popUpToInclusive="true"
             app:enterAnim="@anim/nav_anim_enter_back"
             app:exitAnim="@anim/nav_anim_exit_back" />
@@ -90,12 +91,21 @@
         tools:layout="@layout/fragment_payment_update">
 
         <action
-            android:id="@+id/action_move_back"
-            app:destination="@id/fragment1"
-            app:popUpTo="@id/fragment1"
+            android:id="@+id/action_move_treasurer_tools"
+            app:destination="@id/fragment_treasuer_tools"
+            app:popUpTo="@id/fragment_treasuer_tools"
             app:popUpToInclusive="true"
             app:enterAnim="@anim/nav_anim_enter_back"
             app:exitAnim="@anim/nav_anim_exit_back" />
+
+        <action
+            android:id="@+id/action_move_dues_detail_view"
+            app:destination="@id/fragment_dues_detail_view"
+            app:popUpTo="@id/fragment_dues_detail_view"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
+
     </fragment>
 
     <fragment
@@ -106,8 +116,8 @@
 
         <action
             android:id="@+id/action_move_back"
-            app:destination="@id/fragment1"
-            app:popUpTo="@id/fragment1"
+            app:destination="@id/fragment_treasuer_tools"
+            app:popUpTo="@id/fragment_treasuer_tools"
             app:popUpToInclusive="true"
             app:enterAnim="@anim/nav_anim_enter_back"
             app:exitAnim="@anim/nav_anim_exit_back" />
@@ -121,8 +131,8 @@
 
         <action
             android:id="@+id/action_move_back"
-            app:destination="@id/fragment1"
-            app:popUpTo="@id/fragment1"
+            app:destination="@id/fragment_treasuer_tools"
+            app:popUpTo="@id/fragment_treasuer_tools"
             app:popUpToInclusive="true"
             app:enterAnim="@anim/nav_anim_enter_back"
             app:exitAnim="@anim/nav_anim_exit_back" />

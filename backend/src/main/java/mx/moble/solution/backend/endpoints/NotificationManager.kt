@@ -1,6 +1,7 @@
 package mx.moble.solution.backend.endpoints
 
 import com.google.auth.oauth2.GoogleCredentials
+import com.google.cloud.ServiceOptions.getDefaultProjectId
 import com.google.firebase.FirebaseApp
 import com.google.firebase.FirebaseOptions
 import com.google.firebase.messaging.FirebaseMessaging
@@ -11,19 +12,19 @@ import com.googlecode.objectify.ObjectifyService
 import mx.moble.solution.backend.model.RegistrationToken
 import java.io.IOException
 
-class NotificationManager(val token: String) {
+class NotificationManager(private val token: String) {
 
     fun sendNotDataOnly(nData: Map<String, String>) {
         val tokens = getTokens()
-        println("Tokens: $tokens")
-        val message = MulticastMessage.builder()
-            .putAllData(nData)
-            .addAllTokens(tokens)
-            .build()
-
-        send(message)
+        if (tokens.isNotEmpty()) {
+            println("Tokens: $tokens")
+            val message = MulticastMessage.builder()
+                .putAllData(nData)
+                .addAllTokens(tokens)
+                .build()
+            send(message)
+        }
     }
-
 
     fun sendNotOnly(nTitle: String, nBody: String) {
 
@@ -59,21 +60,24 @@ class NotificationManager(val token: String) {
     }
 
     private fun send(message: MulticastMessage) {
-        val options = FirebaseOptions.Builder()
-            .setCredentials(GoogleCredentials.getApplicationDefault())
-            .setDatabaseUrl("https://nabia04.firebaseio.com")
-            .setProjectId("nabia04")
-            .build()
-        if (FirebaseApp.getApps().isEmpty()) {
-            FirebaseApp.initializeApp(options)
-        }
         try {
+            val projectId = getDefaultProjectId()
+            println("Project Id: ${getDefaultProjectId()}")
+            val options = FirebaseOptions.Builder()
+                .setCredentials(GoogleCredentials.getApplicationDefault())
+                .setDatabaseUrl("https://$projectId.firebaseio.com")
+                .setProjectId(projectId)
+                .build()
+            if (FirebaseApp.getApps().isEmpty()) {
+                FirebaseApp.initializeApp(options)
+            }
             val response = FirebaseMessaging.getInstance().sendMulticast(message)
             val responses = response.responses
             for (i in responses.indices) {
                 if (responses[i].isSuccessful) {
-                    //The order of responses corresponds to the order of the registration tokens.
                     println("Sending is successfull")
+                } else {
+                    println(responses[i].exception)
                 }
             }
         } catch (e: FirebaseMessagingException) {

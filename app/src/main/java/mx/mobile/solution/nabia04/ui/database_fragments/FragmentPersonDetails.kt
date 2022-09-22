@@ -360,7 +360,7 @@ class FragmentPersonDetails : BaseFragment<FragmentPersonDetailsBinding>() {
     }
 
     private fun warnAndSend(errors: List<String>) {
-        val v = layoutInflater.inflate(R.layout.dialog_view1, null)
+        val v = layoutInflater.inflate(R.layout.send_warning_dialog, null)
         val dialog = AlertDialog.Builder(requireContext())
         dialog.setTitle("INVALID ENTRIES")
         dialog.setView(v)

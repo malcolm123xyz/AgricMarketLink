@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blue_light_variant"
+        android:fitsSystemWindows="true">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="?attr/colorPrimary"
+            android:gravity="top">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/new_annuncement"
+                android:textColor="#ffffff"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+        </androidx.appcompat.widget.Toolbar>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                app:cardBackgroundColor="@color/blue_light_variant"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="10dp">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="10dp">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <CheckBox
+                                    android:id="@+id/eventCheckbox"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="25dp"
+                                    android:text="@string/event"
+                                    android:layout_marginLeft="36dp"
+                                    android:onClick="onEventCheck"
+
+                                    android:layout_marginStart="36dp" />
+
+                            </LinearLayout>
+
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="2dp"
+                                android:layout_marginLeft="35dp"
+                                android:layout_marginRight="35dp"
+                                android:background="@color/pink"
+                                android:layout_marginEnd="35dp"
+                                android:layout_marginStart="35dp" />
+
+                            <Spinner
+                                android:id="@+id/eventTypeSpinner"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:visibility="gone"
+                                android:layout_marginTop="5dp"
+                                android:entries="@array/event_type"
+                                android:gravity="bottom"
+                                android:padding="6dp"
+                                android:spinnerMode="dropdown"
+                                android:theme="@style/ThemeOverlay.AppCompat.Light"
+                                android:layout_marginStart="30dp"
+                                android:layout_marginEnd="10dp" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="2dp"
+                                android:layout_marginLeft="35dp"
+                                android:layout_marginRight="35dp"
+                                android:background="@color/pink"
+                                android:layout_marginStart="35dp"
+                                android:layout_marginEnd="35dp" />
+
+                            <TextView
+                                android:id="@+id/eventDateTv"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/set_event_due_date"
+                                android:padding="5dp"
+                                android:gravity="center_vertical"
+                                android:layout_marginStart="30dp"
+                                android:visibility="gone"
+                                app:drawableLeftCompat="@android:drawable/ic_menu_my_calendar"
+                                app:drawableStartCompat="@android:drawable/ic_menu_my_calendar" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="2dp"
+                                android:layout_marginLeft="35dp"
+                                android:layout_marginRight="35dp"
+                                android:background="@color/pink"
+                                android:layout_marginEnd="35dp"
+                                android:layout_marginStart="35dp" />
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/venueHolder"
+                                android:layout_marginLeft="30dp"
+                                android:layout_marginRight="30dp"
+                                android:visibility="gone"
+                                android:padding="5dp">
+
+                                <EditText
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:id="@+id/venue"
+                                    android:inputType="textCapSentences"
+                                    android:hint="Venue" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="30dp"
+                                android:layout_marginRight="30dp"
+                                android:padding="5dp">
+
+                                <EditText
+                                    android:id="@+id/heading"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:inputType="textMultiLine|textCapSentences"
+                                    android:background="@color/white"
+                                    android:hint="@string/heading"
+                                    android:gravity="top"
+                                    android:lines="3" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <com.google.android.material.textfield.TextInputLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="30dp"
+                                android:layout_marginRight="30dp"
+                                android:padding="5dp">
+
+                                <EditText
+                                    android:id="@+id/message"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="300dp"
+                                    android:layout_gravity="center_horizontal"
+                                    android:background="@color/white"
+                                    android:inputType="textMultiLine|textCapSentences"
+                                    android:hint="@string/ann_body_hing"
+                                    android:gravity="top"
+                                    android:lines="10" />
+
+                            </com.google.android.material.textfield.TextInputLayout>
+
+                            <ImageView
+                                android:id="@+id/annImage"
+                                android:layout_width="100dp"
+                                android:layout_height="100dp"
+                                android:layout_gravity="center_horizontal"
+                                android:src="@drawable/photo_galary" />
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/changePicture"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/edit"
+                                android:padding="15dp"
+                                android:layout_gravity="center_horizontal"
+                                android:text="Change Picture" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                </ScrollView>
+
+            </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabSendAnn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            app:srcCompat="@android:drawable/ic_menu_send" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

@@ -1,6 +1,7 @@
+@file:Suppress("KDocUnresolvedReference")
+
 package mx.mobile.solution.nabia04.ui
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
+import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.startMils
 
 /**
  * Base fragment with data binding and prints lifecycle events
@@ -41,11 +43,6 @@ abstract class BaseFragment<ViewBinding : ViewDataBinding> : Fragment() {
 
     @LayoutRes
     abstract fun getLayoutRes(): Int
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-//        println("🥰 ${this.javaClass.simpleName} #${this.hashCode()}   onAttach()")
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,7 +90,10 @@ abstract class BaseFragment<ViewBinding : ViewDataBinding> : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        println("🎃 ${this.javaClass.simpleName} #${this.hashCode()} onResume()")
+
+        val time = System.currentTimeMillis() - startMils
+
+        println("🎃 ${this.javaClass.simpleName} #${this.hashCode()} onResume() in $time")
     }
 
     override fun onPause() {

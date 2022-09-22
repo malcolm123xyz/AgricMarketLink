@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ObjectKey
+import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.AndroidEntryPoint
@@ -116,6 +117,7 @@ class FragmentProfMainView : BaseFragment<FragmentProfMainBinding>(),
                             adapter.setData(users.data.toMutableList())
                         }
                     }
+                    else -> {}
                 }
             }
     }
@@ -154,7 +156,6 @@ class FragmentProfMainView : BaseFragment<FragmentProfMainBinding>(),
 
     private fun showFilterPopup(view: View) {
 
-
         val arrayList = resources.getStringArray(R.array.employment_sector).toMutableList()
         arrayList.add(1, "All")
         val popupMenu = PopupMenu(requireContext(), view)
@@ -184,8 +185,10 @@ class FragmentProfMainView : BaseFragment<FragmentProfMainBinding>(),
             .show()
         val spinner = v.findViewById<Spinner>(R.id.select_spinner)
         val questionEdit = v.findViewById<TextView>(R.id.message)
+        val textEditHolder = v.findViewById<TextInputLayout>(R.id.textEditHolder)
         val sendButt = v.findViewById<Button>(R.id.send)
-        spinner.onItemSelectedListener = OnSpinnerItemClick(questionEdit)
+        val anonymous = v.findViewById<CheckBox>(R.id.anonymous)
+        spinner.onItemSelectedListener = OnSpinnerItemClick(textEditHolder)
         sendButt.setOnClickListener {
             val txt = questionEdit.text.toString()
             if (selectedArea.isEmpty()) {
@@ -213,14 +216,14 @@ class FragmentProfMainView : BaseFragment<FragmentProfMainBinding>(),
                         question.folio = userFolioNumber
                         question.time = fd.format(Date(id))
                         question.question = txt
-                        question.imageUrl = user.imageUri ?: ""
-                        var name = "Anonymous"
-                        if (!sharedP.getBoolean(Const.Q_FROM_ANANYMOUS, false)) {
-                            name =
-                                sharedP.getString(SessionManager.USER_FULL_NAME, "").toString()
+                        question.imageUrl = user?.imageUri ?: ""
+                        question.from =
+                            sharedP.getString(SessionManager.USER_FULL_NAME, "Anonymous").toString()
+                        if (anonymous.isChecked) {
+                            question.from = "Anonymous"
+                            question.imageUrl = ""
                         }
-                        question.from = name
-                        sendQuestion(question)
+                        sendNewQuestion(question)
                     }
                     dial.dismiss()
                     if (response.status == Status.SUCCESS.toString()) {
@@ -237,9 +240,9 @@ class FragmentProfMainView : BaseFragment<FragmentProfMainBinding>(),
         }
     }
 
-    private fun sendQuestion(question: Question): ResponseString {
+    private fun upDateQuestion(question: Question): ResponseString {
         return try {
-            val responseString = endpoint.insertQuestion(question).execute()
+            val responseString = endpoint.upDateQuestion(question).execute()
             if (responseString.status == Status.SUCCESS.toString()) {
                 viewModel.repository.dao.insert(getEntity(question))
             }
@@ -249,11 +252,39 @@ class FragmentProfMainView : BaseFragment<FragmentProfMainBinding>(),
         }
     }
 
-    private inner class OnSpinnerItemClick(val questionEdit: TextView) :
+    private fun sendNewQuestion(question: Question): ResponseString {
+        return try {
+            val responseString = endpoint.saveNewQuestion(question).execute()
+            if (responseString.status == Status.SUCCESS.toString()) {
+                viewModel.repository.dao.insert(getEntity(question))
+            }
+            responseString
+        } catch (e: IOException) {
+            ResponseString().setStatus("ERROR").setMessage(e.localizedMessage)
+        }
+    }
+
+    private fun sendEditQuestion(question: Question): ResponseString {
+        return try {
+            val responseString = endpoint.upDateQuestion(question).execute()
+            if (responseString.status == Status.SUCCESS.toString()) {
+                viewModel.repository.dao.insert(getEntity(question))
+            }
+            responseString
+        } catch (e: IOException) {
+            ResponseString().setStatus("ERROR").setMessage(e.localizedMessage)
+        }
+    }
+
+    private inner class OnSpinnerItemClick(val questionEdit: TextInputLayout) :
         AdapterView.OnItemSelectedListener {
         override fun onItemSelected(adapter: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
             selectedArea = adapter?.selectedItem.toString()
-            questionEdit.isEnabled = p2 > 0
+            if (p2 > 0) {
+                questionEdit.visibility = View.VISIBLE
+            } else {
+                questionEdit.visibility = View.GONE
+            }
         }
 
         override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -325,7 +356,6 @@ class FragmentProfMainView : BaseFragment<FragmentProfMainBinding>(),
         }
     }
 
-
     private fun showEditDial(question: EntityQuestion) {
         val v: View = layoutInflater.inflate(R.layout.select_area_layout1, null)
         val alert = AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
@@ -348,7 +378,7 @@ class FragmentProfMainView : BaseFragment<FragmentProfMainBinding>(),
                         MyAlertDialog(requireContext(), "", "Sending Question...", false).show()
                     val response = withContext(Dispatchers.IO) {
                         question.question = txt
-                        sendQuestion(getBackendQuestionObj(question))
+                        sendEditQuestion(getBackendQuestionObj(question))
                     }
                     dial.dismiss()
                     if (response.status == Status.SUCCESS.toString()) {
@@ -436,7 +466,7 @@ class FragmentProfMainView : BaseFragment<FragmentProfMainBinding>(),
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.question_list_item, parent, false)
+                .inflate(R.layout.list_item_questions, parent, false)
             return MyViewHolder(view)
         }
 
@@ -519,7 +549,7 @@ class FragmentProfMainView : BaseFragment<FragmentProfMainBinding>(),
             lifecycleScope.launch {
                 p.visibility = View.VISIBLE
                 val response = withContext(Dispatchers.IO) {
-                    sendQuestion(getBackendQuestionObj(q))
+                    upDateQuestion(getBackendQuestionObj(q))
                 }
                 p.visibility = View.GONE
                 if (response.status == Status.SUCCESS.toString()) {
@@ -547,7 +577,7 @@ class FragmentProfMainView : BaseFragment<FragmentProfMainBinding>(),
             lifecycleScope.launch {
                 p.visibility = View.VISIBLE
                 val response = withContext(Dispatchers.IO) {
-                    sendQuestion(getBackendQuestionObj(q))
+                    upDateQuestion(getBackendQuestionObj(q))
                 }
                 p.visibility = View.GONE
                 if (response.status == Status.SUCCESS.toString()) {
@@ -588,16 +618,16 @@ class FragmentProfMainView : BaseFragment<FragmentProfMainBinding>(),
         val u = Question()
         u.id = q.id
         u.folio = q.folio
-        u.from = q.from ?: ""
-        u.question = q.question ?: ""
-        u.area = q.area ?: ""
-        u.time = q.time ?: ""
-        u.imageUrl = q.imageUrl ?: ""
-        u.upVote = q.upVote ?: "0"
-        u.downVote = q.downVote ?: "0"
-        u.numReply = q.numReply ?: "0"
-        u.replyList = q.replyList ?: ""
-        u.visibility = q.visibility ?: true
+        u.from = q.from
+        u.question = q.question
+        u.area = q.area
+        u.time = q.time
+        u.imageUrl = q.imageUrl
+        u.upVote = q.upVote
+        u.downVote = q.downVote
+        u.numReply = q.numReply
+        u.replyList = q.replyList
+        u.visibility = q.visibility
         return u
     }
 

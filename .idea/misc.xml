@@ -147,12 +147,13 @@
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/list_fragment.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/nav_header_home.xml" value="0.16354166666666667" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/new_payment.xml" value="0.16354166666666667" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/other_layout.xml" value="0.13418803418803418" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/progress_drawable.xml" value="0.14947916666666666" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/question_list_item.xml" value="0.22" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/question_reply_layout.xml" value="0.13418803418803418" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/replay_layout_item.xml" value="0.22" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/request_passwrd.xml" value="0.17552083333333332" />
-        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/select_area_layout.xml" value="0.13418803418803418" />
+        <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/select_area_layout.xml" value="0.22" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/select_area_layout1.xml" value="0.13418803418803418" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/set_clearance.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/layout/set_deceased.xml" value="0.17552083333333332" />
@@ -180,6 +181,127 @@
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/menu/treasurer_bottom_nav_menu.xml" value="0.17552083333333332" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/navigation/nav_graph_dashboard.xml" value="0.1" />
         <entry key="..\:/Android Projects/Nabia04_new/app/src/main/res/xml/root_preferences.xml" value="0.16666666666666666" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/drawable/background_rect_dot.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/drawable/button_background1.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/activity_about_app.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/activity_about_nabia04.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/activity_about_navasco.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/activity_main.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/activity_main2.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/activity_pro_tools.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/activity_send_ann.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/activity_treasurer.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/activity_treasurer_tools.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/activity_user_data_edit1.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/ann_list_item.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/app_bar_home.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/appbar_progress_bar.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/birthdays_list_item.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/change_password_layout.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/content_activity_about_navasco.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/content_activity_contributions.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/content_main.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/contribution_list_item.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/data_placeholder_layout.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/database_viewpager_container.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/dialog_view1.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/dues_backup_list_item.xml" value="0.22" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_about_navasco.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_cont_history.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_database_detail.xml" value="0.13248945147679325" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_database_viewpager.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_detail.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_dues_detail_view.xml" value="0.22" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_login1.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_login_auth.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_person_details.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_prof1.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_prof3.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_prof_main.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_register_auth.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_second.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_treasurer_host.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_treasurer_payment_detail_host.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/fragment_yearly_payment.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/list_fragment.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/list_item_dues_backup.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/new_payment.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/other_layout.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/request_passwrd.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/set_clearance.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/set_deceased.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/settings_activity.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/welfare_nav_host_fragment.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/layout/yearly_dues_list_item.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/activity_announcements.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/activity_home_drawer.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/activity_main_drawer.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/auth_activit_bottom_nav.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/database.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/details_menu.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/details_menu1.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/dues_detail_menu.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/home_bottom_nav_menu.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/manage_database.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/menu_bottom_nav.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/menu_main.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/menu_notice_board_detail.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/questions_main_view.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/questions_refresh.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/app/src/main/res/menu/treasurer_bottom_nav_menu.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/drawable/background_rect_dot.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/drawable/button_background1.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/drawable/button_background2.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/drawable/button_background3.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/drawable/button_background4.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/drawable/side_nav_bar.xml" value="0.1215" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/drawable/splash_screen_drawable.xml" value="0.134" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/activity_authentication.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/activity_fullscreen.xml" value="0.12264957264957264" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/activity_intro.xml" value="0.12" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/activity_intro1.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/activity_main.xml" value="0.14666666666666667" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/activity_main2.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/activity_pro_tools.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/activity_treasurer_tools.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/activity_user_data_edit.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/content_intro.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/content_main2.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_ann_details.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_cont_payment_update.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_cont_request.xml" value="0.11944444444444445" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_contributions.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_database_detail.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_database_host.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_database_update_note.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_departed_members_detail.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_done.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_done_intro.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_dues_summary.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_first.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_list.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_login_auth.xml" value="0.22" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_noticeboard_host.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_person_details.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_prof_main.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_quest_detail.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_register_auth.xml" value="0.22" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_school_info.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_second.xml" value="0.1" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_welfare_summary.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/fragment_work_info.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/list_item_ann.xml" value="0.22" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/list_item_birthday.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/list_item_daparted.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/list_item_database.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/list_item_events.xml" value="0.22" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/list_item_questions.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/nav_header_home.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/layout/set_clearance.xml" value="0.3333333333333333" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/menu/database.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/menu/home_bottom_nav_menu.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/menu/intro_menu.xml" value="0.13418803418803418" />
+        <entry key="..\:/Software Development/My projects/Nabia04/nabia04_beta1/src/main/res/menu/menu_notice_board_detail.xml" value="0.1" />
       </map>
     </option>
   </component>

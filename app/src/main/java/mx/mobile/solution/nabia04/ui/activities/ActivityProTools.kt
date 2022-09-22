@@ -1,6 +1,7 @@
 package mx.mobile.solution.nabia04.ui.activities
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
@@ -24,6 +25,8 @@ class ActivityProTools : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.nestedFragmentHolder) as NavHostFragment
         navController = navHostFragment.navController
@@ -37,6 +40,7 @@ class ActivityProTools : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
+        Log.i("TAG", "onSupportNavigateUp()")
         return navController.navigateUp(appBarConfiguration1) || super.onSupportNavigateUp()
     }
 

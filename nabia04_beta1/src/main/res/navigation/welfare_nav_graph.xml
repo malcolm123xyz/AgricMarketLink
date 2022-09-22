@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/welfare_host_fragment"
+    app:startDestination="@id/welfare_host_frag_nav">
+
+    <fragment
+        android:id="@+id/welfare_host_frag_nav"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.welfare_fragments.WelfareNavHostFragment"
+        android:label="WELFARE"
+        tools:layout="@layout/fragment_dues_summary"></fragment>
+
+</navigation>

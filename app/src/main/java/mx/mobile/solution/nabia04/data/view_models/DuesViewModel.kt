@@ -16,7 +16,7 @@ class DuesViewModel @Inject constructor(val excelHelper: ExcelHelper) : ViewMode
 
     private var data: MutableLiveData<Response<List<EntityDues>>> = MutableLiveData()
 
-    fun fetchAnn(): LiveData<Response<List<EntityDues>>> {
+    fun fetchDues(): LiveData<Response<List<EntityDues>>> {
         viewModelScope.launch {
             data.postValue(Response.loading(null))
             val response = excelHelper.getDues()
@@ -27,6 +27,10 @@ class DuesViewModel @Inject constructor(val excelHelper: ExcelHelper) : ViewMode
             }
         }
         return data
+    }
+
+    fun notifyFileChange() {
+        data.postValue(Response.emitEvent("MODIFIED"))
     }
 
 }

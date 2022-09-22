@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="empty_array"></string-array>
+    <string-array name="area_of_expertise">
+
+    </string-array>
 
     <string-array name="empty_values"></string-array>
 
@@ -64,16 +66,13 @@
         <item>Accountancy and financial management</item>
         <item>Arts</item>
         <item>Banking and investment</item>
-        <item>Built environment</item>
         <item>Business</item>
-        <item>Charities and the voluntary sector</item>
         <item>Consultancy</item>
         <item>Data, information and technology</item>
         <item>Economics</item>
         <item>Education and teaching</item>
         <item>Energy and environment</item>
         <item>Entrepreneurship</item>
-        <item>Fast moving consumer goods</item>
         <item>Financial services</item>
         <item>Health</item>
         <item>International development</item>
@@ -85,6 +84,7 @@
         <item>Regulation</item>
         <item>Research</item>
         <item>Sustainability</item>
+        <item>Other</item>
     </string-array>
 
     <string-array name="event_type">
@@ -222,7 +222,7 @@
         <item>Ghana Fire  Service</item>
         <item>Ghana Armed Forces</item>
         <item>Non Governmental Organisation</item>
-        <item>Privatie Organisation</item>
+        <item>Private Organisation</item>
         <item>Private Business</item>
         <item>Others (Specify)</item>
 

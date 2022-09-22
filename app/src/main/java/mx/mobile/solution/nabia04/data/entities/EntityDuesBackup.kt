@@ -10,9 +10,9 @@ import androidx.room.PrimaryKey
 data class EntityDuesBackup(
     @PrimaryKey
     var id: Long,
+    var version: Int = 0,
     var totalAmount: String = "",
     var fileFullPath: String = "",
     var filePath: String = "",
     var fileName: String = "",
-    var published: Boolean = false
 )

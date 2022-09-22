@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blue_light_variant">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:background="@color/blue_light"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/type"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:paddingTop="60dp"
+                            android:layout_marginTop="10dp"
+                            android:textSize="20sp"
+                            android:text="NABIA04 DUES DETAILS"
+                            android:textColor="@color/white" />
+
+                        <View
+                            android:layout_width="200dp"
+                            android:layout_height="2dp"
+                            android:layout_gravity="center_horizontal"
+                            android:background="@color/black" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/total_cont"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:layout_marginTop="5dp"
+                            android:textColor="@color/white" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/num_contributors"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:layout_marginTop="5dp"
+                            android:textColor="@color/white" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/date_updated"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_horizontal"
+                            android:layout_marginTop="10dp"
+                            android:text="Last update: 10th July, 2020"
+                            android:textColor="@color/white" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:id="@+id/l1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="5dp"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal"
+                                android:padding="5dp">
+
+                                <!--                                <ImageView-->
+                                <!--                                    android:id="@+id/undo"-->
+                                <!--                                    android:layout_width="wrap_content"-->
+                                <!--                                    android:layout_height="wrap_content"-->
+                                <!--                                    android:layout_marginEnd="5dp"-->
+                                <!--                                    android:src="@drawable/undo" />-->
+
+                                <!--                                <ImageView-->
+                                <!--                                    android:id="@+id/save"-->
+                                <!--                                    android:layout_width="wrap_content"-->
+                                <!--                                    android:layout_height="wrap_content"-->
+                                <!--                                    android:layout_marginEnd="5dp"-->
+                                <!--                                    android:src="@drawable/save" />-->
+
+                                <!--                                <TextView-->
+                                <!--                                    android:layout_width="200dp"-->
+                                <!--                                    android:layout_height="wrap_content"-->
+                                <!--                                    android:layout_alignParentRight="true"-->
+                                <!--                                    android:text="This Update is not published. Users do not have this update"-->
+                                <!--                                    android:textColor="@color/black" />-->
+
+                            </LinearLayout>
+
+                            <ImageView
+                                android:id="@+id/undo1"
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/redo"
+                                android:layout_margin="5dp"
+                                android:visibility="gone"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentBottom="true" />
+
+                        </RelativeLayout>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginLeft="5dp"
+                            android:layout_marginRight="5dp"
+                            android:layout_marginBottom="5dp"
+                            android:background="@color/light_grey"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/name"
+                                android:layout_width="match_parent"
+                                android:gravity="center"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.35"
+                                android:text="NAME"
+                                android:background="@drawable/dues_item_border"
+                                android:textColor="#000000"
+                                android:textSize="15sp" />
+
+
+                            <TextView
+                                android:id="@+id/y1"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.4"
+                                android:gravity="center"
+                                android:background="@drawable/dues_item_border"
+                                android:text="2018"
+                                android:textColor="#000000"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/y2"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.4"
+                                android:gravity="center"
+                                android:background="@drawable/dues_item_border"
+                                android:text="2019"
+                                android:textColor="#000000"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/y3"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.4"
+                                android:gravity="center"
+                                android:background="@drawable/dues_item_border"
+                                android:text="2019"
+                                android:textColor="#000000"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/y4"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.4"
+                                android:gravity="center"
+                                android:background="@drawable/dues_item_border"
+                                android:text="2021"
+                                android:textColor="#000000"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/y5"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.4"
+                                android:gravity="center"
+                                android:background="@drawable/dues_item_border"
+                                android:text="2022"
+                                android:textColor="#000000"
+                                android:textSize="15sp" />
+
+                            <TextView
+                                android:id="@+id/total6"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.4"
+                                android:gravity="center"
+                                android:background="@drawable/dues_item_border"
+                                android:text="Grand Total"
+                                android:textColor="#000000"
+                                android:textSize="15sp" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:nestedScrollingEnabled="true"
+                        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="5dp"
+                        android:background="@color/light_grey"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.3"
+                            android:gravity="left|center_vertical"
+                            android:text="TOTAL"
+                            android:layout_marginLeft="20dp"
+                            android:textColor="#000000"
+                            android:textSize="18sp" />
+
+                        <TextView
+                            android:id="@+id/total"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.4"
+                            android:gravity="right|center_vertical"
+                            android:text="TOTAL"
+                            android:layout_marginRight="20dp"
+                            android:textColor="#000000"
+                            android:textSize="18sp" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="100dp"
+                android:foregroundGravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</layout>

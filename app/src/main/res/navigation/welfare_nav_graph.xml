@@ -3,13 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/welfare_host_fragment"
-    app:startDestination="@id/welfare_fragment1">
+    app:startDestination="@id/welfare_host_frag_nav">
 
     <fragment
-        android:id="@+id/welfare_fragment1"
+        android:id="@+id/welfare_host_frag_nav"
         android:name="mx.mobile.solution.nabia04.ui.welfare_fragments.WelfareNavHostFragment"
         android:label="WELFARE"
-        tools:layout="@layout/welfare_nav_host_fragment">
-    </fragment>
+        tools:layout="@layout/fragment_dues_summary"></fragment>
 
 </navigation>

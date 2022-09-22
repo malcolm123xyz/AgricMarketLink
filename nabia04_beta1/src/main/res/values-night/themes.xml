@@ -1,0 +1,30 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="Theme.MainTheme.light" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">#252B2E</item>
+        <item name="colorPrimaryDark">#122935</item>
+        <item name="colorOnPrimary">#7E0D0D</item>
+
+        <item name="my_background">#252B2E</item>
+        <item name="my_background1">#3B3E42</item>
+        <item name="my_background2">#1F2022</item>
+        <item name="toolbar_background">#252B2E</item>
+        <item name="text_Color">@color/white</item>
+        <item name="text_Color1">#B80D5D</item>
+        <item name="button_Color">#DCE8EE</item>
+
+        <!-- Secondary brand color.-->
+        <item name="colorSecondary">#B80D5D</item>
+        <item name="colorSecondaryVariant">#DF4754</item>
+        <item name="colorOnSecondary">#E6ECF1</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">#252B2E</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="ThemeOverlay.Nabia04.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/light_blue_900</item>
+        <item name="fullscreenTextColor">@color/light_blue_A400</item>
+    </style>
+</resources>

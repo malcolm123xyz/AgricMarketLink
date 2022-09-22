@@ -105,8 +105,9 @@ class ProfMainViewRepository @Inject constructor(
             return Response.success(list)
         }
 
-        try {
+        Log.i("TAG", "Fetching questions...")
 
+        try {
             val response = endpoint.questions.execute()
             return if (response?.status == Status.SUCCESS.toString()) {
                 val allData = getEntity(response.data).toList()

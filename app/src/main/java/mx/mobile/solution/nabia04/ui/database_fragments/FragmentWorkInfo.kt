@@ -35,6 +35,7 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
 
     override fun getLayoutRes(): Int = R.layout.fragment_work_info
 
+    private var other = ""
     private val updateModel by activityViewModels<DBUpdateViewModel>()
 
     private val networkViewModel by viewModels<NetworkViewModel>()
@@ -122,7 +123,44 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
 
         vb?.employmentStatusSpinner?.onItemSelectedListener = OnEmploymentStatusClickListener()
 
+        vb?.employmentSectorSpinner?.onItemSelectedListener = OnEmploymentSectorClickListener()
+
         listenOnBackPressed()
+    }
+
+    private inner class OnEmploymentSectorClickListener : AdapterView.OnItemSelectedListener {
+        override fun onItemSelected(adapter: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+
+            if (employment_sector_spinner.selectedItem.toString() == "Other") {
+                otherDial()
+            }
+        }
+
+        override fun onNothingSelected(p0: AdapterView<*>?) {
+
+        }
+    }
+
+    private fun otherDial() {
+        val v: View = layoutInflater.inflate(R.layout.other_layout, null)
+        val alert = AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+            .setView(v)
+            .show()
+        val questionEdit = v.findViewById<TextView>(R.id.message)
+        val sendButt = v.findViewById<Button>(R.id.send)
+        sendButt.setOnClickListener {
+            val txt = questionEdit.text.toString()
+            if (txt.isEmpty()) {
+                Toast.makeText(
+                    requireContext(),
+                    "Input cannot be empty",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                other = txt
+                alert.dismiss()
+            }
+        }
     }
 
     private inner class OnEmploymentStatusClickListener : AdapterView.OnItemSelectedListener {
@@ -187,6 +225,9 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
     fun onNext() {
         userData.employmentStatus = employment_status_spinner.selectedItem.toString()
         userData.employmentSector = employment_sector_spinner.selectedItem.toString()
+        if (employment_sector_spinner.selectedItem.toString() == "Other") {
+            userData.employmentSector = other
+        }
         userData.establishmentRegion = region_spinner.selectedItem.toString()
         if (district_spinner.selectedItem != null) {
             userData.establishmentDist = district_spinner.selectedItem.toString()
@@ -228,6 +269,7 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
                         pDial.dismiss()
                         showAlertDialog("ERROR", "An error has occurred: ${response.data}")
                     }
+                    else -> {}
                 }
             }
     }
@@ -256,7 +298,7 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
     }
 
     private fun warnAndSend(errors: List<String>) {
-        val v = layoutInflater.inflate(R.layout.dialog_view1, null)
+        val v = layoutInflater.inflate(R.layout.send_warning_dialog, null)
         val dialog = AlertDialog.Builder(requireContext())
         dialog.setTitle("INVALID ENTRIES")
         dialog.setView(v)
@@ -266,6 +308,7 @@ class FragmentWorkInfo : BaseFragment<FragmentWorkInfoBinding>() {
         lv.adapter = adapter
         dialog.setPositiveButton("PROCEED") { d, id ->
             d.dismiss()
+            Log.i("TAG", "Model imageUri: ${userData.imageUri}")
             updateModel.postData(userData)
             AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                 .setTitle("WARNING")

@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -38,14 +39,17 @@ class FragmentTreasurerTools : BaseFragment<FragmentTreasurerToolsBinding>() {
     @Inject
     lateinit var excelHelper: ExcelHelper
 
-    private val PERMISSION_REQUEST_CODE: Int = 586
+    private val permissionRequestCode: Int = 586
     private val networkViewModel by viewModels<NetworkViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vb?.viewDuesPayment?.setOnClickListener { findNavController().navigate(R.id.action_move_to_dues_payment_view) }
         vb?.sendContRequest?.setOnClickListener { findNavController().navigate(R.id.action_move_cont_request) }
-        vb?.updateCont?.setOnClickListener { findNavController().navigate(R.id.action_move_cont_update) }
+        vb?.updateCont?.setOnClickListener {
+            val bundle = bundleOf("fragment" to "FragmentTreasurerTools")
+            findNavController().navigate(R.id.action_move_cont_update, bundle)
+        }
         vb?.manageBackups?.setOnClickListener { findNavController().navigate(R.id.action_move_manage_backups) }
         vb?.uploadMasterExcelSheet?.setOnClickListener {
             if (checkPermission()) {
@@ -96,6 +100,7 @@ class FragmentTreasurerTools : BaseFragment<FragmentTreasurerToolsBinding>() {
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+                    else -> {}
                 }
             }
     }
@@ -135,7 +140,7 @@ class FragmentTreasurerTools : BaseFragment<FragmentTreasurerToolsBinding>() {
             //below android 11
             ActivityCompat.requestPermissions(
                 requireActivity(), arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                PERMISSION_REQUEST_CODE
+                permissionRequestCode
             )
         }
     }
@@ -165,10 +170,10 @@ class FragmentTreasurerTools : BaseFragment<FragmentTreasurerToolsBinding>() {
         grantResults: IntArray
     ) {
         when (requestCode) {
-            PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty()) {
-                val READ_EXTERNAL_STORAGE = grantResults[0] == PackageManager.PERMISSION_GRANTED
-                val WRITE_EXTERNAL_STORAGE = grantResults[1] == PackageManager.PERMISSION_GRANTED
-                if (READ_EXTERNAL_STORAGE && WRITE_EXTERNAL_STORAGE) {
+            permissionRequestCode -> if (grantResults.isNotEmpty()) {
+                val readExtStorage = grantResults[0] == PackageManager.PERMISSION_GRANTED
+                val writeExtStorage = grantResults[1] == PackageManager.PERMISSION_GRANTED
+                if (readExtStorage && writeExtStorage) {
                     Log.i("TAG", "Permission Granted")
                     sendExcelDocToCloud()
                 } else {

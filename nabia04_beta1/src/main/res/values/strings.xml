@@ -1,0 +1,221 @@
+<resources>
+    <string name="app_name">Nabia04_beta1</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="enter_your_folio_number">Enter folio number</string>
+    <string name="enter_your_password">Enter password</string>
+    <string name="enter_full_name">Enter fullname</string>
+    <string name="enter_email_address">Enter email</string>
+    <string name="contact">Phone number</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="title_dashboard">Register</string>
+    <string name="register">Register</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="login_txt">Log in</string>
+    <string name="sign_up_txt">Sign up</string>
+
+
+    <string name="title_activity_authentication">Login/Register</string>
+    <string name="title_home">Login</string>
+
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="title_home_ann">Notice Board</string>
+    <string name="title_home_database">Database</string>
+    <string name="title_home_welfare">Welfare</string>
+    <string name="notice_board">Notice Board</string>
+    <string name="title_home_profession">Profession</string>
+    <string name="title_home_gallary">Events Gallary</string>
+    <string name="title_home_events">Events Gallary</string>
+    <string name="new_annuncement">New Announcement</string>
+    <string name="event">This is an Event</string>
+    <string name="set_event_due_date">Set event due date</string>
+    <string name="heading">HEADING</string>
+    <string name="entityAnnouncement">ANNOUNCEMENTS SYSTEM</string>
+    <string name="ann_status">No Announcement found. Please click on the refresh button above to refresh the Announcements</string>
+    <string name="copy">Copy</string>
+    <string name="delete">Delete</string>
+    <string name="delete_from_server">Delete From server</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="personal_details"><u>PERSONAL DETAILS</u></string>
+    <string name="school_details"><u>SCHOOL DETAILS</u></string>
+
+    <string name="qualification"><u>QUALIFICATION</u></string>
+    <string name="occupation_profession1"><u>WORK</u></string>
+    <string name="all"><u>ALL</u></string>
+    <string name="same_house"><u>Same house</u></string>
+    <string name="same_class"><u>Same class</u></string>
+    <string name="same_course"><u>Same course</u></string>
+    <string name="title_activity_member_detail">Details</string>
+    <string name="search">Search</string>
+    <string name="view_profile">View profile</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="notice_board_general">Notice Board (General)</string>
+    <string name="title_event_notice">Notice Board (Events)</string>
+    <string name="title_database_current">Database (Current)</string>
+    <string name="ann_body_hing">BODY</string>
+    <string name="warning_1">Note: if this person is assigned a position either than none,
+        then he/she have the privilege to send announcement, edit, add or delete users etc
+    .To revoke any assigned position, select "None"</string>
+    <string name="lebel_personal_details">Personal details</string>
+    <string name="school_information">School Information</string>
+    <string name="work_information">Work information</string>
+    <string name="Back">Back</string>
+    <string name="done">DONE</string>
+    <string name="database_update">Database Update</string>
+    <string name="cancel">CANCEL</string>
+    <string name="copy_txt">Copy</string>
+    <string name="date_not_set">Date not set</string>
+
+
+    <string name="show_popup_menu">Show Popup Menu</string>
+    <string name="menu1">Menu 1</string>
+    <string name="menu2">Menu 2</string>
+    <string name="menu3">Menu 3</string>
+    <string name="menu3_1">Menu 3.1</string>
+    <string name="menu3_2">Menu 3.2</string>
+    <string name="total_contributions">TOTAL CONTRIBUTIONS:</string>
+    <string name="dues_details">Dues Details</string>
+    <string name="jan">Jan</string>
+    <string name="feb">Feb</string>
+    <string name="mar">Mar</string>
+    <string name="apr">Apr</string>
+    <string name="may">May</string>
+    <string name="jun">Jun</string>
+    <string name="jul">Jul</string>
+    <string name="aug">Aug</string>
+    <string name="sep">Sep</string>
+    <string name="oct">Oct</string>
+    <string name="nov">Nov</string>
+    <string name="dec">Dec</string>
+    <string name="total">Total</string>
+    <string name="home">Home</string>
+    <string name="database">Database</string>
+    <string name="announcements1">Notice board</string>
+    <string name="about_navasco">Navasco</string>
+    <string name="about_nabia_04">Nabia04</string>
+    <string name="default_notification_channel_id">fcm_notification_chanell</string>
+    <string name="title_activity_settings">Settings</string>
+    <string name="school_song">I passed through Navasco early enough in its history – from 1966 to 1974 – to recall some exciting moments of its formative years. This means that I met the first batch of students from Folio No 1, who started the school in 1960 when they were writing their external A-Level exams set by the University of London. I spent a total of eight years in Navasco. The one distinguishing trait of Navasco is its meticulous numbering of students who pass through the school, by assigning folio numbers to students alphabetically in year groups, the last folio number on record tells how many students have passed through the school since its inception in 1960. By a student\'s folio number, the year group can immediately be determined, and one can also tell who was in the school earlier than the other.</string>
+
+
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="title_activity_about_navasco">ActivityAboutNavasco</string>
+
+    <string name="general_intro_text">
+        This App is designed to provide important services to support the operation of Nabia04
+        Association. With members of the association scatted away from each other, the app serves as
+        a tool for bridging the gap by making certain services available to us.
+        The Whatsapp platform has been a very effective tool in terms of communication among members.
+        However, just like all other apps, Whatsapp comes with a few limitations. The Nabia04 App,
+        therefore, presents a few services to complement that of Whatsapp.
+These services are…
+    </string>
+
+    <string name="database_intro_text">
+        The Database section is the core of the app. Even if the app has nothing to officer, the database section alone is worth using it. This section provides detailed information about each member of the association. The information captured includes personal information, school information (Navasco), work information etc. The app does not only maintain detailed information about members who are alive but also our fallen comrades.
+It provides a useful way of finding a member base on specific search criteria. Sometimes, one may need help from a colleague of a particular background or from a colleague who works in a particular organization. For example, if you need the help of a police officer in Kumasi metropolitan, the app can give you a list of your colleagues who are police officers there.
+
+    </string>
+
+    <string name="welfare_intro_text">
+        The Welfare section handles everything concerning dues and contributions. It gives information
+        on how each person is fairing in terms of dues payment and silver contributions.
+        From the Welfare section, one knows how much he/she has paid so far, number of months paid,
+        number of months owed, percentage contribution, rank and whether you are in good standing or
+        not. The silver contribution sub-section shows the current contribution
+    </string>
+
+    <string name="prof_intro_text">
+       This section is a learning section. It is a question-and-answer section. The Nabia04 association
+        is made up of people with different professional backgrounds. Eg; Doctors, Nurses, Lawyers,
+        Teachers etc. With the app, one can tap into the knowledge of these professionals for
+        professional assistance in real-life situation. If you have a professional question,
+        you asked by selecting the right category and typing your question, the question will be
+        delivered to a colleague who’s background is related to the question. This person will then
+        respond to your question.
+    </string>
+
+    <string name="noticeboard_intro_text">
+        The Notice board section of the app provides an interactive notification system to keep us
+        informed of important announcements and events. We are notified of important issues on the
+        Whatsapp platform but these notifications or announcements are not grouped and WhatsApp does
+        not remind us of events that are scheduled to occur in the future.\n\nThe announcement section of the app is divided into two categories, General Announcements and Event
+        announcements (Events such as birthdays, weddings, funerals etc). The most important thing
+        about the event notification is that the App automatically schedules an alarm reminder for
+        each event.
+        The Notice board section also shows a list of upcoming birthdays of members. Hence, at any time, we
+        know who’s birthday is due
+    </string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_intro">IntroActivity</string>
+    <string name="title_activity_main2">MainActivity2</string>
+
+    <string name="lorem_ipsum">
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
+        volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus
+        dui nec risus. Maecenas non sodales nisi, vel dictum dolor. Class aptent taciti sociosqu ad
+        litora torquent per conubia nostra, per inceptos himenaeos. Suspendisse blandit eleifend
+        diam, vel rutrum tellus vulputate quis. Aliquam eget libero aliquet, imperdiet nisl a,
+        ornare ex. Sed rhoncus est ut libero porta lobortis. Fusce in dictum tellus.\n\n
+        Suspendisse interdum ornare ante. Aliquam nec cursus lorem. Morbi id magna felis. Vivamus
+        egestas, est a condimentum egestas, turpis nisl iaculis ipsum, in dictum tellus dolor sed
+        neque. Morbi tellus erat, dapibus ut sem a, iaculis tincidunt dui. Interdum et malesuada
+        fames ac ante ipsum primis in faucibus. Curabitur et eros porttitor, ultricies urna vitae,
+        molestie nibh. Phasellus at commodo eros, non aliquet metus. Sed maximus nisl nec dolor
+        bibendum, vel congue leo egestas.\n\n
+        Sed interdum tortor nibh, in sagittis risus mollis quis. Curabitur mi odio, condimentum sit
+        amet auctor at, mollis non turpis. Nullam pretium libero vestibulum, finibus orci vel,
+        molestie quam. Fusce blandit tincidunt nulla, quis sollicitudin libero facilisis et. Integer
+        interdum nunc ligula, et fermentum metus hendrerit id. Vestibulum lectus felis, dictum at
+        lacinia sit amet, tristique id quam. Cras eu consequat dui. Suspendisse sodales nunc ligula,
+        in lobortis sem porta sed. Integer id ultrices magna, in luctus elit. Sed a pellentesque
+        est.\n\n
+        Aenean nunc velit, lacinia sed dolor sed, ultrices viverra nulla. Etiam a venenatis nibh.
+        Morbi laoreet, tortor sed facilisis varius, nibh orci rhoncus nulla, id elementum leo dui
+        non lorem. Nam mollis ipsum quis auctor varius. Quisque elementum eu libero sed commodo. In
+        eros nisl, imperdiet vel imperdiet et, scelerisque a mauris. Pellentesque varius ex nunc,
+        quis imperdiet eros placerat ac. Duis finibus orci et est auctor tincidunt. Sed non viverra
+        ipsum. Nunc quis augue egestas, cursus lorem at, molestie sem. Morbi a consectetur ipsum, a
+        placerat diam. Etiam vulputate dignissim convallis. Integer faucibus mauris sit amet finibus
+        convallis.\n\n
+        Phasellus in aliquet mi. Pellentesque habitant morbi tristique senectus et netus et
+        malesuada fames ac turpis egestas. In volutpat arcu ut felis sagittis, in finibus massa
+        gravida. Pellentesque id tellus orci. Integer dictum, lorem sed efficitur ullamcorper,
+        libero justo consectetur ipsum, in mollis nisl ex sed nisl. Donec maximus ullamcorper
+        sodales. Praesent bibendum rhoncus tellus nec feugiat. In a ornare nulla. Donec rhoncus
+        libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
+        vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
+    </string>
+    <string name="database_dit_text">DATABASE UPDATE\n\nHere you either update a user\'s information or add a new user to the Database. The update is done in
+    three stages; 1: Personal Details, 2: School details and Work details. Apart from folio and username,
+    other information is can be skipped for now. However, please endeavour to provide information for all the field to
+    ensure that Search and Filters work well.</string>
+
+</resources>

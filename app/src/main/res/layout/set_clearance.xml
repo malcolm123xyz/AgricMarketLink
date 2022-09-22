@@ -28,7 +28,6 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:gravity="center_vertical"
-        android:onClick="onFilterItemClick"
         android:text="NONE" />
 
     <View
@@ -43,7 +42,6 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:gravity="center_vertical"
-        android:onClick="onFilterItemClick"
         android:text="President" />
 
     <View
@@ -58,7 +56,6 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:gravity="center_vertical"
-        android:onClick="onFilterItemClick"
         android:text="Vice President" />
 
     <View
@@ -73,7 +70,6 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:gravity="center_vertical"
-        android:onClick="onFilterItemClick"
         android:text="Secretary" />
 
     <View
@@ -88,7 +84,6 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:gravity="center_vertical"
-        android:onClick="onFilterItemClick"
         android:text="Treasurer" />
 
     <View

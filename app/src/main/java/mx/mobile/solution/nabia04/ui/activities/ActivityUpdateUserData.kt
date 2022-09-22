@@ -19,13 +19,12 @@ class ActivityUpdateUserData : AppCompatActivity() {
 
     companion object {
         var selectedFolio: String = ""
-        var userFolio: String = ""
         var newImageUri: String = ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_user_data_edit1)
+        setContentView(R.layout.activity_user_data_edit)
 
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)

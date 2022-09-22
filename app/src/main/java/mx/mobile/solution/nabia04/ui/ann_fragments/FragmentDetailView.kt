@@ -30,7 +30,7 @@ import kotlinx.coroutines.launch
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement
 import mx.mobile.solution.nabia04.data.view_models.AnnViewModel
-import mx.mobile.solution.nabia04.databinding.FragmentDetailBinding
+import mx.mobile.solution.nabia04.databinding.FragmentAnnDetailsBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
@@ -43,8 +43,8 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
-    override fun getLayoutRes(): Int = R.layout.fragment_detail
+class FragmentDetailView : BaseFragment<FragmentAnnDetailsBinding>() {
+    override fun getLayoutRes(): Int = R.layout.fragment_ann_details
 
     @Inject
     lateinit var endpoint: MainEndpoint
@@ -79,7 +79,7 @@ class FragmentDetailView : BaseFragment<FragmentDetailBinding>() {
         vb?.date?.text = getDate(announcement.id)
         Linkify.addLinks(vb!!.annBody, Linkify.PHONE_NUMBERS or Linkify.WEB_URLS)
 
-        loadImage(announcement.imageUri ?: "")
+        loadImage(announcement.imageUri)
 
         val eventDate = announcement.eventDate
         if (announcement.annType > 0) {

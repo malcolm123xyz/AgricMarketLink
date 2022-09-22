@@ -63,7 +63,7 @@ class DBRepository @Inject constructor(
 
         return withContext(Dispatchers.IO) {
             if (newImageUri.isEmpty()) {
-                sendToDataStore(data, userData, newImageUri)
+                sendToDataStore(data, userData)
             } else {
                 sendImageFirst(data, userData)
             }
@@ -96,8 +96,9 @@ class DBRepository @Inject constructor(
             if (task.isSuccessful) {
                 val downloadUri = task.result
                 Log.i("TAG", "downloadUri: $downloadUri")
+                userData.imageUri = downloadUri.toString()
                 val scope = CoroutineScope(Dispatchers.IO)
-                scope.launch { sendToDataStore(data, userData, downloadUri.toString()) }
+                scope.launch { sendToDataStore(data, userData) }
             } else {
                 data.postValue(Response.error("Failed to send Image. Please try again", ""))
                 task.exception?.printStackTrace()
@@ -107,11 +108,9 @@ class DBRepository @Inject constructor(
 
     private fun sendToDataStore(
         data: MutableLiveData<Response<String>>,
-        userData: EntityUserData,
-        imageUri: String
+        userData: EntityUserData
     ) {
         var erMsg = ""
-        userData.imageUri = imageUri
         try {
             data.postValue(Response.loading("Sending data to server..."))
             val response = if (selectedFolio.isEmpty()) {
@@ -139,7 +138,7 @@ class DBRepository @Inject constructor(
     }
 
 
-    suspend fun getUser(folio: String): EntityUserData {
+    suspend fun getUser(folio: String): EntityUserData? {
         return dao.userData(folio)
     }
 

@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/FirstFragment">
+
+    <fragment
+        android:id="@+id/FirstFragment"
+        android:name="mx.mobile.solution.nabia04_beta1.intro.FragmentWelcomeScreen"
+        android:label=""
+        tools:layout="@layout/fragment_first">
+
+        <action
+            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            app:destination="@id/general_intro"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+
+        <action
+            android:id="@+id/action_move_to_login"
+            app:destination="@id/login_fragment"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+    </fragment>
+    <fragment
+        android:id="@+id/general_intro"
+        android:name="mx.mobile.solution.nabia04_beta1.intro.FragmentGenIntro"
+        android:label=""
+        tools:layout="@layout/fragment_second">
+
+        <action
+            android:id="@+id/action_move_forward"
+            app:destination="@id/notice_board_intro"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/notice_board_intro"
+        android:name="mx.mobile.solution.nabia04_beta1.intro.FragmentNoticeBoardIntro"
+        android:label=""
+        tools:layout="@layout/fragment_second">
+
+        <action
+            android:id="@+id/action_move_forward"
+            app:destination="@id/database_intro"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+    </fragment>
+    <fragment
+        android:id="@+id/database_intro"
+        android:name="mx.mobile.solution.nabia04_beta1.intro.FragmentDatabaseIntro"
+        android:label=""
+        tools:layout="@layout/fragment_second">
+
+        <action
+            android:id="@+id/action_move_forward"
+            app:destination="@id/welfare_intro"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/welfare_intro"
+        android:name="mx.mobile.solution.nabia04_beta1.intro.FragmentWelfareIntro"
+        android:label=""
+        tools:layout="@layout/fragment_second">
+
+        <action
+            android:id="@+id/action_move_forward"
+            app:destination="@id/prof_help_intro"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+    </fragment>
+    <fragment
+        android:id="@+id/prof_help_intro"
+        android:name="mx.mobile.solution.nabia04_beta1.intro.FragmentProfIntro"
+        android:label=""
+        tools:layout="@layout/fragment_second">
+
+        <action
+            android:id="@+id/action_move_forward"
+            app:destination="@id/fragment_done"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_done"
+        android:name="mx.mobile.solution.nabia04_beta1.intro.FragmentDone"
+        android:label=""
+        tools:layout="@layout/fragment_done_intro">
+
+        <action
+            android:id="@+id/action_done"
+            app:destination="@id/sign_up_screen"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+
+        <action
+            android:id="@+id/action_move_to_login"
+            app:destination="@id/login_fragment"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+    </fragment>
+    <fragment
+        android:id="@+id/sign_up_screen"
+        android:name="mx.mobile.solution.nabia04_beta1.intro.FragmentSignUp"
+        android:label=""
+        tools:layout="@layout/fragment_register_auth">
+
+        <action
+            android:id="@+id/action_move_to_login"
+            app:destination="@id/login_fragment"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/login_fragment"
+        android:name="mx.mobile.solution.nabia04_beta1.intro.FragmentLogin"
+        android:label=""
+        tools:layout="@layout/fragment_login_auth">
+
+        <action
+            android:id="@+id/action_move_to_signup"
+            app:destination="@id/sign_up_screen"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
+    </fragment>
+</navigation>

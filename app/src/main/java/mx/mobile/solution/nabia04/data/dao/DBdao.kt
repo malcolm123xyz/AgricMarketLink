@@ -15,6 +15,6 @@ interface DBdao {
     val getAllUserData: List<EntityUserData>
 
     @Query("SELECT * FROM user_data_table WHERE folioNumber = :folio")
-    suspend fun userData(folio: String): EntityUserData
+    suspend fun userData(folio: String): EntityUserData?
 
 }

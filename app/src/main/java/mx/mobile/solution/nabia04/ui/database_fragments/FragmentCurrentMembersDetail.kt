@@ -57,6 +57,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     override fun getLayoutRes(): Int = R.layout.fragment_database_detail
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
 
         requireActivity().addMenuProvider(
@@ -150,15 +151,14 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     inner class OnClearanceItemClick internal constructor(
         var position: String,
         var alert: AlertDialog
-    ) :
-        View.OnClickListener {
+    ) : View.OnClickListener {
         override fun onClick(view: View) {
             alert.dismiss()
             setClearance(selectedFolio, position)
         }
     }
 
-    private fun setClearance (folio:String, Clearance:String) {
+    private fun setClearance(folio: String, Clearance: String) {
         val pDialog =
             MyAlertDialog(requireContext(), "ALERT", "Assigning position... Please wait", false)
         pDialog.show()
@@ -190,11 +190,11 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
         val toggleButton = v.findViewById<ToggleButton>(R.id.toggle)
         val statusTV = v.findViewById<TextView>(R.id.statusTV)
 
-        if(userData?.survivingStatus == 1){
+        if (userData?.survivingStatus == 1) {
             val st1 = userData?.fullName + ": DECEASED"
             statusTV.text = st1
             toggleButton.isChecked = true
-        }else {
+        } else {
             val st1 = userData?.fullName + ": ALIVE"
             statusTV.text = st1
             toggleButton.isChecked = false
@@ -202,8 +202,9 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
 
         toggleButton.isChecked = userData?.survivingStatus != 1
         toggleButton.setOnCheckedChangeListener { buttonView, isChecked ->
-            if(!isChecked){
-                MyAlarmManager(requireContext()).showDateTimePicker(object : MyAlarmManager.CallBack {
+            if (!isChecked) {
+                MyAlarmManager(requireContext()).showDateTimePicker(object :
+                    MyAlarmManager.CallBack {
                     override fun done(alarmTime: Long) {
                         deceasedDate = alarmTime
                         val date = fd.format(Date(deceasedDate))
@@ -211,7 +212,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
                         setDeceased(selectedFolio, date, 1)
                     }
                 })
-            }else {
+            } else {
                 dialog?.dismiss()
                 setDeceased(selectedFolio, "date", 0)
             }
@@ -227,7 +228,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
         dialog.show()
     }
 
-    private fun setDeceased (folio:String, date: String, status: Int) {
+    private fun setDeceased(folio: String, date: String, status: Int) {
         val pDialog = MyAlertDialog(requireContext(), "ALERT", "Setting deceased status...", false)
         pDialog.show()
         lifecycleScope.launch {
@@ -286,9 +287,9 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
     private fun showDetails(data: EntityUserData) {
         var nickName = ""
         if (data.nickName != null) {
-            nickName = " (" + data.nickName.toString() + ")"
+            nickName = " (" + data.nickName + ")"
         }
-        val name: String = data.fullName.toString() + nickName
+        val name: String = data.fullName + nickName
         fullNameTv_Nickname.text = name
         folio_number_Tv.text = data.folioNumber
 
@@ -310,7 +311,7 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
         if (data.email != null) {
             emailTV.text = data.email
         }
-        if (data.birthDayAlarm  != 0L) {
+        if (data.birthDayAlarm != 0L) {
             dateOfBirth.text = fd.format(Date(data.birthDayAlarm))
         }
         if (data.className != null) {
@@ -350,8 +351,8 @@ class FragmentCurrentMembersDetail : BaseFragment<FragmentDatabaseDetailBinding>
         Linkify.addLinks(contact1TV, Linkify.PHONE_NUMBERS)
         Linkify.addLinks(emailTV, Linkify.EMAIL_ADDRESSES)
 
-        val imageUri: String = data.imageUri ?: ""
-        val imageId: String = data.imageId ?: ""
+        val imageUri: String = data.imageUri
+        val imageId: String = data.imageId
 
         Log.i("TAG", "imageUri = $imageUri, imageId = $imageId")
 

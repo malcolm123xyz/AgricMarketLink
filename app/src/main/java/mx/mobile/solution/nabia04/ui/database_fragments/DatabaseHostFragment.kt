@@ -5,6 +5,7 @@ package mx.mobile.solution.nabia04.ui.database_fragments
 import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -36,20 +37,16 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.smarttoolfactory.tutorial7_2bnv_viewpager2_complexarchitecture.adapter.DatabaseChildFragmentStateAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import mx.mobile.solution.nabia04.R
-import mx.mobile.solution.nabia04.core.old_package.database.view_models.AppbarViewModel
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.data.view_models.DBViewModel
-import mx.mobile.solution.nabia04.databinding.DatabaseViewpagerContainerBinding
+import mx.mobile.solution.nabia04.databinding.FragmentDatabaseHostBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.clearance
 import mx.mobile.solution.nabia04.ui.activities.MainActivity.Companion.userFolioNumber
-import mx.mobile.solution.nabia04.ui.adapters.DBcurrentListAdapter
-import mx.mobile.solution.nabia04.util.Event
 import mx.mobile.solution.nabia04.utilities.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -69,13 +66,10 @@ import javax.inject.Inject
  * also causes memory leak.
  */
 @AndroidEntryPoint
-class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
+class DatabaseHostFragment : BaseFragment<FragmentDatabaseHostBinding>(),
     SearchView.OnQueryTextListener {
 
     private val viewModel by activityViewModels<DBViewModel>()
-
-
-    private val appbarViewModel by activityViewModels<AppbarViewModel>()
 
     @Inject
     lateinit var adapter: DBcurrentListAdapter
@@ -92,11 +86,11 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     private val workRegion: MutableList<String> = ArrayList()
     private val workDistrict: MutableList<String> = ArrayList()
 
-    var animationCounter = 0
+    private var animationCounter = 0
 
     private var animationJob: Job? = null
 
-    override fun getLayoutRes(): Int = R.layout.database_viewpager_container
+    override fun getLayoutRes(): Int = R.layout.fragment_database_host
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -108,7 +102,7 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
 
         // ViewPager2
         vb?.viewpager?.adapter =
-            DatabaseChildFragmentStateAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
+            FragmentAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
         // TabLayout
         val tabLayout = vb!!.tabLayout
         // Bind tabs and viewpager
@@ -157,7 +151,7 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
                 upDateStats(list)
                 getFilterData(list)
                 this.cancel()
-                //initiateJob(list)
+                initiateJob(list)
             }
         }
     }
@@ -165,27 +159,73 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
     private fun initiateJob(list: List<EntityUserData>) {
         animationJob?.cancel() // optional if you want to start afresh
 
-        // Create a new Job and assign it to our variable
+        val users: MutableList<EntityUserData> = ArrayList()
+        for (event in list) {
+            val daysLeft = getDaysLeft(event.birthDayAlarm)
+            if (daysLeft == "0") {
+                users.add(event)
+            }
+        }
+
         animationJob = lifecycleScope.launch {
-            while (isActive) {
-                val users: MutableList<EntityUserData> = ArrayList()
-                for (event in list) {
-                    val daysLeft = getDaysLeft(event.birthDayAlarm)
-                    if (daysLeft == "0") {
-                        users.add(event)
+            var counter = 0
+            if (users.size > 0) {
+                Log.i("TAG", "Users size: ${users.size}")
+                var i = 0
+                while (isActive) {
+                    Log.i("TAG", "Random index: $i")
+                    val strArray = arrayOf("HAPPY", "BIRTHDAY", "TO", users[i].fullName)
+                    val drawable = if (counter == 3) {
+                        getBirthDayImage(users[i].imageUri)
+                        i++
+                        i %= users.size
+                        birthdayDrawable ?: TextDrawable.Builder()
+                            .setColor(generator.randomColor)
+                            .setShape(TextDrawable.SHAPE_RECT)
+                            .setText(strArray[counter])
+                            .setFontSize(50)
+                            .build()
+                    } else {
+                        TextDrawable.Builder()
+                            .setColor(generator.randomColor)
+                            .setShape(TextDrawable.SHAPE_RECT)
+                            .setText(strArray[counter])
+                            .setFontSize(50)
+                            .build()
                     }
+                    vb?.imageswitcher?.setImageDrawable(drawable)
+                    delay(2 * 1000)
+                    counter++
+                    counter %= 4
                 }
-                if (users.size > 0) {
-                    getBirthDayImage(users[0].imageUri)
-                    animationTask(true, users[0].imageUri)
-                } else {
-                    animationTask(false, "")
+            } else {
+                while (isActive) {
+                    val drawable = when (counter) {
+                        1 -> AppCompatResources.getDrawable(
+                            requireContext(),
+                            R.drawable.login_background2
+                        )
+                        2 -> AppCompatResources.getDrawable(
+                            requireContext(),
+                            R.drawable.login_background3
+                        )
+                        3 -> AppCompatResources.getDrawable(
+                            requireContext(),
+                            R.drawable.login_background4
+                        )
+                        else -> AppCompatResources.getDrawable(
+                            requireContext(),
+                            R.drawable.login_background2
+                        )
+                    }
+                    vb?.imageswitcher?.setImageDrawable(drawable)
+                    counter++
+                    counter %= 4
+                    delay(2 * 1000)
                 }
-                delay(2 * 1000) // Task will be performed after the delay
             }
         }
     }
-
 
     private fun getDaysLeft(userBirthday: Long): String {
         val diff = userBirthday - System.currentTimeMillis()
@@ -215,23 +255,10 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
             }).submit()
     }
 
-    private fun animationTask(isBirthDay: Boolean, birthdayPersonName: String) {
-        vb?.imageswitcher?.setImageDrawable(
-            getTxtDrawable(isBirthDay, animationCounter, birthdayPersonName)
-        )
-        animationCounter %= 5
-        animationCounter++
-    }
-
     override fun onResume() {
         super.onResume()
         println("🏠 ${this.javaClass.simpleName} #${this.hashCode()}  onResume()")
         callback.isEnabled = true
-
-        // Set this navController as ViewModel's navController
-        navController.let {
-            appbarViewModel.currentNavController.value = Event(it)
-        }
     }
 
     override fun onPause() {
@@ -458,33 +485,33 @@ class DatabaseHostFragment : BaseFragment<DatabaseViewpagerContainerBinding>(),
 
     private fun getFilterData(list: List<EntityUserData>) {
         for (user in list) {
-            if (!user.districtOfResidence.equals("SELECT DISTRICT") &&
+            if (user.districtOfResidence != "SELECT DISTRICT" &&
                 user.districtOfResidence.isNotEmpty() &&
                 !hometownDistrict.contains(user.districtOfResidence)
             ) {
                 hometownDistrict.add(user.districtOfResidence)
             }
-            if (!user.regionOfResidence.equals("SELECT REGION") &&
+            if (user.regionOfResidence != "SELECT REGION" &&
                 user.regionOfResidence.isNotEmpty() &&
                 !hometownReg.contains(user.regionOfResidence)
             ) {
                 hometownReg.add(user.regionOfResidence)
             }
-            if (!user.employmentSector.isEmpty() &&
+            if (user.employmentSector.isNotEmpty() &&
                 !employmentSector.contains(user.employmentSector)
             ) {
                 employmentSector.add(user.employmentSector)
             }
-            if (!user.specificOrg.isEmpty() && !specificOrg.contains(user.specificOrg)) {
+            if (user.specificOrg.isNotEmpty() && !specificOrg.contains(user.specificOrg)) {
                 specificOrg.add(user.specificOrg)
             }
-            if (!user.establishmentRegion.equals("SELECT REGION") &&
+            if (user.establishmentRegion != "SELECT REGION" &&
                 user.establishmentRegion.isNotEmpty() &&
                 !workRegion.contains(user.establishmentRegion)
             ) {
                 workRegion.add(user.establishmentRegion)
             }
-            if (!user.districtOfResidence.equals("SELECT DISTRICT") &&
+            if (user.districtOfResidence != "SELECT DISTRICT" &&
                 user.establishmentDist.isNotEmpty() && !workDistrict.contains(user.establishmentDist)
             ) {
                 workDistrict.add(user.establishmentDist)

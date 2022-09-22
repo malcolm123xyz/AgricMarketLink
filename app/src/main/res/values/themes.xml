@@ -24,8 +24,15 @@
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" >@color/blue_light_variant</item>
+        <item name="android:statusBarColor">@color/blue_light_variant</item>
         <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground">@color/blue_light</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/pink</item>
+        <item name="postSplashScreenTheme">@style/Theme.MainTheme</item>
     </style>
 
     <style name="Theme.Material_day" parent="Theme.MaterialComponents.NoActionBar">
@@ -47,7 +54,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
 
     <style name="Theme.Nabia04.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 

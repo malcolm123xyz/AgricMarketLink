@@ -32,7 +32,7 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.settings_activity)
+        setContentView(R.layout.activity_settings)
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
@@ -40,7 +40,7 @@ class SettingsActivity : AppCompatActivity() {
                 .commit()
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false);
+        PreferenceManager.setDefaultValues(this, R.xml.root_preferences, false)
 
     }
 
@@ -97,7 +97,7 @@ class SettingsActivity : AppCompatActivity() {
                         "New password cannot be empty",
                         Toast.LENGTH_SHORT
                     ).show()
-                } else if (repeatP.isEmpty() || !repeatP.equals(newP)) {
+                } else if (repeatP.isEmpty() || repeatP != newP) {
                     Toast.makeText(requireContext(), "Password mismatch", Toast.LENGTH_SHORT).show()
                 } else {
                     lifecycleScope.launch {
@@ -131,14 +131,14 @@ class SettingsActivity : AppCompatActivity() {
 
         private fun logoutUser() {
 
-            requireActivity().getWindow().setFlags(
+            requireActivity().window.setFlags(
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
-            );
+            )
 
             SessionManager.clearData()
 
-            requireActivity().deleteDatabase("main_database");
+            requireActivity().deleteDatabase("main_database")
 
             val i = Intent(requireContext(), AuthenticationActivity::class.java)
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)

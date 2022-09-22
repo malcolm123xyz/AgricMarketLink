@@ -1,0 +1,53 @@
+<resources>
+
+    <style name="Theme.MainTheme.light" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/blue_light</item>
+        <item name="colorPrimaryDark">@color/blue_light_variant</item>
+        <item name="colorOnPrimary">@color/blue_light</item>
+
+        <item name="my_background">@color/blue_light_variant</item>
+        <item name="my_background1">@color/blue_light</item>
+        <item name="my_background2">@color/white</item>
+        <item name="toolbar_background">@color/blue_light_variant</item>
+        <item name="text_Color">@color/white</item>
+        <item name="text_Color1">@color/black</item>
+        <item name="button_Color">@color/blue_light</item>
+
+        <!-- Secondary brand color.-->
+        <item name="colorSecondary">#B80D5D</item>
+        <item name="colorSecondaryVariant">#DF4754</item>
+        <item name="colorOnSecondary">#E6ECF1</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor">@color/blue_light_variant</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen.IconBackground">
+        <item name="windowSplashScreenBackground">@color/blue_light_variant</item>
+        <item name="windowSplashScreenIconBackgroundColor">@color/pink</item>
+        <item name="postSplashScreenTheme">@style/Theme.MainTheme.light</item>
+    </style>
+
+    <style name="Theme.Nabia04.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppCompatAlertDialogStyle" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <item name="colorAccent">@color/blue_light</item>
+        <item name="android:textColorPrimary">#FFFFFFFF</item>
+        <item name="android:background">@color/blue_light_variant</item>
+    </style>
+
+    <style name="Theme.MainTheme.Fullscreen" parent="Theme.MainTheme.light">
+        <item name="android:actionBarStyle">@style/Widget.Theme.MainTheme.ActionBar.Fullscreen
+        </item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+    <style name="ThemeOverlay.Nabia04.FullscreenContainer" parent="">
+        <item name="android:actionBarStyle">@style/Widget.Theme.MainTheme.ActionBar.Fullscreen
+        </item>
+        <item name="fullscreenBackgroundColor">@color/blue_light</item>
+    </style>
+
+</resources>

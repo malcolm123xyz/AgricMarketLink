@@ -17,3 +17,4 @@ dependencyResolutionManagement {
 rootProject.name = "Nabia04"
 include ':app'
 include ':backend'
+include ':nabia04_beta1'

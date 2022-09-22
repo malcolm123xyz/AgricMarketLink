@@ -223,40 +223,10 @@
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
-  "insertQuestion": {
-   "httpMethod": "POST",
-   "id": "mainEndpoint.insertQuestion",
-   "path": "insertQuestion",
-   "request": {
-    "$ref": "Question",
-    "parameterName": "resource"
-   },
-   "response": {
-    "$ref": "Response_String"
-   },
-   "scopes": [
-    "https://www.googleapis.com/auth/userinfo.email"
-   ]
-  },
   "notifyExcelPublish": {
    "httpMethod": "POST",
    "id": "mainEndpoint.notifyExcelPublish",
    "path": "notifyExcelPublish",
-   "scopes": [
-    "https://www.googleapis.com/auth/userinfo.email"
-   ]
-  },
-  "qVote": {
-   "httpMethod": "POST",
-   "id": "mainEndpoint.qVote",
-   "path": "qVote",
-   "request": {
-    "$ref": "Question",
-    "parameterName": "resource"
-   },
-   "response": {
-    "$ref": "Response_String"
-   },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
    ]
@@ -277,6 +247,36 @@
    "path": "resetPassword",
    "response": {
     "$ref": "Response_LoginData"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "saveNewQuestion": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.saveNewQuestion",
+   "path": "saveNewQuestion",
+   "request": {
+    "$ref": "Question",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "Response_String"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "saveNewReply": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.saveNewReply",
+   "path": "saveNewReply",
+   "request": {
+    "$ref": "Question",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "Response_String"
    },
    "scopes": [
     "https://www.googleapis.com/auth/userinfo.email"
@@ -363,6 +363,21 @@
    "path": "upDateContPayment",
    "request": {
     "$ref": "ContributionData",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "Response_String"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "upDateQuestion": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.upDateQuestion",
+   "path": "upDateQuestion",
+   "request": {
+    "$ref": "Question",
     "parameterName": "resource"
    },
    "response": {

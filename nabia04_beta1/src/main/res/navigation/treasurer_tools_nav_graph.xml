@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/fragment_treasuer_tools">
+
+    <fragment
+        android:id="@+id/fragment_treasuer_tools"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.treasurer.FragmentTreasurerTools"
+        android:label="TREASURER MENU"
+        tools:layout="@layout/fragment_treasurer_tools">
+
+        <action
+            android:id="@+id/action_move_to_dues_payment_view"
+            app:destination="@id/fragment_dues_detail_view"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+
+        <action
+            android:id="@+id/action_move_dues_update"
+            app:destination="@id/payment_update_fragment"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+
+        <action
+            android:id="@+id/action_move_to_cont_request"
+            app:destination="@id/cont_request_fragment"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+
+        <action
+            android:id="@+id/action_move_cont_update"
+            app:destination="@id/cont_payment_update"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+
+        <action
+            android:id="@+id/action_move_manage_backups"
+            app:destination="@id/manage_backups"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/manage_backups"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.treasurer.FragmentManageDuesBackups"
+        android:label="DUES BACKUPS"
+        tools:layout="@layout/fragment_manage_dues_backups">
+
+        <action
+            android:id="@+id/action_move_to_dues_payment_view"
+            app:destination="@id/fragment_dues_detail_view"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+
+        <!--        <action-->
+        <!--            android:id="@+id/action_move_back"-->
+        <!--            app:destination="@id/fragment1"-->
+        <!--            app:popUpTo="@id/fragment1"-->
+        <!--            app:popUpToInclusive="true"-->
+        <!--            app:enterAnim="@anim/nav_anim_enter_back"-->
+        <!--            app:exitAnim="@anim/nav_anim_exit_back" />-->
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_dues_detail_view"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.treasurer.FragmentDuesDetailView"
+        android:label="DUES (ALL)"
+        tools:layout="@layout/fragment_dues_detail_view">
+
+        <action
+            android:id="@+id/action_move_dues_update"
+            app:destination="@id/payment_update_fragment"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+
+        <action
+            android:id="@+id/action_move_back"
+            app:destination="@id/fragment_treasuer_tools"
+            app:popUpTo="@id/fragment_treasuer_tools"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/payment_update_fragment"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.treasurer.FragmentPaymentUpdate"
+        android:label="Payment Update"
+        tools:layout="@layout/fragment_payment_update">
+
+        <action
+            android:id="@+id/action_move_treasurer_tools"
+            app:destination="@id/fragment_treasuer_tools"
+            app:popUpTo="@id/fragment_treasuer_tools"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
+
+        <action
+            android:id="@+id/action_move_dues_detail_view"
+            app:destination="@id/fragment_dues_detail_view"
+            app:popUpTo="@id/fragment_dues_detail_view"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/cont_request_fragment"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.treasurer.FragmentContributionRequest"
+        android:label="NEW CONTRIBUTION"
+        tools:layout="@layout/fragment_cont_request">
+
+        <action
+            android:id="@+id/action_move_back"
+            app:destination="@id/fragment_treasuer_tools"
+            app:popUpTo="@id/fragment_treasuer_tools"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/cont_payment_update"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.treasurer.FragmentContPaymentUpdate"
+        android:label="CONT PAYMENT UPDATE"
+        tools:layout="@layout/fragment_payment_update">
+
+        <action
+            android:id="@+id/action_move_back"
+            app:destination="@id/fragment_treasuer_tools"
+            app:popUpTo="@id/fragment_treasuer_tools"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
+    </fragment>
+
+</navigation>

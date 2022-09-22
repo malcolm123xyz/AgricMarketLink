@@ -15,6 +15,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -33,7 +34,7 @@ import mx.mobile.solution.nabia04.databinding.FragmentManageUsersBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.ui.activities.ActivityUpdateUserData
 import mx.mobile.solution.nabia04.ui.activities.endpoint
-import mx.mobile.solution.nabia04.ui.adapters.DiffCallbackCurrList
+import mx.mobile.solution.nabia04.ui.database_fragments.DiffCallbackCurrList
 import mx.mobile.solution.nabia04.utilities.*
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.ResponseLoginData
 import java.text.SimpleDateFormat
@@ -77,13 +78,17 @@ class FragmentManageUser : BaseFragment<FragmentManageUsersBinding>(),
         }
 
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            when (menuItem.itemId) {
+            return when (menuItem.itemId) {
+                android.R.id.home -> {
+                    findNavController().navigateUp()
+                    true
+                }
                 R.id.refresh -> {
                     viewModel.refreshDB()
-                    return true
+                    true
                 }
                 else -> {
-                    return true
+                    true
                 }
             }
         }
@@ -111,6 +116,7 @@ class FragmentManageUser : BaseFragment<FragmentManageUsersBinding>(),
                             .show()
                         users.data?.let { adapter.setData(it.toMutableList()) }
                     }
+                    else -> {}
                 }
             }
 
@@ -392,14 +398,14 @@ class FragmentManageUser : BaseFragment<FragmentManageUsersBinding>(),
 
             /* Bind flower name and image. */
             fun bind(userItem: EntityUserData, i: Int) {
-                val nickN = userItem.nickName ?: ""
-                var name = userItem.fullName ?: ""
+                val nickN = userItem.nickName
+                var name = userItem.fullName
                 if (nickN.isNotEmpty()) {
                     name = name + " (" + userItem.nickName + ")"
                 }
-                val folio = userItem.folioNumber ?: ""
-                val imageUri = userItem.imageUri ?: ""
-                val imageId = userItem.folioNumber ?: ""
+                val folio = userItem.folioNumber
+                val imageUri = userItem.imageUri
+                val imageId = userItem.folioNumber
                 fullNameTxt.text = name
                 val f = ": " + userItem.folioNumber
                 folioTxt.text = f
@@ -430,7 +436,7 @@ class FragmentManageUser : BaseFragment<FragmentManageUsersBinding>(),
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.database_manage_list_item, parent, false)
+                .inflate(R.layout.list_item_database_management, parent, false)
             return MyViewHolder(view)
         }
 

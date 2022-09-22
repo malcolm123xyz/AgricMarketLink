@@ -3,23 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/fragment1">
+    app:startDestination="@+id/fragment_treasuer_tools">
 
     <fragment
-        android:id="@+id/fragment1"
+        android:id="@+id/fragment_treasuer_tools"
         android:name="mx.mobile.solution.nabia04.ui.pro.FragmentProTools"
         android:label="TREASURER MENU"
         tools:layout="@layout/fragment_pro_tools">
         <action
             android:id="@+id/action_move_to_manage_users"
-            app:destination="@id/fragment_manage_users"
+            app:destination="@id/fragment_dues_detail_view"
             app:enterAnim="@anim/nav_anim_enter_foward"
             app:exitAnim="@anim/nav_anim_exit_forward" />
 
     </fragment>
 
     <fragment
-        android:id="@+id/fragment_manage_users"
+        android:id="@+id/fragment_dues_detail_view"
         android:name="mx.mobile.solution.nabia04.ui.pro.FragmentManageUser"
         android:label="Manage Users"
         tools:layout="@layout/fragment_manage_users">
@@ -32,8 +32,8 @@
 
         <action
             android:id="@+id/action_move_back"
-            app:destination="@id/fragment1"
-            app:popUpTo="@id/fragment1"
+            app:destination="@id/fragment_treasuer_tools"
+            app:popUpTo="@id/fragment_treasuer_tools"
             app:popUpToInclusive="true"
             app:enterAnim="@anim/nav_anim_enter_back"
             app:exitAnim="@anim/nav_anim_exit_back" />
@@ -49,8 +49,8 @@
 
         <action
             android:id="@+id/action_move_back"
-            app:destination="@id/fragment1"
-            app:popUpTo="@id/fragment1"
+            app:destination="@id/fragment_treasuer_tools"
+            app:popUpTo="@id/fragment_treasuer_tools"
             app:popUpToInclusive="true"
             app:enterAnim="@anim/nav_anim_enter_back"
             app:exitAnim="@anim/nav_anim_exit_back" />

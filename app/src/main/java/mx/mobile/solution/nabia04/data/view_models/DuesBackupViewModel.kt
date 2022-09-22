@@ -24,7 +24,7 @@ class DuesBackupViewModel @Inject constructor(
 
     private var data: MutableLiveData<Response<List<EntityDuesBackup>>> = MutableLiveData()
 
-    fun fetchList(): LiveData<Response<List<EntityDuesBackup>>> {
+    fun fetchBackups(): LiveData<Response<List<EntityDuesBackup>>> {
         viewModelScope.launch {
             data.postValue(Response.loading(null))
             val response = withContext(Dispatchers.IO) {
@@ -33,7 +33,7 @@ class DuesBackupViewModel @Inject constructor(
             if (response.status == Status.SUCCESS) {
                 data.postValue(Response.success(response.data))
             } else {
-                data.postValue(Response.error("Error: ${response.message}", null))
+                data.postValue(Response.error("${response.message}", null))
             }
         }
         return data

@@ -1,6 +1,11 @@
 package mx.mobile.solution.nabia04.utilities
 
 object Const {
+    const val EXCEL_SHOW_SAVE = "excelSave"
+    const val EXCEL_UNDO = "excelUndo"
+    const val NOTIFY_QUESTION_CHANGE = "notifyNewQuestion"
+    const val NEW_QUESTION = "newQuestion"
+    const val NEW_QUESTION_REPLY = "newQuestionReply"
     const val Q_FROM_ANANYMOUS = "qFromAnanymous"
     const val EXCEL_STORAGE_BACKUP_REF = "dues/backup/Nabiadues.xlsx"
     const val EXCEL_PUBLISHED = "excelPublished"

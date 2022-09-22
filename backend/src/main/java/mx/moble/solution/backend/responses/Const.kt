@@ -2,6 +2,8 @@ package mx.moble.solution.backend.responses
 
 object Const {
     const val NOTIFY_QUESTION_CHANGE = "notifyNewQuestion"
+    const val NEW_QUESTION = "newQuestion"
+    const val NEW_QUESTION_REPLY = "newQuestionReply"
     const val NOTIFY_EXCEL_UPDATE = "notifyExcelUpdate"
     const val OK = 1
     const val ALREADY_SIGN_UP = 2

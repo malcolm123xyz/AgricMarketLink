@@ -1,0 +1,589 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="area_of_expertise">
+
+    </string-array>
+
+    <string-array name="empty_values"></string-array>
+
+
+    <string-array name="alarm_offset_entries">
+        <item>30 mins</item>
+        <item>1 Hr</item>
+        <item>1Hr 30 mins</item>
+        <item>2Hrs</item>
+        <item>2Hrs 30 mins</item>
+        <item>3Hrs</item>
+    </string-array>
+
+    <string-array name="alarm_offset_vals">
+        <item>30 mins</item>
+        <item>1 Hr</item>
+        <item>1Hr 30 mins</item>
+        <item>2Hrs</item>
+        <item>2Hrs 30 mins</item>
+        <item>3Hrs</item>
+    </string-array>
+
+    <!-- Reply Preference -->
+    <string-array name="reply_entries">
+        <item>Reply</item>
+        <item>Reply to all</item>
+    </string-array>
+
+    <string-array name="reply_values">
+        <item>reply</item>
+        <item>reply_all</item>
+    </string-array>
+
+    <string-array name="sex">
+        <item>SELECT SEX</item>
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+    <string-array name="professions">
+        <item>SELECT PROFESSION</item>
+    </string-array>
+    <string-array name="organisations">
+        <item>SELECT ORGANISATION</item>
+        <item>ORGANISATION 1</item>
+        <item>ORGANISATION 2</item>
+        <item>ORGANISATION 3</item>
+        <item>ORGANISATION 4</item>
+    </string-array>
+
+    <string-array name="employmentstatus">
+        <item>SELECT</item>
+        <item>Employed</item>
+        <item>Unemployed</item>
+    </string-array>
+
+    <string-array name="employment_sector">
+        <item>SELECT</item>
+        <item>Public (Government)</item>
+        <item>Accountancy and financial management</item>
+        <item>Arts</item>
+        <item>Banking and investment</item>
+        <item>Business</item>
+        <item>Consultancy</item>
+        <item>Data, information and technology</item>
+        <item>Economics</item>
+        <item>Education and teaching</item>
+        <item>Energy and environment</item>
+        <item>Entrepreneurship</item>
+        <item>Financial services</item>
+        <item>Health</item>
+        <item>International development</item>
+        <item>International organisations</item>
+        <item>Law and legal services</item>
+        <item>Hospitality</item>
+        <item>Media and communications</item>
+        <item>Public sector, politics and government</item>
+        <item>Regulation</item>
+        <item>Research</item>
+        <item>Sustainability</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="event_type">
+        <item>SELECT EVENT TYPE</item>
+        <item>Funeral</item>
+        <item>Wedding</item>
+        <item>Naming ceremony</item>
+        <item>Birthday</item>
+        <item>Reminder</item>
+    </string-array>
+
+    <string-array name="cont_type">
+        <item>SELECT</item>
+        <item>Funeral Contribution</item>
+        <item>Wedding Contribution</item>
+        <item>Naming ceremony </item>
+        <item>Others</item>
+    </string-array>
+
+    <string-array name="clearance">
+        <item>NONE</item>
+        <item>President</item>
+        <item>Vice President</item>
+        <item>Secretary</item>
+        <item>Treasurer</item>
+    </string-array>
+
+    <string-array name="pic_type">
+        <item>SELECT CATEGORY</item>
+        <item>Happy moment</item>
+        <item>Campus picture</item>
+        <item>Funeral</item>
+        <item>Others</item>
+    </string-array>
+
+    <string-array name="classes">
+        <item>SELECT CLASS</item>
+        <item>A</item>
+        <item>B1</item>
+        <item>B2</item>
+        <item>C1</item>
+        <item>C2</item>
+        <item>D1</item>
+        <item>D2</item>
+        <item>E1</item>
+        <item>E2</item>
+    </string-array>
+
+    <string-array name="courses">
+        <item>SELECT COURSE</item>
+        <item>Science</item>
+        <item>General arts</item>
+        <item>General Agric.</item>
+        <item>Business</item>
+        <item>Visual arts</item>
+        <item>Home economics</item>
+    </string-array>
+
+    <string-array name="position_held">
+        <item>SELECT POSITION</item>
+        <item>Boys School prefect</item>
+        <item>Girls school prefect</item>
+        <item>House prefect</item>
+        <item>Dinning holl prefect</item>
+        <item>Class prefect</item>
+        <item>NONE</item>
+        <item>Others</item>
+    </string-array>
+
+    <string-array name="house">
+        <item>SELECT HOUSE</item>
+        <item>Volta</item>
+        <item>Abavana</item>
+        <item>Nkrumah</item>
+        <item>Livingstone</item>
+        <item>Abartey</item>
+        <item>Aggrey</item>
+        <item>Kennedy</item>
+        <item>Garvey</item>
+        <item>Ferguson</item>
+        <item>Tono</item>
+        <item>Slessor</item>
+        <item>Indece</item>
+        <item>Luther king</item>
+    </string-array>
+
+    <string-array name="region">
+        <item>SELECT REGION</item>
+        <item>AHAFO REGION</item>
+        <item>ASHANTI REGION</item>
+        <item>BONO EAST REGION</item>
+        <item>BONO</item>
+        <item>EASTERN REGION</item>
+        <item>GREATER ACCRA</item>
+        <item>NORTHERN REGION</item>
+        <item>OTI REGION</item>
+        <item>SAVANA REGION</item>
+        <item>UPPER EAST</item>
+        <item>UPPER WEST</item>
+        <item>VOLTA REGION</item>
+        <item>WESTERN REGION</item>
+        <item>WESTERN NORTH REGION</item>
+        <item>CENTRAL REGION</item>
+        <item>NORTH EAST REGION</item>
+
+    </string-array>
+
+    <string-array name="highestQualif">
+        <item>SELECT QUALIFICATION</item>
+        <item>Qualification 1</item>
+        <item>Qualification 2</item>
+        <item>Qualification 3</item>
+        <item>Qualification 4</item>
+    </string-array>
+
+    <string-array name="occupation">
+        <item>SELECT OCCUPATION</item>
+        <item>Doctor</item>
+        <item>Nursing</item>
+        <item>Midwifery</item>
+        <item>Teaching</item>
+        <item>Police service</item>
+        <item>Agriculturist</item>
+        <item>Others</item>
+    </string-array>
+
+    <string-array name="organisation">
+        <item>SELECT ORGANISATION</item>
+        <item>Ghana Education Service</item>
+        <item>Ghana Health Service</item>
+        <item>Local Government Service</item>
+        <item>Civil Service</item>
+        <item>Ghana Police Service</item>
+        <item>Ghana Immigration Service</item>
+        <item>Ghana Fire  Service</item>
+        <item>Ghana Armed Forces</item>
+        <item>Non Governmental Organisation</item>
+        <item>Private Organisation</item>
+        <item>Private Business</item>
+        <item>Others (Specify)</item>
+
+        <item>Others</item>
+    </string-array>
+
+    <string-array name="filter_items">
+        <item>ALL</item>
+        <item>MY HOUSE MEMBERS</item>
+        <item>MY CLASS MATES</item>
+        <item>MY COURSE MATES</item>
+        <item>FROM MY HOMETOWN</item>
+        <item>MY LOC/ADDRESS</item>
+        <item>SAME INSTITUTION</item>
+        <item>SAME PROFESSION</item>
+        <item>MORE OPTIONS</item>
+    </string-array>
+
+    <string-array name="upper_east">
+        <item>SELECT DISTRICT</item>
+        <item>Bawku</item>
+        <item>Bolgatanga Municipal</item>
+        <item>Kassena Nankana East Municipal</item>
+        <item>Bawku West District</item>
+        <item>Binduri District</item>
+        <item>Bolgatanga East District</item>
+        <item>Bongo District</item>
+        <item>Builsa North District</item>
+        <item>Builsa South District</item>
+        <item>Garu District</item>
+        <item>Kassena Nankana West District</item>
+        <item>Nabdam District</item>
+        <item>Pusiga District</item>
+        <item>Talensi District</item>
+        <item>Tempane District</item>
+    </string-array>
+
+    <string-array name="upper_west">
+        <item>SELECT DISTRICT</item>
+        <item>Wa</item>
+        <item>Wa East</item>
+        <item> Wa West</item>
+        <item>Sissala East</item>
+        <item>Sissala West</item>
+        <item>Lambussi / Kami</item>
+        <item>Jirapa</item>
+        <item>Daffiama – Bissie – Issa</item>
+        <item>Nadowli – Kaleo</item>
+        <item>Nandom</item>
+        <item>Lawra</item>
+    </string-array>
+
+    <string-array name="western">
+        <item>SELECT DISTRICT</item>
+        <item>Sekondi – Takoradi</item>
+        <item>Tarkwa Nsuaem</item>
+        <item>Nzema East</item>
+        <item>Sefwi Wiaso</item>
+        <item>Bibiani – Anhwiaso Bekwai</item>
+        <item>Jomoro</item>
+        <item>Ahanta West</item>
+        <item>Amenfi East</item>
+        <item>Prestea Huni Valley</item>
+        <item>Shama</item>
+        <item>Sefwi Akontombra</item>
+        <item>Ellembele</item>
+        <item>Wassa Amenfi Central</item>
+        <item>Wassa Amenfi West</item>
+        <item>Bia West</item>
+        <item>Bia East</item>
+        <item>Suaman</item>
+        <item>Aowin</item>
+        <item>Wassa East</item>
+        <item>Mpohor</item>
+        <item>Juabeso</item>
+        <item>Bodie</item>
+    </string-array>
+
+    <string-array name="western_north">
+        <item>SELECT DISTRICT</item>
+        <item>Aowin Municipal</item>
+        <item>Enchi</item>
+        <item>Bibiani Anhwiaso Bekwai Municipal</item>
+        <item>Sefwi Wiawso Municipal</item>
+        <item>Bia East District</item>
+        <item>Bia West District</item>
+        <item>Bodi District</item>
+        <item>Juaboso District</item>
+        <item>Sefwi Akontombra District</item>
+        <item>Suaman District</item>
+    </string-array>
+
+    <string-array name="volta">
+        <item>SELECT DISTRICT</item>
+        <item>Keta</item>
+        <item>Hohoe</item>
+        <item>Kpando</item>
+        <item>Ho</item>
+        <item>Kadjebi</item>
+        <item>South Tongu</item>
+        <item>South Dayi</item>
+        <item>Krachi East</item>
+        <item>Ketu North</item>
+        <item>Nkwanta North</item>
+        <item>Biakoye</item>
+        <item>Nkwanta South</item>
+        <item>Ketu South</item>
+        <item>Jasikan</item>
+        <item>North Dayi</item>
+        <item>Central Tongu</item>
+        <item>Krachi West</item>
+        <item>Afadzato – South</item>
+        <item>Agortime Ziope</item>
+        <item>North Tongu</item>
+        <item>Akatsi North</item>
+        <item>Ho West</item>
+        <item>Krachi Ntsumuru</item>
+        <item>Adaklu</item>
+        <item>Akatsi South</item>
+    </string-array>
+
+    <string-array name="savanna">
+        <item>SELECT DISTRICT</item>
+        <item>Bole</item>
+        <item>East Gonja Municipal</item>
+        <item>West Gonja District	</item>
+        <item>Sawla Tuna Kalba District	</item>
+        <item>Central Gonja District</item>
+        <item>North Gonja District</item>
+        <item>North East Gonja Distric</item>
+    </string-array>
+
+    <string-array name="oti">
+        <item>SELECT DISTRICT</item>
+        <item>Dambai</item>
+        <item>Nkwanta South Municipal</item>
+        <item>Biakoye District</item>
+        <item>Jasikan District</item>
+        <item>Kadjebi District</item>
+        <item>Krachi Nchumuru District</item>
+        <item>Krachi West District</item>
+        <item>Nkwanta North District</item>
+    </string-array>
+
+    <string-array name="north_east">
+        <item>SELECT DISTRICT</item>
+        <item>	Gambaga	</item>
+        <item>	West Mamprusi Municipal	</item>
+        <item>	Bunkpurugu Nakpanduri District	</item>
+        <item>	Chereponi District	</item>
+        <item>	Mamprugu Moagduri District	</item>
+        <item>	Yunyoo Nasuan District	</item>
+    </string-array>
+
+    <string-array name="northern">
+        <item>SELECT DISTRICT</item>
+        <item>Tamale</item>
+        <item>Gushegu Municipal</item>
+        <item>Nanumba North Municipal</item>
+        <item>Sagnerigu Municipal</item>
+        <item>Savelugu Municipal</item>
+        <item>Yendi Municipal</item>
+        <item>Karaga District</item>
+        <item>Kpandai District</item>
+        <item>Kumbungu District</item>
+        <item>Mion District</item>
+        <item>Nanton District</item>
+        <item>Nanumba South District</item>
+        <item>Saboba District</item>
+        <item>Tatale Sanguli District</item>
+        <item>Tolon District</item>
+        <item>Zabzugu District</item>
+
+    </string-array>
+
+    <string-array name="accra">
+        <item>SELECT DISTRICT</item>
+        <item>Accra</item>
+        <item>Tema Metropolitan</item>
+        <item>Ablekuma Central Municipal</item>
+        <item>Ablekuma North Municipal</item>
+        <item>Ablekuma West Municipal</item>
+        <item>Adenta Municipal</item>
+        <item>Ashiaman Municipal</item>
+        <item>Ayawaso Central Municipal</item>
+        <item>Ayawaso East Municipal</item>
+        <item>Ayawaso North Municipal</item>
+        <item>Ayawaso West Municipal</item>
+        <item>Ga  South Municipal</item>
+        <item>Ga Central Municipal</item>
+        <item>Ga East Municipal	</item>
+        <item>Ga North Municipal</item>
+        <item>Ga West Municipal</item>
+        <item>Korle Klottey Municipal</item>
+        <item>Kpone Katamanso Municipal</item>
+        <item>Krowor Municipal	</item>
+        <item>La Dade-Kotopon Municipal</item>
+        <item>La-Nkwantanang Municipal</item>
+        <item>Ledzokuku Municipal</item>
+        <item>Okaikwei North Municipal</item>
+        <item>Tema West Municipal</item>
+        <item>Weija-Gbawe Municipal</item>
+        <item>Ada East District</item>
+        <item>Ada West District</item>
+        <item>Ningo-Prampram District</item>
+        <item>Shai-Osudoku District</item>
+
+    </string-array>
+
+    <string-array name="easthern">
+        <item>SELECT DISTRICT</item>
+        <item>Abuakwa North Municipal</item>
+        <item>Abuakwa South Municipal</item>
+        <item>Akwapim North Municipal</item>
+        <item>Birim Central Municipal</item>
+        <item>Kwaebibirem Municipal</item>
+        <item>Kwahu West Municipal</item>
+        <item>Lower Manya Krobo Municipal</item>
+        <item>New Juaben North Municipal</item>
+        <item>New Juaben South Municipal</item>
+        <item>Nsawam Adoagyiri Municipal</item>
+        <item>Suhum Municipal</item>
+        <item>West Akim Municipal</item>
+        <item>Yilo Krobo Municipal</item>
+        <item>Achiase District	</item>
+        <item>Akuapem South District</item>
+        <item>Akyemansa District</item>
+        <item>Asene-Manso-Akroso District</item>
+        <item>Asuogyaman District</item>
+        <item>Atiwa East District</item>
+        <item>Atiwa West District</item>
+        <item>Ayensuano District</item>
+        <item>Birim North District</item>
+        <item>Birim South District</item>
+        <item>Denkyembuor District</item>
+        <item>Fanteakwa North District</item>
+        <item>Fanteakwa South District	</item>
+        <item>Kwahu Afram Plains North District	</item>
+        <item>Kwahu Afram Plains South District	</item>
+        <item>Kwahu East District</item>
+        <item>Kwahu South District</item>
+        <item>Okere District</item>
+        <item>Upper Manya Krobo District</item>
+        <item>Upper West Akim District</item>
+
+    </string-array>
+
+    <string-array name="central">
+        <item>SELECT DISTRICT</item>
+        <item>Cape Coast Metropolitan	</item>
+        <item>Agona West Municipal	</item>
+        <item>Assin Fosu Municipal	</item>
+        <item>Awutu Senya East Municipal	</item>
+        <item>Effutu Municipal	</item>
+        <item>Komenda-Edina-Eguafo-Abrim Municipal	</item>
+        <item>Mfantsiman Municipal	</item>
+        <item>Upper Denkyira East Municipal	</item>
+        <item>Abura/ Asebu/ Kwamankese District	</item>
+        <item>Agona East District	</item>
+        <item>Ajumako/Enyan/Esiam District	</item>
+        <item>Asikuma-Odoben-Brakwa-Breman District	</item>
+        <item>Assin North District	</item>
+        <item>Assin South District	</item>
+        <item>Awutu Senya District	</item>
+        <item>Ekumfi District	</item>
+        <item>Gomoa Central District	</item>
+        <item>Gomoa East District	</item>
+        <item>Gomoa West District	</item>
+        <item>Hemang Lower Denkyira District	</item>
+        <item>Twifu Ati Morkwa District	</item>
+        <item>Upper Denkyira West District</item>
+    </string-array>
+
+    <string-array name="bono">
+        <item>SELECT DISTRICT</item>
+        <item>Berekum East Municipal	</item>
+        <item>Dormaa Central Municipal	</item>
+        <item>Jaman South Municipal	</item>
+        <item>Sunyani Municipal	</item>
+        <item>Wenchi Municipal	</item>
+        <item>Tain District	</item>
+        <item>Jaman North District	</item>
+        <item>Sunyani West District	</item>
+        <item>Dormaa East District	</item>
+        <item>Banda District	</item>
+        <item>Dormaa West District	</item>
+        <item>Berekum West District</item>
+
+    </string-array>
+
+    <string-array name="bono_east">
+        <item>SELECT DISTRICT</item>
+        <item>Atebubu Amantin Municipal	</item>
+        <item>Kintampo North Municipal	</item>
+        <item>Nkoranza South Municipal	</item>
+        <item>Techiman Municipal	</item>
+        <item>Sene West District	</item>
+        <item>Pru East District	</item>
+        <item>Kintampo South District	</item>
+        <item>Nkoranza North District	</item>
+        <item>Techiman North District	</item>
+        <item>Sene East District	</item>
+        <item>Pru West District</item>
+
+    </string-array>
+
+    <string-array name="ashanti">
+        <item>SELECT DISTRICT</item>
+        <item>Kumasi Metropolitan	</item>
+        <item>Ahafo Ano North Municipal	</item>
+        <item>Asante Akim Central Municipal	</item>
+        <item>Asante Akim South Municipal	</item>
+        <item>Asokore Mampong Municipal	</item>
+        <item>Asokwa Municipal	</item>
+        <item>Atwima Nwabiagya Municipal	</item>
+        <item>Bekwai Municipal	</item>
+        <item>Ejisu Municipal	</item>
+        <item>Ejura Sekyredumasi Municipal	</item>
+        <item>Juaben Municipal	</item>
+        <item>Kwabre East Municipal	</item>
+        <item>Kwadaso Municipal	</item>
+        <item>Mampong Municipal	</item>
+        <item>Obuasi Municipal	</item>
+        <item>Offinso Municipal	</item>
+        <item>Oforikrom Municipal	</item>
+        <item>Old Tafo Municipal	</item>
+        <item>Suame Municipal	</item>
+        <item>Adansi Asokwa District	</item>
+        <item>Adansi North District	</item>
+        <item>Adansi South District	</item>
+        <item>Afigya Kwabre North District	</item>
+        <item>Afigya Kwabre South District	</item>
+        <item>Ahafo Ano South East District	</item>
+        <item>Ahafo Ano South West District	</item>
+        <item>Akrofuom District	</item>
+        <item>Amansie Central District	</item>
+        <item>Amansie South District	</item>
+        <item>Amansie West District	</item>
+        <item>Asante Akim North District	</item>
+        <item>Atwima Kwanwoma District	</item>
+        <item>Atwima Mponua District	</item>
+        <item>Atwima Nwabiagya North District	</item>
+        <item>Bosome Freho District	</item>
+        <item>Bosomtwe District	</item>
+        <item>Obuasi East District	</item>
+        <item>Offinso North District	</item>
+        <item>Sekyere Afram Plains District	</item>
+        <item>Sekyere Central District	</item>
+        <item>Sekyere East District	</item>
+        <item>Sekyere Kumawu District	</item>
+        <item>Sekyere South District</item>
+    </string-array>
+
+    <string-array name="ahafo">
+        <item>SELECT DISTRICT</item>
+        <item>	Asunafo North Municipal	</item>
+        <item>	Asutifi North District	</item>
+        <item>	Tano South Municipal	</item>
+        <item>	Asutifi South District	</item>
+        <item>	Asunafo South District	</item>
+        <item>	Tano North Municipal	</item>
+    </string-array>
+
+</resources>

@@ -3,6 +3,7 @@ package mx.mobile.solution.nabia04.ui.treasurer
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.SharedPreferences
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -13,7 +14,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -23,6 +23,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.amulyakhare.textdrawable.TextDrawable
+import com.amulyakhare.textdrawable.util.ColorGenerator
 import com.google.android.material.card.MaterialCardView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -48,7 +50,9 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FragmentManageDuesBackups() : BaseFragment<FragmentManageDuesBackupsBinding>() {
+class FragmentManageDuesBackups : BaseFragment<FragmentManageDuesBackupsBinding>() {
+
+    private val fd = SimpleDateFormat("EEE, d MMM yyyy mm:ss", Locale.US)
 
     @Inject
     lateinit var excelHelper: ExcelHelper
@@ -70,7 +74,7 @@ class FragmentManageDuesBackups() : BaseFragment<FragmentManageDuesBackupsBindin
     private lateinit var sortList: MutableList<EntityDuesBackup>
 
     companion object {
-        private var intPosition = 0;
+        private var intPosition = 0
         fun newInstance(pos: Int): FragmentManageDuesBackups {
             intPosition = pos
             return FragmentManageDuesBackups()
@@ -96,7 +100,7 @@ class FragmentManageDuesBackups() : BaseFragment<FragmentManageDuesBackupsBindin
 
 
     private fun setUpViewListener() {
-        viewModel.fetchList()
+        viewModel.fetchBackups()
             .observe(viewLifecycleOwner) { response: Response<List<EntityDuesBackup>> ->
                 Log.i("TAG", "BACKUPS SIZE = ${response.data?.size}")
                 when (response.status) {
@@ -123,6 +127,7 @@ class FragmentManageDuesBackups() : BaseFragment<FragmentManageDuesBackupsBindin
                         showProgress(false)
                         Toast.makeText(requireContext(), response.message, Toast.LENGTH_LONG).show()
                     }
+                    else -> {}
                 }
             }
     }
@@ -162,7 +167,7 @@ class FragmentManageDuesBackups() : BaseFragment<FragmentManageDuesBackupsBindin
                         )
                         .setPositiveButton("YES") { dialog: DialogInterface, _: Int ->
                             dialog.dismiss()
-                            restore(i)
+                            doRestore(sortList[i])
                         }.setNegativeButton("NO") { dialog: DialogInterface, _: Int ->
                             dialog.dismiss()
                         }.show()
@@ -211,10 +216,64 @@ class FragmentManageDuesBackups() : BaseFragment<FragmentManageDuesBackupsBindin
         popupMenu.show()
     }
 
+    private fun doRestore(backUp: EntityDuesBackup) {
+        val duesDir = File(App.applicationContext().filesDir, "Dues")
+        val `in`: InputStream?
+        val out: OutputStream?
+        try {
+            //create output directory if it doesn't exist
+            val dir = File(duesDir.absolutePath)
+            if (!dir.exists()) {
+                dir.mkdirs()
+            }
+
+            val outFile = "${duesDir.absolutePath}/Nabiadues.xlsx"
+            val inFile = "${backUp.filePath}/${backUp.fileName}"
+
+            Log.i("TAG", "OUT FILE: $outFile")
+
+            Log.i("TAG", "IN FILE: $inFile")
+
+            `in` = FileInputStream(inFile)
+            out = FileOutputStream(outFile)
+            val buffer = ByteArray(1024)
+            var read: Int
+            while (`in`.read(buffer).also { read = it } != -1) {
+                out.write(buffer, 0, read)
+            }
+            `in`.close()
+            // write the output file (You have now copied the file)
+            out.flush()
+            out.close()
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        finishBackup(backUp)
+        viewModel.fetchBackups()
+        excelHelper.reloadExcel()
+    }
+
+    private fun finishBackup(backup: EntityDuesBackup) {
+        lifecycleScope.launch {
+            dao.delete(backup)
+            val fdelete = File(backup.fileFullPath)
+            if (fdelete.exists()) {
+                if (fdelete.delete()) {
+                    Log.i("TAG", "file Deleted :" + backup.fileFullPath)
+                } else {
+                    Log.i("TAG", "file not Deleted :" + backup.fileFullPath)
+                }
+            }
+        }
+    }
+
+
     private fun delete(i: Int) {
         lifecycleScope.launch {
             deleteBackup(i)
-            setUpViewListener()
+            viewModel.fetchBackups()
             Toast.makeText(requireContext(), "Deleted", Toast.LENGTH_SHORT).show()
         }
     }
@@ -262,10 +321,9 @@ class FragmentManageDuesBackups() : BaseFragment<FragmentManageDuesBackupsBindin
     private fun rest(i: Int) {
         val backUp = sortList[i]
         val duesDir = File(App.applicationContext().filesDir, "Dues")
-        excelHelper.backup()
         restoreExcelFile(backUp.filePath, "/${backUp.fileName}", duesDir.absolutePath)
-        excelHelper.isCreated = false
-        excelHelper.initialize()
+        viewModel.fetchBackups()
+        excelHelper.reloadExcel()
     }
 
     private fun restoreExcelFile(inputPath: String, inputFile: String, outputPath: String) {
@@ -346,34 +404,25 @@ class FragmentManageDuesBackups() : BaseFragment<FragmentManageDuesBackupsBindin
 
     private inner class ListAdapter1 :
         ListAdapter<EntityDuesBackup, ListAdapter1.MyViewHolder>(DiffCallback()) {
-        private val fd = SimpleDateFormat("EEE, d MMM yyyy mm:ss", Locale.US)
+
+        private val generator: ColorGenerator = ColorGenerator.MATERIAL
 
         inner class MyViewHolder(parent: View) : RecyclerView.ViewHolder(parent) {
             val itemHolder: MaterialCardView = itemView.findViewById(R.id.item_holder)
             val date: TextView = itemView.findViewById(R.id.date)
-            val total: TextView = itemView.findViewById(R.id.totalAmount)
+            val total: ImageView = itemView.findViewById(R.id.totalAmount)
             val menu: ImageView = itemView.findViewById(R.id.actionMenu)
 
             fun bind(dues: EntityDuesBackup, i: Int) {
-                date.text = "Modified on: ${fd.format(Date(dues.id))}"
-                total.text = "Total amount = Ghc ${dues.totalAmount}"
+                date.text = "Backup on: ${fd.format(Date(dues.id))}"
+                total.background = getDrawable("GHC ${dues.totalAmount}0")
                 menu.setOnClickListener { showPopupMenu(i, it) }
-
-                if (dues.published) {
-                    date.text = "Modified on: ${fd.format(Date(dues.id))} (Published file)"
-                    itemHolder.setCardBackgroundColor(
-                        ContextCompat.getColor(
-                            requireContext(),
-                            R.color.good_standing
-                        )
-                    )
-                }
             }
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.dues_backup_list_item, parent, false)
+                .inflate(R.layout.list_item_dues_backup, parent, false)
             return MyViewHolder(view)
         }
 
@@ -381,6 +430,16 @@ class FragmentManageDuesBackups() : BaseFragment<FragmentManageDuesBackupsBindin
         override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
             val flower = getItem(position)
             holder.bind(flower, position)
+        }
+
+        private fun getDrawable(s: String): Drawable {
+            return TextDrawable.Builder()
+                .setColor(generator.randomColor)
+                .setShape(TextDrawable.SHAPE_ROUND)
+                .setText(s)
+                .setBold()
+                .setFontSize(30)
+                .build()
         }
 
     }

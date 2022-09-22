@@ -3,6 +3,7 @@
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="1.8">
       <module name="Nabia04.app" target="11" />
+      <module name="Nabia04.nabia04_beta1" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>

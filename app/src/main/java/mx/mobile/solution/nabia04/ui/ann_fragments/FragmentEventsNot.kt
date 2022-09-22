@@ -14,9 +14,8 @@ import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.entities.EntityAnnouncement
 import mx.mobile.solution.nabia04.data.view_models.AnnViewModel
 import mx.mobile.solution.nabia04.data.view_models.MainAppbarViewModel
-import mx.mobile.solution.nabia04.databinding.ListFragmentBinding
+import mx.mobile.solution.nabia04.databinding.FragmentListBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
-import mx.mobile.solution.nabia04.ui.adapters.EventsAnnAdapter
 import mx.mobile.solution.nabia04.util.Event
 import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
@@ -26,9 +25,9 @@ import javax.inject.Inject
  * This fragment is added to main graph via [NoticeBoardHostFragment]'s  [NavHostFragment]
  */
 @AndroidEntryPoint
-class FragmentEventsNot : BaseFragment<ListFragmentBinding>() {
+class FragmentEventsNot : BaseFragment<FragmentListBinding>() {
 
-    override fun getLayoutRes(): Int = R.layout.list_fragment
+    override fun getLayoutRes(): Int = R.layout.fragment_list
 
     @Inject
     lateinit var adapter: EventsAnnAdapter
@@ -64,6 +63,7 @@ class FragmentEventsNot : BaseFragment<ListFragmentBinding>() {
                     Toast.makeText(requireContext(), users.message, Toast.LENGTH_LONG).show()
                     lifecycleScope.launch { users.data?.let { renderList(it) } }
                 }
+                else -> {}
             }
         }
     }

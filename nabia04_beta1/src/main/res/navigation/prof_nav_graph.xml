@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/prof_nav_host_fragment"
+    app:startDestination="@id/fragment_main_view_nav">
+
+    <fragment
+        android:id="@+id/fragment_main_view_nav"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.prof_fragments.FragmentProfMainView"
+        android:label="PROF. HELP CENTER"
+        tools:layout="@layout/fragment_prof_main">
+        <action
+            android:id="@+id/action_move_detail_view"
+            app:destination="@id/fragment_question_detail" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_question_detail"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.prof_fragments.FragmentQuestionDetails"
+        android:label="Details"
+        tools:layout="@layout/fragment_quest_detail">
+        <!--        <action-->
+        <!--            android:id="@+id/action_proffragment2_to_proffragment3"-->
+        <!--            app:destination="@id/prof_fragment3" />-->
+    </fragment>
+
+</navigation>

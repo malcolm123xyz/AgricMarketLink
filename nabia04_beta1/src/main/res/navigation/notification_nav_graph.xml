@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/notice_board_host_frag_nav"
+    app:startDestination="@id/notice_board_host_frag">
+
+    <!-- ViewPagerContainerFragment-->
+    <fragment
+        android:id="@+id/notice_board_host_frag"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.ann_fragments.NoticeBoardHostFragment"
+        android:label="NOTICE BOARD"
+        tools:layout="@layout/fragment_noticeboard_host">
+
+        <action
+            android:id="@+id/action_gen_not_to_events_not"
+            app:destination="@id/detail_fragment"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+    </fragment>
+
+    <!-- Login -->
+    <fragment
+        android:id="@+id/detail_fragment"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.ann_fragments.FragmentDetailView"
+        android:label="Details"
+        tools:layout="@layout/fragment_ann_details">
+        <action
+            android:id="@+id/action_detail_fragment_to_view_pager"
+            app:destination="@id/notice_board_host_frag"
+            app:popUpTo="@id/notice_board_host_frag"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
+    </fragment>
+
+</navigation>

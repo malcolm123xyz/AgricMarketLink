@@ -6,21 +6,9 @@ derived_file_type:
 threadsafe: True
 auto_id_policy: default
 beta_settings:
-  'source_reference': 'https://github.com/malcolm123xyz/Nabia04.git#b8ab4c1abbff89cc7d4befb7c9df1143feeff34d'
+  'source_reference': 'https://github.com/malcolm123xyz/Nabia04.git#afe9becbd2e49e8ff6d96e8b7ef8d0f870ba89a2'
 api_version: 'user_defined'
 handlers:
-- url: (/.*/)
-  static_files: __static__\1index.html
-  upload: __NOT_USED__
-  require_matching_file: True
-  login: optional
-  secure: optional
-- url: (/)
-  static_files: __static__\1index.html
-  upload: __NOT_USED__
-  require_matching_file: True
-  login: optional
-  secure: optional
 - url: (/.*)
   static_files: __static__\1
   upload: __NOT_USED__

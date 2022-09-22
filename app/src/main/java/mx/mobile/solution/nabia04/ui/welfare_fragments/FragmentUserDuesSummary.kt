@@ -142,7 +142,7 @@ class FragmentUserDuesSummary : BaseFragment<FragmentWelfareSummaryBinding>() {
         }
     }
 
-    inner class OnSpinnerItemClick() : AdapterView.OnItemSelectedListener {
+    inner class OnSpinnerItemClick : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(adapterView: AdapterView<*>?, view: View?, i: Int, l: Long) {
             if (i > 0) {
                 refreshViews(i)

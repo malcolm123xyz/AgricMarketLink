@@ -26,7 +26,7 @@ import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.data.repositories.DBRepository
 import mx.mobile.solution.nabia04.data.view_models.MainAppbarViewModel
-import mx.mobile.solution.nabia04.databinding.ListFragmentBinding
+import mx.mobile.solution.nabia04.databinding.FragmentListBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 import mx.mobile.solution.nabia04.util.Event
 import mx.mobile.solution.nabia04.utilities.BackgroundTasks
@@ -40,12 +40,12 @@ import javax.inject.Inject
  * This fragment is added to main graph via [NoticeBoardHostFragment]'s  [NavHostFragment]
  */
 @AndroidEntryPoint
-class FragmentBirthDay : BaseFragment<ListFragmentBinding>() {
+class FragmentBirthDay : BaseFragment<FragmentListBinding>() {
 
     @Inject
     lateinit var repository: DBRepository
 
-    override fun getLayoutRes(): Int = R.layout.list_fragment
+    override fun getLayoutRes(): Int = R.layout.fragment_list
     private var adapter: ListAdapter? = null
     private val mainAppbarViewModel by activityViewModels<MainAppbarViewModel>()
 
@@ -122,7 +122,7 @@ class FragmentBirthDay : BaseFragment<ListFragmentBinding>() {
             viewType: Int
         ): MyViewHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.birthdays_list_item, parent, false)
+                .inflate(R.layout.list_item_birthday, parent, false)
             return MyViewHolder(view)
         }
 

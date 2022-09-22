@@ -2,8 +2,13 @@ package mx.mobile.solution.nabia04.ui.treasurer
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.*
 import android.widget.Filter
@@ -14,10 +19,12 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider.getUriForFile
+import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -30,22 +37,27 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mx.mobile.solution.nabia04.App
 import mx.mobile.solution.nabia04.R
+import mx.mobile.solution.nabia04.data.dao.DuesBackupDao
 import mx.mobile.solution.nabia04.data.entities.EntityDues
+import mx.mobile.solution.nabia04.data.entities.EntityDuesBackup
 import mx.mobile.solution.nabia04.data.view_models.DuesViewModel
 import mx.mobile.solution.nabia04.data.view_models.NetworkViewModel
-import mx.mobile.solution.nabia04.databinding.FragmentYearlyPaymentBinding
+import mx.mobile.solution.nabia04.databinding.FragmentDuesDetailViewBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
-import mx.mobile.solution.nabia04.ui.treasurer.TreasurerPaymentDetailHost.Companion.SORT
 import mx.mobile.solution.nabia04.utilities.*
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.DuesBackup
-import java.io.File
+import java.io.*
 import java.util.*
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
-class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
+class FragmentDuesDetailView : BaseFragment<FragmentDuesDetailViewBinding>(),
     SearchView.OnQueryTextListener {
 
+    private lateinit var undoMenuItem: MenuItem
+    private lateinit var saveMenuItem: MenuItem
+    private var sort = 2
     private var excelFilePath = ""
 
     @Inject
@@ -54,20 +66,23 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
     @Inject
     lateinit var sharedP: SharedPreferences
 
+    @Inject
+    lateinit var duesBackupDao: DuesBackupDao
+
     private val networkViewModel by viewModels<NetworkViewModel>()
+
+    private val viewModel by activityViewModels<DuesViewModel>()
 
     private lateinit var adapter: ListAdapter1
 
-    override fun getLayoutRes(): Int = R.layout.fragment_yearly_payment
-
-    private lateinit var viewModel: DuesViewModel
+    override fun getLayoutRes(): Int = R.layout.fragment_dues_detail_view
 
     private lateinit var selectedList: MutableList<EntityDues>
 
     private var total = ""
 
     companion object {
-        private var intPosition = 0;
+        private var intPosition = 0
         fun newInstance(pos: Int): FragmentDuesDetailView {
             intPosition = pos
             return FragmentDuesDetailView()
@@ -76,7 +91,6 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[DuesViewModel::class.java]
         adapter = ListAdapter1()
         excelFilePath = arguments?.getString("temp_file") ?: ""
         Log.i("TAG", "Excel to view path: $excelFilePath")
@@ -84,12 +98,6 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val duesDir = File(App.applicationContext().filesDir, "Dues")
-        val isPublish = sharedP.getBoolean(Const.EXCEL_PUBLISHED, false)
-        if (excelHelper.getExcelFile().exists() && !isPublish) {
-            vb!!.l1.visibility = View.VISIBLE
-            vb!!.publish.setOnClickListener { showPublishWarning() }
-        }
 
         requireActivity().addMenuProvider(
             MyMenuProvider(),
@@ -106,6 +114,7 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
             showHeader()
         }
     }
+
 
     private fun showPublishWarning() {
         AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
@@ -138,7 +147,7 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
                         pDial.dismiss()
                         Toast.makeText(requireContext(), "DONE", Toast.LENGTH_SHORT).show()
                         sharedP.edit().putBoolean(Const.EXCEL_PUBLISHED, true).apply()
-                        findNavController().navigate(R.id.action_move_back)
+                        vb!!.l1.visibility = View.GONE
                     }
                     Status.LOADING -> {
                         pDial.setMessage(response.data.toString())
@@ -147,6 +156,7 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
                         pDial.dismiss()
                         showDialog("ERROR", "An error has occurred: ${response.message}")
                     }
+                    else -> {}
                 }
             }
     }
@@ -170,7 +180,7 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
     }
 
     private suspend fun setUpListener() {
-        viewModel.fetchAnn().observe(viewLifecycleOwner) { users: Response<List<EntityDues>> ->
+        viewModel.fetchDues().observe(viewLifecycleOwner) { users: Response<List<EntityDues>> ->
             when (users.status) {
                 Status.SUCCESS -> {
                     selectedList = users.data?.toMutableList() ?: ArrayList()
@@ -193,6 +203,10 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
                     Log.i("TAG", "ERROR")
                     showProgress(false)
                     Toast.makeText(requireContext(), users.message, Toast.LENGTH_LONG).show()
+                }
+                Status.EVENT -> {
+                    saveMenuItem.isVisible = true
+                    undoMenuItem.isVisible = true
                 }
             }
         }
@@ -226,7 +240,7 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
         showProgress(true)
         withContext(Dispatchers.Default) {
             if (selectedList.isNotEmpty()) {
-                when (SORT) {
+                when (sort) {
                     1 -> {
                         selectedList.sortWith(fun(obj1: EntityDues, obj2: EntityDues): Int {
                             return obj1.name.compareTo(obj2.name)
@@ -263,18 +277,74 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+
+        Log.i("TAG", "onResume()")
+        val backupDir =
+            File(Environment.getExternalStorageDirectory().absolutePath, "Nabia04_Dues_backups")
+        val fileName = "temp_save.xlsx"
+        val file = File(backupDir, fileName)
+        if (file.exists()) {
+            Log.i("TAG", "Temporal file exist")
+            if (this::undoMenuItem.isInitialized) {
+                undoMenuItem.isVisible = true
+                Log.i("TAG", "Menu is innitialized")
+            } else {
+                Log.i("TAG", "Menu is not innitialized")
+            }
+        } else {
+            Log.i("TAG", "Temporal file does not exist")
+        }
+
+        val isPublish = sharedP.getBoolean(Const.EXCEL_SHOW_SAVE, false)
+        Log.i("TAG", "isPublish: $isPublish")
+        if (isPublish) {
+            if (this::saveMenuItem.isInitialized) {
+                saveMenuItem.isVisible = true
+            }
+        }
+    }
+
     private inner class MyMenuProvider : MenuProvider {
         override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
             menuInflater.inflate(R.menu.dues_detail_menu, menu)
+
+            undoMenuItem = menu.findItem(R.id.undo)
+            saveMenuItem = menu.findItem(R.id.save)
+            undoMenuItem.isVisible = false
+            saveMenuItem.isVisible = false
 
             val searchItem: MenuItem = menu.findItem(R.id.search)
             val searchView = searchItem.actionView as SearchView
 
             searchView.setOnQueryTextListener(this@FragmentDuesDetailView)
+
+            val backupDir =
+                File(Environment.getExternalStorageDirectory().absolutePath, "Nabia04_Dues_backups")
+            val fileName = "temp_save.xlsx"
+            val file = File(backupDir, fileName)
+            if (file.exists()) {
+                Log.i("TAG", "Temporal file exist")
+                undoMenuItem.isVisible = true
+            } else {
+                Log.i("TAG", "Temporal file does not exist")
+            }
+
+            val isPublish = sharedP.getBoolean(Const.EXCEL_SHOW_SAVE, false)
+            Log.i("TAG", "isPublish: $isPublish")
+            if (isPublish) {
+                saveMenuItem.isVisible = true
+            }
         }
 
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
             return when (menuItem.itemId) {
+
+                android.R.id.home -> {
+                    findNavController().navigateUp()
+                    true
+                }
                 R.id.sort -> {
                     val menuItemView: View =
                         ActivityCompat.requireViewById(requireActivity(), R.id.sort)
@@ -283,7 +353,103 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
                 }
 
                 R.id.upDateDuesPayment -> {
-                    findNavController().navigate(R.id.action_move_dues_update)
+                    val bundle = bundleOf("fragment" to "FragmentDuesDetailView")
+                    findNavController().navigate(R.id.action_move_dues_update, bundle)
+                    true
+                }
+
+                R.id.save -> {
+                    AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+                        .setTitle("WARNING")
+                        .setMessage("Are you sure you want to save this current document?")
+                        .setPositiveButton("YES") { dialog: DialogInterface, _: Int ->
+                            dialog.dismiss()
+                            excelHelper.saveFile()
+                            sharedP.edit().putBoolean(Const.EXCEL_SHOW_SAVE, false).apply()
+                            saveMenuItem.isVisible = false
+                            Toast.makeText(requireContext(), "Saved", Toast.LENGTH_SHORT).show()
+                        }.setNegativeButton("NO") { dialog: DialogInterface, _: Int ->
+                            dialog.dismiss()
+                        }.show()
+                    true
+                }
+
+                R.id.undo -> {
+                    AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+                        .setTitle("WARNING")
+                        .setMessage(
+                            "Are you sure you want to do the current changes done to the excel sheet?" +
+                                    " This will override all current changes with previous state. " +
+                                    "\n" +
+                                    "\nTHIS CANNOT BE UNDONE\n\n" +
+                                    "Do you want to continue?"
+                        )
+                        .setPositiveButton("YES") { dialog: DialogInterface, _: Int ->
+                            dialog.dismiss()
+                            undo()
+                            undoMenuItem.isVisible = false
+                            sharedP.edit().putBoolean(Const.EXCEL_SHOW_SAVE, false).apply()
+                            Toast.makeText(requireContext(), "Changes reverted", Toast.LENGTH_SHORT)
+                                .show()
+                        }.setNegativeButton("NO") { dialog: DialogInterface, _: Int ->
+                            dialog.dismiss()
+                        }.show()
+                    true
+                }
+
+                R.id.share -> {
+                    val imagePath = File(requireContext().filesDir, "Dues")
+                    val newFile = File(imagePath, "Nabiadues.xlsx")
+                    val contentUri: Uri = getUriForFile(
+                        requireContext(),
+                        "mx.mobile.solution.nabia04.fileprovider",
+                        newFile
+                    )
+                    val sharingIntent = Intent(Intent.ACTION_SEND)
+                    val file = excelHelper.getExcelFile()
+                    if (file.exists()) {
+                        val resInfoList: List<ResolveInfo> =
+                            requireActivity().packageManager.queryIntentActivities(
+                                sharingIntent,
+                                PackageManager.MATCH_DEFAULT_ONLY
+                            )
+                        for (resolveInfo in resInfoList) {
+                            val packageName = resolveInfo.activityInfo.packageName
+                            requireContext().grantUriPermission(
+                                packageName,
+                                contentUri,
+                                Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            )
+                        }
+
+                        sharingIntent.type = "application/pdf"
+                        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Sharing File...");
+                        sharingIntent.putExtra(Intent.EXTRA_TEXT, "Sharing File...")
+                        sharingIntent.putExtra(Intent.EXTRA_STREAM, contentUri)
+                        startActivity(Intent.createChooser(sharingIntent, "Share File"));
+                    }
+                    true
+                }
+
+                R.id.copy -> {
+                    copyToStorage()
+                    true
+                }
+
+                R.id.backup -> {
+                    AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
+                        .setTitle("WARNING")
+                        .setMessage(
+                            "Are you sure you want to backup the current dues sheet?"
+                        )
+                        .setPositiveButton("YES") { dialog: DialogInterface, _: Int ->
+                            dialog.dismiss()
+                            excelHelper.backupDues()
+                            Toast.makeText(requireContext(), "Backup done", Toast.LENGTH_SHORT)
+                                .show()
+                        }.setNegativeButton("NO") { dialog: DialogInterface, _: Int ->
+                            dialog.dismiss()
+                        }.show()
                     true
                 }
 
@@ -308,6 +474,98 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
         }
     }
 
+    private fun undo() {
+        val backupDir =
+            File(Environment.getExternalStorageDirectory().absolutePath, "Nabia04_Dues_backups")
+
+        val duesDir = File(App.applicationContext().filesDir, "Dues")
+        val `in`: InputStream?
+        val out: OutputStream?
+        try {
+            //create output directory if it doesn't exist
+            val dir = File(duesDir.absolutePath)
+            if (!dir.exists()) {
+                dir.mkdirs()
+            }
+
+            val outFile = "${duesDir.absolutePath}/Nabiadues.xlsx"
+            val inFile = File(backupDir, "temp_save.xlsx")
+
+            `in` = FileInputStream(inFile)
+            out = FileOutputStream(outFile)
+            val buffer = ByteArray(1024)
+            var read: Int
+            while (`in`.read(buffer).also { read = it } != -1) {
+                out.write(buffer, 0, read)
+            }
+            `in`.close()
+            // write the output file (You have now copied the file)
+            out.flush()
+            out.close()
+
+            if (inFile.exists()) {
+                val b = inFile.delete()
+            }
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        excelHelper.reloadExcel()
+        viewModel.fetchDues()
+
+    }
+
+    private fun finishBackup(backup: EntityDuesBackup) {
+        lifecycleScope.launch {
+            duesBackupDao.delete(backup)
+            val fdelete = File(backup.fileFullPath)
+            if (fdelete.exists()) {
+                if (fdelete.delete()) {
+                    Log.i("TAG", "file Deleted :" + backup.fileFullPath)
+                } else {
+                    Log.i("TAG", "file not Deleted :" + backup.fileFullPath)
+                }
+            }
+            excelHelper.saveToTemporalStorage()
+        }
+    }
+
+    private fun copyToStorage() {
+        val inFile = excelHelper.getExcelFile()
+
+        val backupDir =
+            File(Environment.getExternalStorageDirectory().absolutePath, "Nabia04_Dues_backups")
+        val `in`: InputStream?
+        val out: OutputStream?
+        try {
+            //create output directory if it doesn't exist
+            val dir = File(backupDir.absolutePath)
+            if (!dir.exists()) {
+                dir.mkdirs()
+            }
+
+            val outFile = "${backupDir.absolutePath}/Nabiadues_copy.xlsx"
+
+            `in` = FileInputStream(inFile)
+            out = FileOutputStream(outFile)
+            val buffer = ByteArray(1024)
+            var read: Int
+            while (`in`.read(buffer).also { read = it } != -1) {
+                out.write(buffer, 0, read)
+            }
+            `in`.close()
+            // write the output file (You have now copied the file)
+            out.flush()
+            out.close()
+            Toast.makeText(requireContext(), "File Copied", Toast.LENGTH_SHORT).show()
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private fun showSortPopup(view: View) {
 
         val popupMenu = PopupMenu(requireContext(), view)
@@ -318,7 +576,7 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
         amountSubMenu.add(1, 3, 1, "Lowest to Highest")
         popupMenu.setOnMenuItemClickListener { item ->
             if (item.itemId < 5) {
-                SORT = item.itemId
+                sort = item.itemId
                 lifecycleScope.launch {
                     sortData()
                     adapter.submitList(selectedList)
@@ -393,7 +651,7 @@ class FragmentDuesDetailView() : BaseFragment<FragmentYearlyPaymentBinding>(),
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.yearly_dues_list_item, parent, false)
+                .inflate(R.layout.list_item_dues_detail_view, parent, false)
             return MyViewHolder(view)
         }
 

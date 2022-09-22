@@ -114,7 +114,7 @@ class FragmentQuestionDetails : BaseFragment<FragmentQuestDetailBinding>() {
 
     private fun sendReply(question: Question): ResponseString {
         return try {
-            val responseString = endpoint.insertQuestion(question).execute()
+            val responseString = endpoint.saveNewReply(question).execute()
             if (responseString.status == Status.SUCCESS.toString()) {
                 viewModel.repository.dao.insert(getEntity(question))
             }
@@ -463,7 +463,7 @@ class FragmentQuestionDetails : BaseFragment<FragmentQuestDetailBinding>() {
         val id = System.currentTimeMillis()
         reply.id = id.toString()
         reply.folio = userFolioNumber
-        reply.questionId = question.id ?: ""
+        reply.questionId = question.id
         reply.time = fd.format(Date(id))
         reply.reply = msg
         reply.imageUrl = user?.imageUri ?: ""
@@ -474,7 +474,7 @@ class FragmentQuestionDetails : BaseFragment<FragmentQuestDetailBinding>() {
         reply.from = name
         val replys = getReplyList(question.replyList)
         replys?.add(reply)
-        val rp = getStrReply(replys) ?: ""
+        val rp = getStrReply(replys)
         question.replyList = rp
         question.numReply = "${question.numReply.toInt() + 1}"
         return getBackendObj(question)
@@ -483,17 +483,17 @@ class FragmentQuestionDetails : BaseFragment<FragmentQuestDetailBinding>() {
     private fun getBackendObj(obj: EntityQuestion): Question {
         val u = Question()
         u.id = obj.id
-        u.from = obj.from ?: ""
-        u.folio = obj.folio ?: ""
-        u.question = obj.question ?: ""
-        u.area = obj.area ?: ""
-        u.time = obj.time ?: ""
-        u.imageUrl = obj.imageUrl ?: ""
-        u.upVote = obj.upVote ?: ""
-        u.downVote = obj.downVote ?: ""
-        u.numReply = obj.numReply ?: ""
-        u.replyList = obj.replyList ?: ""
-        u.visibility = obj.visibility ?: true
+        u.from = obj.from
+        u.folio = obj.folio
+        u.question = obj.question
+        u.area = obj.area
+        u.time = obj.time
+        u.imageUrl = obj.imageUrl
+        u.upVote = obj.upVote
+        u.downVote = obj.downVote
+        u.numReply = obj.numReply
+        u.replyList = obj.replyList
+        u.visibility = obj.visibility
         return u
     }
 

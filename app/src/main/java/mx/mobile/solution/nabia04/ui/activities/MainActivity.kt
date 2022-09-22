@@ -1,3 +1,5 @@
+@file:Suppress("KDocUnresolvedReference")
+
 package mx.mobile.solution.nabia04.ui.activities
 
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
@@ -14,7 +16,6 @@ import android.provider.Settings
 import android.util.Log
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -25,8 +26,8 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupWithNavController
 import androidx.viewpager2.widget.ViewPager2
 import androidx.work.*
@@ -41,13 +42,10 @@ import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.view_models.*
 import mx.mobile.solution.nabia04.databinding.ActivityMainBinding
 import mx.mobile.solution.nabia04.fcm_.SendTokenToServerWorker
-import mx.mobile.solution.nabia04.main.setupWithNavController
-import mx.mobile.solution.nabia04.util.Event
 import mx.mobile.solution.nabia04.utilities.Const
 import mx.mobile.solution.nabia04.utilities.ExcelHelper
 import mx.mobile.solution.nabia04.utilities.SessionManager
 import mx.mobile.solution.nabia04.workManager.ExcelDownloadWorker
-import mx.mobile.solution.nabia04.workManager.TokenRefreshWorker
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import kotlin.time.ExperimentalTime
@@ -93,10 +91,10 @@ import kotlin.time.measureTime
  */
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-    private val PERMISSION_REQUEST_CODE = 9684
+    private val permissionRequestCode = 9684
+
     private lateinit var navController: NavController
-    private val RC_APP_PERM = 1244
-    private val appbarViewModel by viewModels<MainAppbarViewModel>()
+    private lateinit var appBarConfiguration: AppBarConfiguration
 
     private lateinit var dataBinding: ActivityMainBinding
 
@@ -109,6 +107,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     companion object {
         lateinit var userFolioNumber: String
         lateinit var clearance: String
+        var startMils: Long = 0L
     }
 
     private lateinit var drawerLayout: DrawerLayout
@@ -117,25 +116,43 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        val n = measureTime {
 
+        startMils = System.currentTimeMillis()
+
+        val m = measureTime {
             dataBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+
+            val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_container)
+                    as NavHostFragment
+            navController = navHostFragment.navController
+
+            // Setup the bottom navigation view with navController
+            val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav)
+            bottomNavigationView.setupWithNavController(navController)
+
+            drawerLayout = dataBinding.drawerLayout
+
+            // Setup the ActionBar with navController and 3 top level destinations
+            appBarConfiguration = AppBarConfiguration(
+                setOf(
+                    R.id.notice_board_host_frag,
+                    R.id.database_host_frag,
+                    R.id.welfare_host_frag_nav,
+                    R.id.fragment_main_view_nav
+                ), drawerLayout
+            )
 
             val toolbar = findViewById<Toolbar>(R.id.toolbar)
             setSupportActionBar(toolbar)
+
+            toolbar.setupWithNavController(navController, appBarConfiguration)
 
             userFolioNumber = sharedP.getString(SessionManager.FOLIO_NUMBER, "") ?: ""
             clearance = sharedP.getString(Const.CLEARANCE, "") ?: ""
             Log.i("TAG", "USER CLEARANCE = $clearance")
 
-            drawerLayout = dataBinding.drawerLayout
-
             val navigationView = findViewById<NavigationView>(R.id.nav_view)
             navigationView.setNavigationItemSelectedListener(this)
-
-            if (savedInstanceState == null) {
-                setupBottomNavigationBar()
-            }
 
             scheduleSendingTokenToServer()
 
@@ -148,21 +165,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 requestPermission()
             }
         }
-        Log.i("TAG", "Activity onCreate() took: $n")
+
+        Log.i("TAG", "Activity created in $m")
     }
 
     private fun checkPermission(): Boolean {
-        if (SDK_INT >= Build.VERSION_CODES.R) {
-            return Environment.isExternalStorageManager()
+        return if (SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
         } else {
             val result =
                 ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE)
             val result1 =
                 ContextCompat.checkSelfPermission(this, WRITE_EXTERNAL_STORAGE)
 
-            Log.i("TAG", "Permission results: Result1 = $result, Result2 = $result1")
-
-            return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED
+            result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED
         }
     }
 
@@ -203,7 +219,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             //below android 11
             ActivityCompat.requestPermissions(
                 this, arrayOf(WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE),
-                PERMISSION_REQUEST_CODE
+                permissionRequestCode
             )
         }
     }
@@ -231,10 +247,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         grantResults: IntArray
     ) {
         when (requestCode) {
-            PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty()) {
-                val READ_EXTERNAL_STORAGE = grantResults[0] == PackageManager.PERMISSION_GRANTED
-                val WRITE_EXTERNAL_STORAGE = grantResults[1] == PackageManager.PERMISSION_GRANTED
-                if (READ_EXTERNAL_STORAGE && WRITE_EXTERNAL_STORAGE) {
+            permissionRequestCode -> if (grantResults.isNotEmpty()) {
+                val readExtStorage = grantResults[0] == PackageManager.PERMISSION_GRANTED
+                val writeExtStorage = grantResults[1] == PackageManager.PERMISSION_GRANTED
+                if (readExtStorage && writeExtStorage) {
                     Log.i("TAG", "Permission Granted")
                     lifecycleScope.launch {
                         initializeExcel()
@@ -259,25 +275,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun scheduleTokenRefresh() {
-        val requestID = "scheduleTokenRefresh"
-        val myWorkRequest =
-            PeriodicWorkRequest.Builder(TokenRefreshWorker::class.java, 15, TimeUnit.MINUTES)
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-                )
-                .setBackoffCriteria(
-                    BackoffPolicy.LINEAR,
-                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
-                    TimeUnit.MILLISECONDS
-                )
-                .addTag(requestID)
-                .build()
-        WorkManager.getInstance(applicationContext)
-            .enqueueUniquePeriodicWork(requestID, ExistingPeriodicWorkPolicy.REPLACE, myWorkRequest)
-    }
+//    private fun scheduleTokenRefresh() {
+//        val requestID = "scheduleTokenRefresh"
+//        val myWorkRequest =
+//            PeriodicWorkRequest.Builder(TokenRefreshWorker::class.java, 15, TimeUnit.MINUTES)
+//                .setConstraints(
+//                    Constraints.Builder()
+//                        .setRequiredNetworkType(NetworkType.CONNECTED)
+//                        .build()
+//                )
+//                .setBackoffCriteria(
+//                    BackoffPolicy.LINEAR,
+//                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
+//                    TimeUnit.MILLISECONDS
+//                )
+//                .addTag(requestID)
+//                .build()
+//        WorkManager.getInstance(applicationContext)
+//            .enqueueUniquePeriodicWork(requestID, ExistingPeriodicWorkPolicy.REPLACE, myWorkRequest)
+//    }
 
     private fun scheduleExcelDownloader() {
         val requestID = "scheduleExcelDownloader"
@@ -299,56 +315,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             .enqueueUniquePeriodicWork(requestID, ExistingPeriodicWorkPolicy.KEEP, myWorkRequest)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        // Now that BottomNavigationBar has restored its instance state
-        // and its selectedItemId, we can proceed with setting up the
-        // BottomNavigationBar with Navigation
-        setupBottomNavigationBar()
-    }
-
-    /**
-     * Called on first creation and when restoring state.
-     */
-    private fun setupBottomNavigationBar() {
-        val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav)
-
-        val navGraphIds = listOf(
-            R.navigation.notification_nav_graph,
-            R.navigation.database_nav_graph,
-            R.navigation.welfare_nav_graph,
-            R.navigation.prof_nav_graph,
-            R.navigation.gallery_nav_graph
-        )
-
-        //Setup the bottom navigation view with a list of navigation graphs
-        val controller = bottomNavigationView.setupWithNavController(
-            navGraphIds = navGraphIds,
-            fragmentManager = supportFragmentManager,
-            containerId = R.id.nav_host_container,
-            intent = intent
-        )
-
-        //Whenever the selected controller changes, setup the action bar.
-        controller.observe(this) { navController ->
-            val appBarConfig = AppBarConfiguration(navController.graph, drawerLayout)
-            dataBinding.toolbar.setupWithNavController(navController, appBarConfig)
-            NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
-        }
-
-        appbarViewModel.currentNavController.observe(this) {
-            it?.let { event: Event<NavController> ->
-                event.getContentIfNotHandled()?.let { navController ->
-                    val appBarConfig = AppBarConfiguration(navController.graph, drawerLayout)
-                    dataBinding.toolbar.setupWithNavController(navController, appBarConfig)
-                    NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
-                }
-            }
-        }
-    }
-
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        Log.i("TAG", "onNavigationItemSelected")
         when (item.itemId) {
 
             R.id.pro -> {
@@ -380,6 +347,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             R.id.settings -> {
                 val i = Intent(this, SettingsActivity::class.java)
+                startActivity(i)
+            }
+
+            R.id.nav_about_navasco -> {
+                val i = Intent(this, ActivityAboutNavasco::class.java)
+                startActivity(i)
+            }
+
+            R.id.nav_about_nabia_04 -> {
+                val i = Intent(this, ActivityNabia04::class.java)
+                startActivity(i)
+            }
+
+            R.id.nav_about_app -> {
+                val i = Intent(this, ActivityAboutApp::class.java)
                 startActivity(i)
             }
 

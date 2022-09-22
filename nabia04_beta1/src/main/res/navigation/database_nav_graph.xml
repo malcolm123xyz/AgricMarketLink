@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/database_nav_host"
+    app:startDestination="@id/database_host_frag">
+
+
+    <fragment
+        android:id="@+id/database_host_frag"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.database_fragments.DatabaseHostFragment"
+        android:label="DATABASE"
+        tools:layout="@layout/fragment_database_host">
+        <action
+            android:id="@+id/action_database_viewpager_to_current_members_detail"
+            app:destination="@id/fragment_database_detail"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+        <action
+            android:id="@+id/action_database_viewpager_to_departed_members_detail"
+            app:destination="@id/fragment_departed_members_detail"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/fragment_database_detail"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.database_fragments.FragmentCurrentMembersDetail"
+        android:label="Details"
+        tools:layout="@layout/fragment_database_detail" />
+
+    <fragment
+        android:id="@+id/fragment_departed_members_detail"
+        android:name="mx.mobile.solution.nabia04_beta1.ui.database_fragments.FragmentDepartedMembersDetail"
+        android:label="Details"
+        tools:layout="@layout/fragment_departed_members_detail" />
+
+</navigation>

@@ -12,7 +12,7 @@
     <param-name>org.eclipse.jetty.originAttribute</param-name>
     <param-value>origin</param-value>
   </context-param>
-  <listener origin="WebDescriptor(file:///D:/Android%20Projects/Nabia04_new/backend/build/staged-app/WEB-INF/web.xml):0">
+  <listener origin="WebDescriptor(file:///D:/Software%20Development/My%20projects/Nabia04/backend/build/staged-app/WEB-INF/web.xml):0">
     <listener-class>mx.moble.solution.backend.others.Bootstrapper</listener-class>
   </listener>
   <filter>
@@ -22,7 +22,7 @@
   </filter>
   <filter>
     <filter-name>ObjectifyFilter</filter-name>
-    <filter-class origin="WebDescriptor(file:///D:/Android%20Projects/Nabia04_new/backend/build/staged-app/WEB-INF/web.xml):2">com.googlecode.objectify.ObjectifyFilter</filter-class>
+    <filter-class origin="WebDescriptor(file:///D:/Software%20Development/My%20projects/Nabia04/backend/build/staged-app/WEB-INF/web.xml):2">com.googlecode.objectify.ObjectifyFilter</filter-class>
     <async-supported>false</async-supported>
   </filter>
   <filter-mapping>
@@ -61,8 +61,8 @@
   </servlet>
   <servlet>
     <servlet-name>EndpointsServlet</servlet-name>
-    <servlet-class origin="WebDescriptor(file:///D:/Android%20Projects/Nabia04_new/backend/build/staged-app/WEB-INF/web.xml):8">com.google.api.server.spi.EndpointsServlet</servlet-class>
-    <init-param origin="WebDescriptor(file:///D:/Android%20Projects/Nabia04_new/backend/build/staged-app/WEB-INF/web.xml):9">
+    <servlet-class origin="WebDescriptor(file:///D:/Software%20Development/My%20projects/Nabia04/backend/build/staged-app/WEB-INF/web.xml):8">com.google.api.server.spi.EndpointsServlet</servlet-class>
+    <init-param origin="WebDescriptor(file:///D:/Software%20Development/My%20projects/Nabia04/backend/build/staged-app/WEB-INF/web.xml):9">
       <param-name>services</param-name>
       <param-value>mx.moble.solution.backend.endpoints.MainEndpoint</param-value>
     </init-param>
@@ -88,7 +88,7 @@
     <servlet-name>_ah_snapshot</servlet-name>
     <url-pattern>/_ah/snapshot</url-pattern>
   </servlet-mapping>
-  <servlet-mapping origin="WebDescriptor(file:///D:/Android%20Projects/Nabia04_new/backend/build/staged-app/WEB-INF/web.xml):15">
+  <servlet-mapping origin="WebDescriptor(file:///D:/Software%20Development/My%20projects/Nabia04/backend/build/staged-app/WEB-INF/web.xml):15">
     <servlet-name>EndpointsServlet</servlet-name>
     <url-pattern>/_ah/api/*</url-pattern>
   </servlet-mapping>

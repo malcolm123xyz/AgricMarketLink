@@ -184,9 +184,9 @@ class FragmentContributionRequest : BaseFragment<
                 Log.i("TAG", "list size1 = ${usersList!!.size}")
                 usersList!!.add(0, EntityUserData())
                 Log.i("TAG", "list size2 = ${usersList!!.size}")
-                val namesArray = Array(usersList!!.size ?: 0) { "" }
+                val namesArray = Array(usersList!!.size) { "" }
                 for ((index, item) in usersList!!.withIndex()) {
-                    namesArray[index] = item.fullName ?: "NOT A MEMBER"
+                    namesArray[index] = item.fullName
                 }
                 userSpinner.adapter =
                     ArrayAdapter(requireContext(), R.layout.simple_spinner_item, namesArray)
@@ -264,6 +264,7 @@ class FragmentContributionRequest : BaseFragment<
                         pDial.dismiss()
                         showDialog("ERROR", "An error has occurred: ${response.message}")
                     }
+                    else -> {}
                 }
             }
     }

@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/fragment_manage_users">
+    app:startDestination="@+id/fragment_dues_detail_view">
 
     <fragment
-        android:id="@+id/fragment_manage_users"
+        android:id="@+id/fragment_dues_detail_view"
         android:name="mx.mobile.solution.nabia04.ui.database_fragments.FragmentDatabaseUpdateNote"
         android:label="@string/database_update"
         tools:layout="@layout/fragment_database_update_note">

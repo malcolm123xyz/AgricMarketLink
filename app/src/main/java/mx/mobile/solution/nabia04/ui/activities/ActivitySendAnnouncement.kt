@@ -50,7 +50,7 @@ class ActivitySendAnnouncement : AppCompatActivity() {
     private var contentLauncher: ActivityResultLauncher<String>? = null
     private lateinit var vbinding: ActivitySendAnnBinding
 
-    private var PERMISSIONS = arrayOf(
+    private var permissions = arrayOf(
         Manifest.permission.READ_EXTERNAL_STORAGE
     )
 
@@ -70,10 +70,10 @@ class ActivitySendAnnouncement : AppCompatActivity() {
             //sendNotificationTask()
         }
         changePicture.setOnClickListener {
-            if (hasPermissions(this, PERMISSIONS)) {
+            if (hasPermissions(this, permissions)) {
                 contentLauncher!!.launch("image/*")
             } else {
-                permReqLauncher.launch(PERMISSIONS)
+                permReqLauncher.launch(permissions)
             }
 
         }

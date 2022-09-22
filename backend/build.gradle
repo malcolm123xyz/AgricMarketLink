@@ -41,6 +41,7 @@ appengine {  // App Engine tasks configuration
     deploy {   // deploy configuration
         appengine.deploy.projectId = 'GCLOUD_CONFIG'
         appengine.deploy.version = 'GCLOUD_CONFIG'
+
     }
     tools {
         cloudSdkHome = "C:\\Users\\DEPT. OF AGRIC-BONGO\\AppData\\Local\\Google\\Cloud SDK\\google-cloud-sdk"

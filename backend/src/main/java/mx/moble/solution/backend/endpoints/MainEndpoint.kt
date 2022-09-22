@@ -77,19 +77,18 @@ class MainEndpoint {
     }
 
     @ApiMethod(
-        name = "qVote",
-        path = "qVote",
+        name = "saveNewQuestion",
+        path = "saveNewQuestion",
         httpMethod = ApiMethod.HttpMethod.POST
     )
-    fun qVote(question: Question): Response<String> {
+    fun saveNewQuestion(question: Question): Response<String> {
         return try {
-
-
             ObjectifyService.ofy().save().entity(question).now()
             val dataMap = HashMap<String, String>()
-            dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_QUESTION_CHANGE
+            dataMap["NOTIFICATION_TYPE"] = Const.NEW_QUESTION
             dataMap["question"] = question.question
-            dataMap["visibility"] = question.visibility.toString()
+            logger.info("FROM = ${question.from}")
+            dataMap["sendFrom"] = question.from
             dataMap["area"] = question.area
             dataMap["id"] = question.id
             NotificationManager("").sendNotDataOnly(dataMap)
@@ -100,17 +99,40 @@ class MainEndpoint {
     }
 
     @ApiMethod(
-        name = "insertQuestion",
-        path = "insertQuestion",
+        name = "saveNewReply",
+        path = "saveNewReply",
         httpMethod = ApiMethod.HttpMethod.POST
     )
-    fun insertQuestion(question: Question): Response<String> {
+    fun saveNewReply(question: Question): Response<String> {
+        return try {
+            ObjectifyService.ofy().save().entity(question).now()
+            val dataMap = HashMap<String, String>()
+            dataMap["NOTIFICATION_TYPE"] = Const.NEW_QUESTION_REPLY
+            dataMap["question"] = question.question
+            logger.info("FROM = ${question.from}")
+            dataMap["sendFrom"] = question.from
+            dataMap["area"] = question.area
+            dataMap["id"] = question.id
+            NotificationManager("").sendNotDataOnly(dataMap)
+            success(null)
+        } catch (e: IOException) {
+            error("Server error: ${e.localizedMessage}", "")
+        }
+    }
+
+    @ApiMethod(
+        name = "upDateQuestion",
+        path = "upDateQuestion",
+        httpMethod = ApiMethod.HttpMethod.POST
+    )
+    fun upDateQuestion(question: Question): Response<String> {
         return try {
             ObjectifyService.ofy().save().entity(question).now()
             val dataMap = HashMap<String, String>()
             dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_QUESTION_CHANGE
             dataMap["question"] = question.question
-            dataMap["visibility"] = question.visibility.toString()
+            logger.info("FROM = ${question.from}")
+            dataMap["sendFrom"] = question.from
             dataMap["area"] = question.area
             dataMap["id"] = question.id
             NotificationManager("").sendNotDataOnly(dataMap)
@@ -492,33 +514,35 @@ class MainEndpoint {
     @ApiMethod(name = "signUp", path = "signUp", httpMethod = ApiMethod.HttpMethod.POST)
 
     fun signUp(loginData: LoginData): Response<LoginData> {
-
-        //Check if suspended, not found or Already login
         val loginStatus = checkLoginStatus(loginData.folioNumber)
-        if (loginStatus == Const.NOT_FOUND) {
-            loginData.accessToken = UUID.randomUUID().toString()
-            ObjectifyService.ofy().save().entity(loginData).now()
-            if (!alreadyInDB(loginData.folioNumber)) {
-                val updateModel = DatabaseObject()
-                updateModel.folioNumber = loginData.folioNumber
-                updateModel.fullName = loginData.fullName
-                updateModel.email = loginData.emailAddress
-                updateModel.contact = loginData.contact
-                ObjectifyService.ofy().save().entity(updateModel).now()
+        when (loginStatus) {
+            Const.NOT_FOUND -> {
+                loginData.accessToken = UUID.randomUUID().toString()
+                ObjectifyService.ofy().save().entity(loginData).now()
+                if (!alreadyInDB(loginData.folioNumber)) {
+                    val updateModel = DatabaseObject()
+                    updateModel.folioNumber = loginData.folioNumber
+                    updateModel.fullName = loginData.fullName
+                    updateModel.email = loginData.emailAddress
+                    updateModel.contact = loginData.contact
+                    ObjectifyService.ofy().save().entity(updateModel).now()
+                }
+                val dataMap = HashMap<String, String>()
+                dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_DATABASE_UPDATE
+                NotificationManager("").sendNotDataOnly(dataMap)
+                return success(loginData)
             }
-            val dataMap = HashMap<String, String>()
-            dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_DATABASE_UPDATE
-            NotificationManager("").sendNotDataOnly(dataMap)
-            return success(loginData)
-        } else if (loginStatus == Const.ALREADY_SIGN_UP) {
-            val resMsg =
-                "Already signed up. If you have forgotten your folio number contact the administrator"
-            error(resMsg, "")
-        } else if (loginStatus == Const.SUSPENDED) {
-            val resMsg = "Sorry You have been Suspended. Contact the PRO"
-            error(resMsg, "")
+            Const.ALREADY_SIGN_UP -> {
+                val resMsg =
+                    "Already signed up. If you have forgotten your folio number contact the administrator"
+                return error(resMsg, loginData)
+            }
+            Const.SUSPENDED -> {
+                val resMsg = "Sorry You have been Suspended. Contact the PRO"
+                return error(resMsg, loginData)
+            }
         }
-        error("Unknown Error: Unknown error. Please try again")
+        return error("Unknown Error: Unknown error. Please try again", loginData)
     }
 
 

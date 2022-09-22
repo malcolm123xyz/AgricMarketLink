@@ -10,22 +10,21 @@ import dagger.hilt.android.AndroidEntryPoint
 import mx.mobile.solution.nabia04.R
 import mx.mobile.solution.nabia04.data.entities.EntityUserData
 import mx.mobile.solution.nabia04.data.view_models.DBViewModel
-import mx.mobile.solution.nabia04.databinding.ListFragmentBinding
+import mx.mobile.solution.nabia04.databinding.FragmentListBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
-import mx.mobile.solution.nabia04.ui.adapters.DBdepartedListAdapter
 import mx.mobile.solution.nabia04.utilities.Response
 import mx.mobile.solution.nabia04.utilities.Status
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class FragmentDepartedMembers : BaseFragment<ListFragmentBinding>() {
+class FragmentDepartedMembers : BaseFragment<FragmentListBinding>() {
 
     private val viewModel by activityViewModels<DBViewModel>()
 
     @Inject
     lateinit var adapter: DBdepartedListAdapter
 
-    override fun getLayoutRes(): Int = R.layout.list_fragment
+    override fun getLayoutRes(): Int = R.layout.fragment_list
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -54,6 +53,7 @@ class FragmentDepartedMembers : BaseFragment<ListFragmentBinding>() {
                     Toast.makeText(requireContext(), users.message, Toast.LENGTH_LONG).show()
                     users.data?.let { renderList(it.toMutableList()) }
                 }
+                else -> {}
             }
         }
     }

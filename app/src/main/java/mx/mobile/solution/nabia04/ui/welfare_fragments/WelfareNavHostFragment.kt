@@ -8,9 +8,8 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.smarttoolfactory.tutorial7_2bnv_viewpager2_complexarchitecture.adapter.UserWelfareHostStateAdapter
 import mx.mobile.solution.nabia04.R
-import mx.mobile.solution.nabia04.databinding.WelfareNavHostFragmentBinding
+import mx.mobile.solution.nabia04.databinding.FragmentDuesSummaryBinding
 import mx.mobile.solution.nabia04.ui.BaseFragment
 
 
@@ -27,9 +26,9 @@ import mx.mobile.solution.nabia04.ui.BaseFragment
  * *[MainAppbarViewModel] that has a [NavController] that belong to a NavHostFragment that is to be destroyed
  * also causes memory leak.
  */
-class WelfareNavHostFragment : BaseFragment<WelfareNavHostFragmentBinding>() {
+class WelfareNavHostFragment : BaseFragment<FragmentDuesSummaryBinding>() {
 
-    override fun getLayoutRes(): Int = R.layout.welfare_nav_host_fragment
+    override fun getLayoutRes(): Int = R.layout.fragment_dues_summary
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,7 +37,7 @@ class WelfareNavHostFragment : BaseFragment<WelfareNavHostFragmentBinding>() {
         val viewPager = vb!!.viewPager
 
         viewPager.adapter =
-            UserWelfareHostStateAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
+            FragmentAdapter(childFragmentManager, viewLifecycleOwner.lifecycle)
 
         // TabLayout
         val tabLayout = vb!!.tabLayout
