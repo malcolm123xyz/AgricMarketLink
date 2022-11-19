@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.LoginData
 import javax.inject.Inject
 
-class SessionManager @Inject constructor(var pref: SharedPreferences) {
+class SessionManager @Inject constructor(private var pref: SharedPreferences) {
 
     // Editor for Shared preferences
 

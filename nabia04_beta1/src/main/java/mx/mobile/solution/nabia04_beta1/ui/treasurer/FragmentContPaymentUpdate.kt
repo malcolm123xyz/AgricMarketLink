@@ -60,35 +60,35 @@ class FragmentContPaymentUpdate : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lifecycleScope.launch {
-            binding.progressBar?.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
             val members = getMembers()
             members[0] = "Select user"
-            binding.spinner?.adapter =
+            binding.spinner.adapter =
                 ArrayAdapter(requireContext(), R.layout.simple_spinner_item, members)
-            binding.progressBar?.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
         }
 
-        binding.spinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(ad: AdapterView<*>?, view: View?, i: Int, l: Long) {
                 spinnerPos = i
                 if (i > 0) {
                     val member = userDataList[i]
                     folio = member.folioNumber
                     name = member.fullName
-                    binding.holder?.visibility = View.GONE
+                    binding.holder.visibility = View.GONE
                 } else {
-                    binding.holder?.visibility = View.VISIBLE
+                    binding.holder.visibility = View.VISIBLE
                 }
             }
 
             override fun onNothingSelected(adapterView: AdapterView<*>?) {}
         }
 
-        binding.update?.setOnClickListener {
-            amount = binding.amountEdit?.text.toString()
+        binding.update.setOnClickListener {
+            amount = binding.amountEdit.text.toString()
             if (spinnerPos < 1) {
-                folio = binding.folioEdit?.text.toString()
-                name = binding.nameEdit?.text.toString()
+                folio = binding.folioEdit.text.toString()
+                name = binding.nameEdit.text.toString()
             }
 
             if (folio.isEmpty()) {
@@ -106,12 +106,12 @@ class FragmentContPaymentUpdate : Fragment() {
             showWarningDialog(amount, name, folio)
         }
 
-        binding.date?.setOnClickListener {
+        binding.date.setOnClickListener {
             MyAlarmManager(requireContext()).showDayMonthPicker(object : MyAlarmManager.CallBack {
                 override fun done(alarmTime: Long) {
                     val date = fd.format(Date(alarmTime))
                     longDate = alarmTime
-                    binding.tvDeadline?.text = date
+                    binding.tvDeadline.text = date
                 }
             })
         }

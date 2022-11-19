@@ -28,8 +28,4 @@ class DBUpdateViewModel @Inject constructor(var repository: DBRepository) : View
         data.postValue(user)
     }
 
-    fun getDataObj(): EntityUserData? {
-        return data.value
-    }
-
 }

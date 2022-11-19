@@ -34,7 +34,7 @@ class ProfMainViewModel @Inject constructor(var repository: ProfMainViewReposito
         return data
     }
 
-    suspend fun getUser(folio: String): EntityQuestion? {
+    suspend fun getUser(folio: String): EntityQuestion {
         return repository.getQuestion(folio)
     }
 
@@ -49,23 +49,6 @@ class ProfMainViewModel @Inject constructor(var repository: ProfMainViewReposito
                 else -> {
                     val e = response.message ?: ""
                     data.postValue(Response.error(e, null))
-                }
-            }
-        }
-    }
-
-    fun reload() {
-        viewModelScope.launch {
-            data.postValue(Response.loading(null))
-            val response = repository.fetchQuestions()
-            when (response.status) {
-                Status.SUCCESS -> {
-                    val list = response.data?.toMutableList()
-                    data.postValue(Response.success(list))
-                }
-                else -> {
-                    val e = response.message ?: ""
-                    data.postValue(Response.error(e, response.data))
                 }
             }
         }

@@ -2,7 +2,6 @@ package mx.mobile.solution.nabia04_beta1.utilities
 
 import android.content.SharedPreferences
 import android.os.Environment
-import android.os.FileObserver
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +19,7 @@ import java.net.URL
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.math.abs
 import kotlin.math.ceil
 
 
@@ -33,7 +33,7 @@ class ExcelHelper @Inject constructor(
     private var numNumYears = 0
     private var formatter = DataFormatter()
     private var workbook: Workbook? = null
-    var isCreated = false
+    private var isCreated = false
     var members: MutableList<Member> = ArrayList()
     var names: MutableList<String> = ArrayList()
 
@@ -99,7 +99,7 @@ class ExcelHelper @Inject constructor(
                 downloadedSize += bufferLength
                 Log.e(
                     "Progress:",
-                    "downloadedSize:" + Math.abs(downloadedSize * 100 / totalSize)
+                    "downloadedSize:" + abs(downloadedSize * 100 / totalSize)
                 )
             }
             outPut.close()
@@ -245,7 +245,7 @@ class ExcelHelper @Inject constructor(
                 val cell = row.getCell(i)
                 val cValue = getCellvalue(cell).toDouble()
                 var amountToAdd = 60.0 - cValue
-                Log.i("TAG", "Cell $i initial value = ${cell}")
+                Log.i("TAG", "Cell $i initial value = $cell")
                 if (amount < amountToAdd) {
                     amountToAdd = amount
                 }
@@ -479,9 +479,7 @@ class ExcelHelper @Inject constructor(
         row?.createCell(2)?.setCellValue(folio.toDouble())
 
         for (n in 3 until lastCellNum!!) {
-            if (row != null) {
-                row.createCell(n).setCellValue(0.0)
-            }
+            row?.createCell(n)?.setCellValue(0.0)
         }
 
         val lastColName = CellReference.convertNumToColString(lastCellNum - 2)
@@ -612,19 +610,6 @@ class ExcelHelper @Inject constructor(
             }
         }
         return list
-    }
-
-    private fun observeFile() {
-        val duesDir = File(applicationContext().filesDir, "Dues")
-        object : FileObserver(duesDir, ALL_EVENTS) {
-            override fun onEvent(event: Int, path: String?) {
-                when (event) {
-                    32 -> Log.d("TAG", "File created, Event: $event")
-                    2 -> Log.d("TAG", "File modified, Event: $event")
-                }
-                Log.d("TAG", "event: $event")
-            }
-        }.startWatching()
     }
 
 }

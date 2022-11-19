@@ -84,11 +84,11 @@ class FragmentUserDuesSummary : Fragment() {
     }
 
     private fun setUpSpinner(selPos: Int) {
-        binding.userDuesSpinner?.onItemSelectedListener = OnSpinnerItemClick()
+        binding.userDuesSpinner.onItemSelectedListener = OnSpinnerItemClick()
         adapter =
             ArrayAdapter(requireContext(), R.layout.simple_spinner_item, excelHelper.names)
-        binding.userDuesSpinner?.adapter = adapter
-        binding.userDuesSpinner?.setSelection(selPos)
+        binding.userDuesSpinner.adapter = adapter
+        binding.userDuesSpinner.setSelection(selPos)
     }
 
 
@@ -109,37 +109,37 @@ class FragmentUserDuesSummary : Fragment() {
                 val numOfMonthsPaid = userTotal / 5
                 val percentagePaged = ((numOfMonthsPaid / excelHelper.totalNumMonths) * 100).toInt()
 
-                binding.totalAmountTv?.text = "Ghc $userTotal"
-                binding.numMonths?.text = numOfMonthsPaid.toString()
-                binding.percentageContribution?.text = "${percentagePaged}%"
-                binding.numMonthsOwed?.text =
+                binding.totalAmountTv.text = "Ghc $userTotal"
+                binding.numMonths.text = numOfMonthsPaid.toString()
+                binding.percentageContribution.text = "${percentagePaged}%"
+                binding.numMonthsOwed.text =
                     (excelHelper.totalNumMonths - numOfMonthsPaid).toString()
-                binding.rank?.text = excelHelper.getRank(i).toString()
+                binding.rank.text = excelHelper.getRank(i).toString()
 
                 if (percentagePaged <= 29) {
-                    binding.headerHolder?.setBackgroundColor(
+                    binding.headerHolder.setBackgroundColor(
                         ContextCompat.getColor(
                             requireContext(),
                             R.color.bad_standing
                         )
                     )
-                    binding.goodStandingTv?.text = "Not in Good Standing"
+                    binding.goodStandingTv.text = "Not in Good Standing"
                 } else if (percentagePaged in 30..69) {
-                    binding.headerHolder?.setBackgroundColor(
+                    binding.headerHolder.setBackgroundColor(
                         ContextCompat.getColor(
                             requireContext(),
                             R.color.average_standing
                         )
                     )
-                    binding.goodStandingTv?.text = "Average Good Standing"
+                    binding.goodStandingTv.text = "Average Good Standing"
                 } else {
-                    binding.headerHolder?.setBackgroundColor(
+                    binding.headerHolder.setBackgroundColor(
                         ContextCompat.getColor(
                             requireContext(),
                             R.color.good_standing
                         )
                     )
-                    binding.goodStandingTv?.text = "Good Standing"
+                    binding.goodStandingTv.text = "Good Standing"
                 }
                 val folio = excelHelper.members[i].folio
                 val user = loadImage(folio)

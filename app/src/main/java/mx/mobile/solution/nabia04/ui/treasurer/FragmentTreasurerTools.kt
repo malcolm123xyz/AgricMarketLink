@@ -52,11 +52,7 @@ class FragmentTreasurerTools : BaseFragment<FragmentTreasurerToolsBinding>() {
         }
         vb?.manageBackups?.setOnClickListener { findNavController().navigate(R.id.action_move_manage_backups) }
         vb?.uploadMasterExcelSheet?.setOnClickListener {
-            if (checkPermission()) {
-                sendExcelDocToCloud()
-            } else {
-                requestPermission()
-            }
+            findNavController().navigate(R.id.action_move_folio_update)
         }
     }
 

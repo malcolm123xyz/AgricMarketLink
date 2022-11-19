@@ -76,8 +76,6 @@ class FragmentDuesDetailView : Fragment(),
 
     private lateinit var selectedList: MutableList<EntityDues>
 
-    private var total = ""
-
     companion object {
         private var intPosition = 0
         fun newInstance(pos: Int): FragmentDuesDetailView {
@@ -126,22 +124,6 @@ class FragmentDuesDetailView : Fragment(),
     }
 
 
-    private fun showPublishWarning() {
-        AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
-            .setTitle("WARNING")
-            .setMessage(
-                "Publishing the current excel document will make it accessible other users. " +
-                        "Make sure it has the latest updates. \n\n" +
-                        "DO YOU WANT TO CONTINUE?"
-            )
-            .setPositiveButton("YES") { dialog: DialogInterface, _: Int ->
-                dialog.dismiss()
-                publish()
-            }.setNegativeButton("NO") { dialog: DialogInterface, _: Int ->
-                dialog.dismiss()
-            }.show()
-    }
-
     private fun publish() {
 
         val excelFile = excelHelper.getExcelFile()
@@ -180,15 +162,6 @@ class FragmentDuesDetailView : Fragment(),
             ) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
     }
 
-    private fun showExelFileNotExistDial() {
-        AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
-            .setTitle("ERROR")
-            .setMessage("The excel file does not exist. Make sure it is created first")
-            .setPositiveButton("OK") { dialog: DialogInterface, _: Int ->
-                dialog.dismiss()
-            }.show()
-    }
-
     private suspend fun setUpListener() {
         viewModel.fetchDues().observe(viewLifecycleOwner) { users: Response<List<EntityDues>> ->
             when (users.status) {
@@ -203,8 +176,8 @@ class FragmentDuesDetailView : Fragment(),
                     val total = excelHelper.getGrandTotal().toString()
                     binding.total.text = total
 
-                    binding.totalCont?.text = "Total payment: Ghc $total"
-                    binding.numContributors?.text = "${selectedList.size} Members have paid dues"
+                    binding.totalCont.text = "Total payment: Ghc $total"
+                    binding.numContributors.text = "${selectedList.size} Members have paid dues"
                 }
                 Status.LOADING -> {
                     showProgress(true)
@@ -236,11 +209,11 @@ class FragmentDuesDetailView : Fragment(),
     private fun showHeader() {
         val headerItems = excelHelper.getHeader()
         if (headerItems.isNotEmpty()) {
-            binding.y1?.text = headerItems[0]
-            binding.y2?.text = headerItems[1]
-            binding.y3?.text = headerItems[2]
-            binding.y4?.text = headerItems[3]
-            binding.y5?.text = headerItems[4]
+            binding.y1.text = headerItems[0]
+            binding.y2.text = headerItems[1]
+            binding.y3.text = headerItems[2]
+            binding.y4.text = headerItems[3]
+            binding.y5.text = headerItems[4]
         }
     }
 
@@ -433,10 +406,10 @@ class FragmentDuesDetailView : Fragment(),
                         }
 
                         sharingIntent.type = "application/pdf"
-                        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Sharing File...");
+                        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, "Sharing File...")
                         sharingIntent.putExtra(Intent.EXTRA_TEXT, "Sharing File...")
                         sharingIntent.putExtra(Intent.EXTRA_STREAM, contentUri)
-                        startActivity(Intent.createChooser(sharingIntent, "Share File"));
+                        startActivity(Intent.createChooser(sharingIntent, "Share File"))
                     }
                     true
                 }

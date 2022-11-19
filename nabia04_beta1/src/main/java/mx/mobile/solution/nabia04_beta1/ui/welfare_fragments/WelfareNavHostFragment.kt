@@ -78,9 +78,7 @@ class WelfareNavHostFragment : Fragment() {
 
             https://stackoverflow.com/questions/62851425/viewpager2-inside-a-fragment-leaks-after-replacing-the-fragment-its-in-by-navig
          */
-        viewPager2?.let {
-            it.adapter = null
-        }
+        viewPager2.adapter = null
 
         _binding = null
 

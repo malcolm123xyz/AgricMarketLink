@@ -58,6 +58,54 @@ class MainEndpoint {
         }
 
     @ApiMethod(
+        name = "uploadUserList",
+        path = "uploadUserList",
+        httpMethod = ApiMethod.HttpMethod.POST
+    )
+    @Throws(IOException::class)
+    fun uploadUserList(usersListTP: UsersListTP): Response<String> {
+
+        for (user in usersListTP.list!!) {
+            val loginData = LoginData()
+            loginData.folioNumber = user.folioNumber
+
+            try {
+                ObjectifyService.ofy().load().type(LoginData::class.java).id(user.folioNumber)
+                    .safe()
+            } catch (e: NotFoundException) {
+                ObjectifyService.ofy().save().entity(loginData).now()
+            }
+
+            try {
+                ObjectifyService.ofy().load().type(DatabaseObject::class.java).id(user.folioNumber)
+                    .safe()
+            } catch (e: NotFoundException) {
+                ObjectifyService.ofy().save().entity(user).now()
+            }
+        }
+
+        return success(null)
+    }
+
+    @ApiMethod(
+        name = "uploadUser",
+        path = "uploadUser",
+        httpMethod = ApiMethod.HttpMethod.POST
+    )
+    @Throws(IOException::class)
+    fun uploadUser(loginData: LoginData): Response<String> {
+
+        try {
+            ObjectifyService.ofy().load().type(LoginData::class.java).id(loginData.folioNumber)
+                .safe()
+        } catch (e: NotFoundException) {
+            ObjectifyService.ofy().save().entity(loginData).now()
+        }
+
+        return success(null)
+    }
+
+    @ApiMethod(
         name = "insertAnnouncement",
         path = "insertAnnouncement",
         httpMethod = ApiMethod.HttpMethod.POST
@@ -475,14 +523,16 @@ class MainEndpoint {
 
     private fun checkLoginStatus(id: String): Int {
         //Check if suspended, not found or Already login
+        val user: LoginData
         try {
-            val loginData = ObjectifyService.ofy().load().type(
-                LoginData::class.java
-            ).id(id).safe()
+            user = ObjectifyService.ofy().load().type(LoginData::class.java).id(id).safe()
         } catch (e: NotFoundException) {
             return Const.NOT_FOUND
         }
-        return Const.ALREADY_SIGN_UP
+        if (user.accessToken.isNotEmpty()) {
+            return Const.ALREADY_SIGN_UP
+        }
+        return Const.OK
     }
 
     @ApiMethod(
@@ -515,8 +565,10 @@ class MainEndpoint {
 
     fun signUp(loginData: LoginData): Response<LoginData> {
         val loginStatus = checkLoginStatus(loginData.folioNumber)
+
         when (loginStatus) {
-            Const.NOT_FOUND -> {
+
+            Const.OK -> {
                 loginData.accessToken = UUID.randomUUID().toString()
                 ObjectifyService.ofy().save().entity(loginData).now()
                 if (!alreadyInDB(loginData.folioNumber)) {
@@ -531,6 +583,12 @@ class MainEndpoint {
                 dataMap["NOTIFICATION_TYPE"] = Const.NOTIFY_DATABASE_UPDATE
                 NotificationManager("").sendNotDataOnly(dataMap)
                 return success(loginData)
+            }
+            Const.NOT_FOUND -> {
+                val resMsg =
+                    "You are not Authorized. fill the Database form and contact the executives\n\n" +
+                            "https://forms.gle/uCCehRSLzngGS3dK8"
+                return error(resMsg, loginData)
             }
             Const.ALREADY_SIGN_UP -> {
                 val resMsg =
@@ -554,10 +612,10 @@ class MainEndpoint {
 
     @ApiMethod(name = "userLogin", path = "userLogin", httpMethod = ApiMethod.HttpMethod.POST)
     fun userLogin(loginTP: LoginTP): Response<LoginData> {
-        val loginData = ObjectifyService.ofy().load().type(
-            LoginData::class.java
-        ).id(loginTP.folio).now()
-            ?: return error("Not signed up. Sign up first", null)
+        val loginData =
+            ObjectifyService.ofy().load().type(LoginData::class.java).id(loginTP.folio).now()
+                ?: return error("Not signed up. Sign up first", null)
+
         return if (loginData.password == loginTP.password) {
             loginData.accessToken = UUID.randomUUID().toString()
             ObjectifyService.ofy().save().entity(loginData).now()

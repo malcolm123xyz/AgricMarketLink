@@ -77,15 +77,14 @@
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="100dp"
                     android:layout_height="100dp"
-                    android:layout_marginLeft="10dp">
-
+                    android:paddingLeft="10dp">
 
                     <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/uploadMasterExcelSheet"
+                        android:id="@+id/manageBackups"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="UPLOAD MASTER EXCEL" />
+                        android:text="MANAGE BACKUPS" />
 
                 </com.google.android.material.card.MaterialCardView>
 
@@ -98,18 +97,6 @@
                 android:layout_marginTop="10dp"
                 android:orientation="horizontal">
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="100dp"
-                    android:layout_height="100dp">
-
-                    <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/manageBackups"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="MANAGE BACKUPS" />
-
-                </com.google.android.material.card.MaterialCardView>
 
 
             </LinearLayout>

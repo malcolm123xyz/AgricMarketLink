@@ -69,15 +69,15 @@ class FragmentUserContribution : Fragment() {
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
 
-        imv = binding.icon!!
-        tv = binding.msg!!
-        deadline = binding.deadline!!
-        type = binding.type!!
-        momoName = binding.momoName!!
-        momoNum = binding.momoNum!!
+        imv = binding.icon
+        tv = binding.msg
+        deadline = binding.deadline
+        type = binding.type
+        momoName = binding.momoName
+        momoNum = binding.momoNum
 
         lifecycleScope.launch {
-            binding.progressBar?.visibility = View.VISIBLE
+            binding.progressBar.visibility = View.VISIBLE
             val response = withContext(Dispatchers.IO) {
                 getContributions()
             }
@@ -105,7 +105,7 @@ class FragmentUserContribution : Fragment() {
                 }
 
             }
-            binding.progressBar?.visibility = View.GONE
+            binding.progressBar.visibility = View.GONE
         }
     }
 

@@ -43,25 +43,4 @@ class DataConverter {
         val type = object : TypeToken<List<Map<String?, String?>?>?>() {}.type
         return gson.fromJson(countryLangString, type)
     }
-
-
-//    @TypeConverter
-//    fun getStrQuestReply(payments: List<Reply>?): String? {
-//        if (payments == null) {
-//            return null
-//        }
-//        val gson = Gson()
-//        val type = object : TypeToken<List<Reply>>() {}.type
-//        return gson.toJson(payments, type)
-//    }
-//
-//    @TypeConverter
-//    fun getQuestReplyObj(reply: String?): List<Reply>? {
-//        if (reply == null) {
-//            return null
-//        }
-//        val gson = Gson()
-//        val type = object : TypeToken<List<Reply>>() {}.type
-//        return gson.fromJson(reply, type)
-//    }
 }

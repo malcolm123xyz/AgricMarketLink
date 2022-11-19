@@ -54,13 +54,19 @@
         <item>ORGANISATION 4</item>
     </string-array>
 
-    <string-array name="employmentstatus" >
+    <string-array name="employmentstatus">
         <item>SELECT</item>
         <item>Employed</item>
         <item>Unemployed</item>
     </string-array>
 
-    <string-array name="employment_sector" >
+    <string-array name="upload_type">
+        <item>SELECT</item>
+        <item>SINGLE</item>
+        <item>BULK</item>
+    </string-array>
+
+    <string-array name="employment_sector">
         <item>SELECT</item>
         <item>Public (Government)</item>
         <item>Accountancy and financial management</item>

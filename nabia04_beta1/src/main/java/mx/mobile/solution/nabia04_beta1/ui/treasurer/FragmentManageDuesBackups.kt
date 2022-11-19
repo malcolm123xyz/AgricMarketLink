@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
-import com.google.android.material.card.MaterialCardView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,6 +45,7 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.abs
 
 @AndroidEntryPoint
 class FragmentManageDuesBackups : Fragment() {
@@ -314,58 +314,6 @@ class FragmentManageDuesBackups : Fragment() {
         }
     }
 
-    private fun restore(i: Int) {
-        val pDial =
-            MyAlertDialog(requireContext(), "BACKUP", "Restoring...", false).show()
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                rest(i)
-                pDial.dismiss()
-            }
-        }
-    }
-
-    private fun rest(i: Int) {
-        val backUp = sortList[i]
-        val duesDir = File(App.applicationContext().filesDir, "Dues")
-        restoreExcelFile(backUp.filePath, "/${backUp.fileName}", duesDir.absolutePath)
-        viewModel.fetchBackups()
-        excelHelper.reloadExcel()
-    }
-
-    private fun restoreExcelFile(inputPath: String, inputFile: String, outputPath: String) {
-        var `in`: InputStream?
-        val out: OutputStream?
-        try {
-            //create output directory if it doesn't exist
-            val dir = File(outputPath)
-            if (!dir.exists()) {
-                dir.mkdirs()
-            }
-
-            val outFile = "$outputPath/Nabiadues.xlsx"
-            val inFile = inputPath + inputFile
-
-            `in` = FileInputStream(inFile)
-            out = FileOutputStream(outFile)
-            val buffer = ByteArray(1024)
-            var read: Int
-            while (`in`.read(buffer).also { read = it } != -1) {
-                out.write(buffer, 0, read)
-            }
-            `in`.close()
-            `in` = null
-
-            // write the output file (You have now copied the file)
-            out.flush()
-            out.close()
-        } catch (e: FileNotFoundException) {
-            e.printStackTrace()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
     private fun downloadBackup(duesDir: File, i: Int): File? {
         Log.i("TAG", "Downloading file")
         Log.i("TAG", "sortList size = ${sortList.size}")
@@ -397,7 +345,7 @@ class FragmentManageDuesBackups : Fragment() {
                 downloadedSize += bufferLength
                 Log.e(
                     "Progress:",
-                    "downloadedSize:" + Math.abs(downloadedSize * 100 / totalSize)
+                    "downloadedSize:" + abs(downloadedSize * 100 / totalSize)
                 )
             }
             outPut.close()
@@ -415,7 +363,6 @@ class FragmentManageDuesBackups : Fragment() {
         private val generator: ColorGenerator = ColorGenerator.MATERIAL
 
         inner class MyViewHolder(parent: View) : RecyclerView.ViewHolder(parent) {
-            val itemHolder: MaterialCardView = itemView.findViewById(R.id.item_holder)
             val date: TextView = itemView.findViewById(R.id.date)
             val total: ImageView = itemView.findViewById(R.id.totalAmount)
             val menu: ImageView = itemView.findViewById(R.id.actionMenu)
@@ -465,15 +412,6 @@ class FragmentManageDuesBackups : Fragment() {
         ): Boolean {
             return oldItem.totalAmount == newItem.totalAmount
         }
-    }
-
-    private fun showDialog(t: String, s: String) {
-        AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
-            .setTitle(t)
-            .setMessage(s)
-            .setPositiveButton(
-                "OK"
-            ) { dialog: DialogInterface, _: Int -> dialog.dismiss() }.show()
     }
 
     override fun onDestroyView() {

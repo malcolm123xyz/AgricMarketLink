@@ -51,13 +51,13 @@ class FragmentCurrentMembers : Fragment() {
                 when (users.status) {
                     Status.SUCCESS -> {
                         users.data?.let { renderList(it.toMutableList()) }
-                        binding.pb?.visibility = View.GONE
+                        binding.pb.visibility = View.GONE
                     }
                     Status.LOADING -> {
-                        binding.pb?.visibility = View.VISIBLE
+                        binding.pb.visibility = View.VISIBLE
                     }
                     Status.ERROR -> {
-                        binding.pb?.visibility = View.GONE
+                        binding.pb.visibility = View.GONE
                         Toast.makeText(requireContext(), users.message, Toast.LENGTH_LONG)
                             .show()
                         users.data?.let { renderList(it.toMutableList()) }

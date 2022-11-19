@@ -99,7 +99,7 @@ class FragmentProfMainView : Fragment(),
 
         setupObserver()
 
-        binding.fabAddUser?.setOnClickListener {
+        binding.fabAddUser.setOnClickListener {
             showQuestionDial()
         }
 
@@ -113,13 +113,13 @@ class FragmentProfMainView : Fragment(),
                 when (users.status) {
                     Status.SUCCESS -> {
                         users.data?.let { adapter.submitList(it.toMutableList()) }
-                        binding.pb?.visibility = View.GONE
+                        binding.pb.visibility = View.GONE
                     }
                     Status.LOADING -> {
-                        binding.pb?.visibility = View.VISIBLE
+                        binding.pb.visibility = View.VISIBLE
                     }
                     Status.ERROR -> {
-                        binding.pb?.visibility = View.GONE
+                        binding.pb.visibility = View.GONE
                         Toast.makeText(requireContext(), users.message, Toast.LENGTH_LONG).show()
                         if (users.data.isNullOrEmpty()) {
                             adapter.setData(ArrayList())
@@ -142,8 +142,7 @@ class FragmentProfMainView : Fragment(),
         }
 
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            val id = menuItem.itemId
-            return when (id) {
+            return when (menuItem.itemId) {
                 R.id.refresh -> {
                     viewModel.refreshDB()
                     true

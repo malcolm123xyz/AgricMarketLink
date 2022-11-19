@@ -9,58 +9,30 @@ import kotlinx.coroutines.launch
 import mx.mobile.solution.nabia04_beta1.data.entities.EntityAnnouncement
 import mx.mobile.solution.nabia04_beta1.data.repositories.AnnRepository
 import mx.mobile.solution.nabia04_beta1.utilities.Response
-import mx.mobile.solution.nabia04_beta1.utilities.Status
 import javax.inject.Inject
 
 @HiltViewModel
 class AnnViewModel @Inject constructor(var repository: AnnRepository) : ViewModel() {
 
-    private var genData: MutableLiveData<Response<List<EntityAnnouncement>>> = MutableLiveData()
+    private var data: MutableLiveData<Response<List<EntityAnnouncement>>> = MutableLiveData()
 
     fun fetchAnn(): LiveData<Response<List<EntityAnnouncement>>> {
         viewModelScope.launch {
-            genData.postValue(Response.loading(null))
-            val response = repository.fetchAnn()
-            when (response.status) {
-                Status.SUCCESS -> {
-                    val announcements = response.data?.toMutableList()
-                    announcements?.sortWith { obj1: EntityAnnouncement, obj2: EntityAnnouncement ->
-                        obj2.id.compareTo(obj1.id)
-                    }
-                    genData.postValue(Response.success(announcements))
-                }
-                else -> {
-                    val e = response.message ?: ""
-                    genData.postValue(Response.error(e, response.data))
-                }
-            }
+            data.postValue(Response.loading(null))
+            data.postValue(repository.fetchAnn())
         }
-        return genData
+        return data
     }
 
     suspend fun getAnn(id: Long): EntityAnnouncement? {
         return repository.getAnn(id)
     }
 
-    fun refreshDB(): LiveData<Response<List<EntityAnnouncement>>> {
+    fun refreshDB() {
         viewModelScope.launch {
-            genData.postValue(Response.loading(null))
-            val response = repository.refreshDB()
-            when (response.status) {
-                Status.SUCCESS -> {
-                    val announcements = response.data?.toMutableList()
-                    announcements?.sortWith { obj1: EntityAnnouncement, obj2: EntityAnnouncement ->
-                        obj2.id.compareTo(obj1.id)
-                    }
-                    genData.postValue(Response.success(announcements))
-                }
-                else -> {
-                    val e = response.message ?: ""
-                    genData.postValue(Response.error(e, null))
-                }
-            }
+            data.postValue(Response.loading(null))
+            data.postValue(repository.refreshDB())
         }
-        return genData
     }
 
     suspend fun setAnnAsRead(announcement: EntityAnnouncement) {

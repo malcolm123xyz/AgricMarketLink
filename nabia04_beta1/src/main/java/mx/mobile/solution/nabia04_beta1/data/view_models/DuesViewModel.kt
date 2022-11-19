@@ -29,8 +29,4 @@ class DuesViewModel @Inject constructor(val excelHelper: ExcelHelper) : ViewMode
         return data
     }
 
-    fun notifyFileChange() {
-        data.postValue(Response.emitEvent("MODIFIED"))
-    }
-
 }

@@ -256,7 +256,7 @@ class FragmentPersonDetails : Fragment() {
         }
     }
 
-    fun onNext() {
+    private fun onNext() {
         if (updateObj == null) {
             updateObj = EntityUserData()
         }

@@ -28,7 +28,6 @@ import mx.mobile.solution.nabia04_beta1.ui.activities.MainActivity
 import mx.mobile.solution.nabia04_beta1.ui.activities.MainActivity.Companion.userFolioNumber
 import mx.mobile.solution.nabia04_beta1.utilities.Const
 import mx.mobile.solution.nabia04_beta1.utilities.RateLimiter
-import mx.mobile.solution.nabia04_beta1.workManager.AnnRefreshWorker
 import mx.mobile.solution.nabia04_beta1.workManager.ExcelDownloadWorker
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -71,7 +70,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             } else if (type == Const.NOTIFY_CLEARANCE) {
                 if (data["folio"].equals(userFolioNumber)) {
                     val msg = data["msg"] as String
-                    sharedP.edit().putString(Const.CLEARANCE, msg).apply();
+                    sharedP.edit().putString(Const.CLEARANCE, msg).apply()
                 }
             } else if (type == Const.NEW_QUESTION) {
                 val from = data["sendFrom"] ?: ""
@@ -209,23 +208,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         builder.setVibrate(longArrayOf(100, 100, 100, 100, 100))
         builder.setSound(alarmUri)
         notificationManager?.notify(index, builder.build())
-    }
-
-    private fun scheduleAnnouncementUpdate() {
-        val myWorkRequest: WorkRequest =
-            OneTimeWorkRequest.Builder(AnnRefreshWorker::class.java)
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-                )
-                .setBackoffCriteria(
-                    BackoffPolicy.LINEAR,
-                    OneTimeWorkRequest.MIN_BACKOFF_MILLIS,
-                    TimeUnit.MILLISECONDS
-                )
-                .build()
-        WorkManager.getInstance(applicationContext).enqueue(myWorkRequest)
     }
 
     override fun onNewToken(token: String) {

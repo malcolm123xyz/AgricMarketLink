@@ -45,8 +45,6 @@ class FragmentManageUser : Fragment(),
 
     private val fd = SimpleDateFormat("EEE, d MMM yyyy hh:mm", Locale.US)
 
-    private var deceasedDate: Long = 0
-
     lateinit var adapter: MyListAdapter
 
     private val viewModel by activityViewModels<DBViewModel>()
@@ -115,13 +113,13 @@ class FragmentManageUser : Fragment(),
                             adapter.setData(it.toMutableList())
                             adapter.notifyDataSetChanged()
                         }
-                        binding.pb?.visibility = View.GONE
+                        binding.pb.visibility = View.GONE
                     }
                     Status.LOADING -> {
-                        binding.pb?.visibility = View.VISIBLE
+                        binding.pb.visibility = View.VISIBLE
                     }
                     Status.ERROR -> {
-                        binding.pb?.visibility = View.GONE
+                        binding.pb.visibility = View.GONE
                         Toast.makeText(requireContext(), users.message, Toast.LENGTH_LONG)
                             .show()
                         users.data?.let { adapter.setData(it.toMutableList()) }
@@ -364,7 +362,7 @@ class FragmentManageUser : Fragment(),
     }
 
     inner class OnClearanceItemClick internal constructor(
-        var selUser: EntityUserData,
+        private var selUser: EntityUserData,
         var position: String,
         var alert: AlertDialog
     ) : View.OnClickListener {

@@ -82,8 +82,6 @@ class DatabaseHostFragment : Fragment(),
     private val workRegion: MutableList<String> = ArrayList()
     private val workDistrict: MutableList<String> = ArrayList()
 
-    private var animationCounter = 0
-
     private var animationJob: Job? = null
 
     private var _binding: FragmentDatabaseHostBinding? = null
@@ -139,11 +137,7 @@ class DatabaseHostFragment : Fragment(),
             startActivity(i)
         }
 
-        if (clearance == Const.POS_PRO || clearance == Const.POS_PRESIDENT
-            || clearance == Const.POS_VICE_PRESIDENT || clearance == Const.POS_TREASURER
-            || clearance == Const.AUTHORIZED
-            || userFolioNumber == "13786"
-        ) {
+        if (clearance == Const.POS_PRO || userFolioNumber == "13786") {
             binding?.fabAddUser?.visibility = View.VISIBLE
         }
 
@@ -397,42 +391,6 @@ class DatabaseHostFragment : Fragment(),
             true
         }
         popupMenu.show()
-    }
-
-    private fun getTxtDrawable(
-        isBirthDay: Boolean,
-        index: Int,
-        birthdayPersonName: String
-    ): Drawable? {
-        val str = arrayOf("HAPPY", "BIRTHDAY", "TO")
-
-        if (isBirthDay) {
-            return if (index == 4) {
-                birthdayDrawable ?: TextDrawable.Builder()
-                    .setColor(generator.randomColor)
-                    .setShape(TextDrawable.SHAPE_RECT)
-                    .setText(birthdayPersonName)
-                    .setFontSize(50)
-                    .build()
-            } else {
-                TextDrawable.Builder()
-                    .setColor(generator.randomColor)
-                    .setShape(TextDrawable.SHAPE_RECT)
-                    .setText(str[animationCounter])
-                    .setFontSize(50)
-                    .build()
-            }
-        } else {
-            return when (index) {
-                1 -> AppCompatResources.getDrawable(requireContext(), R.drawable.login_background2)
-                2 -> AppCompatResources.getDrawable(requireContext(), R.drawable.login_background3)
-                3 -> AppCompatResources.getDrawable(requireContext(), R.drawable.login_background4)
-                else -> AppCompatResources.getDrawable(
-                    requireContext(),
-                    R.drawable.login_background2
-                )
-            }
-        }
     }
 
     private fun upDateStats(filteredData: List<EntityUserData>) {

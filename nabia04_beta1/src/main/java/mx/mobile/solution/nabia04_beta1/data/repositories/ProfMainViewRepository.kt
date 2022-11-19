@@ -43,10 +43,6 @@ class ProfMainViewRepository @Inject constructor(
         return dao.getQuestion(folio)
     }
 
-    fun insertQuestion(question: EntityQuestion) {
-        dao.insert(question)
-    }
-
     private fun getEntity(list: List<Question>): List<EntityQuestion> {
         val entityQuestionList: MutableList<EntityQuestion> =
             ArrayList()
@@ -134,16 +130,13 @@ class ProfMainViewRepository @Inject constructor(
 
     private fun shouldFetch(data: List<EntityQuestion>): Boolean {
         if (RateLimiter.shouldFetch("Questions", 12, TimeUnit.HOURS)) {
-            Log.i("TAG", "Time limit reached, ShouldFetch Questions")
             return true
         }
 
         if (data.isEmpty()) {
-            Log.i("TAG", "Data is empty, ShouldFetch Questions")
             return true
         }
 
-        Log.i("TAG", "Don't fetch new Questions")
         return false
     }
 

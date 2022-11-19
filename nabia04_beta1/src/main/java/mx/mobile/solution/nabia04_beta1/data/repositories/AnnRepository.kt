@@ -15,7 +15,6 @@ import solutions.mobile.mx.malcolm1234xyz.com.mainEndpoint.model.Announcement
 import java.io.IOException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 import javax.net.ssl.SSLHandshakeException
@@ -66,41 +65,7 @@ class AnnRepository @Inject constructor(
     private fun refresh(): Response<List<EntityAnnouncement>> {
         val erMsg: String
         try {
-            val backendResponse = endpoint.noticeBoardData.execute()
-            if (backendResponse.status == Status.SUCCESS.toString()) {
-                val allAnnouncements = getAnnDataObjects(backendResponse.data).toList()
-                dao.insertAnnouncement(allAnnouncements)
-                RateLimiter.reset("Announcement")
-                alarmManager.scheduleEventNotification(allAnnouncements)
-                return Response.success(allAnnouncements)
-            } else {
-                return Response.error(backendResponse.message, null)
-            }
-
-        } catch (ex: IOException) {
-            erMsg = if (ex is SocketTimeoutException ||
-                ex is SSLHandshakeException ||
-                ex is UnknownHostException
-            ) {
-                "Cause: NO INTERNET CONNECTION"
-            } else {
-                ex.localizedMessage ?: ""
-            }
-            ex.printStackTrace()
-        }
-        return Response.error(erMsg, null)
-    }
-
-    private fun fetch(): Response<List<EntityAnnouncement>> {
-        val erMsg: String
-
-        val annList = dao.annList
-
-        if (!shouldFetch(annList)) {
-            return Response.success(annList)
-        }
-
-        try {
+            Log.i("TAG", "Refreshing announcement")
             val backendResponse = endpoint.noticeBoardData.execute()
             return if (backendResponse.status == Status.SUCCESS.toString()) {
                 val allAnnouncements = getAnnDataObjects(backendResponse.data).toList()
@@ -123,7 +88,20 @@ class AnnRepository @Inject constructor(
             }
             ex.printStackTrace()
         }
-        return Response.error(erMsg, annList)
+        return Response.error(erMsg, null)
+    }
+
+    private fun fetch(): Response<List<EntityAnnouncement>> {
+
+        Log.i("TAG", "Getting announcement from DB")
+
+        val annList = dao.annList
+
+        if (annList.isNotEmpty()) {
+            return Response.success(annList)
+        }
+
+        return Response.error("Noticeboard is empty", annList)
     }
 
     private fun getAnnDataObjects(list: List<Announcement>): MutableList<EntityAnnouncement> {
@@ -152,21 +130,6 @@ class AnnRepository @Inject constructor(
 
     suspend fun delete(announcement: EntityAnnouncement): Int {
         return dao.delete(announcement)
-    }
-
-    private fun shouldFetch(data: List<EntityAnnouncement>): Boolean {
-        if (RateLimiter.shouldFetch("Announcement", 12, TimeUnit.HOURS)) {
-            Log.i("TAG", "Time limit reached, ShouldFetch Announcement data")
-            return true
-        }
-
-        if (data.isEmpty()) {
-            Log.i("TAG", "Data is empty, ShouldFetch Announcement data")
-            return true
-        }
-
-        Log.i("TAG", "Don't fetch new Announcement data")
-        return false
     }
 
 }

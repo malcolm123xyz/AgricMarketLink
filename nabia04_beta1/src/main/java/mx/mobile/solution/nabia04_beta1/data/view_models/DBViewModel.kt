@@ -86,7 +86,7 @@ class DBViewModel @Inject constructor(var repository: DBRepository) : ViewModel(
         biography: String,
         selectedFolio: String
     ): Response<List<EntityUserData>> {
-        return repository.setBiography(biography, selectedFolio);
+        return repository.setBiography(biography, selectedFolio)
     }
 
     suspend fun sendTribute(

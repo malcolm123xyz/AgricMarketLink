@@ -12,16 +12,12 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_payment_update.*
 import kotlinx.coroutines.launch
 import mx.mobile.solution.nabia04_beta1.R
-import mx.mobile.solution.nabia04_beta1.data.view_models.DuesViewModel
-import mx.mobile.solution.nabia04_beta1.data.view_models.NetworkViewModel
 import mx.mobile.solution.nabia04_beta1.databinding.FragmentPaymentUpdateBinding
 import mx.mobile.solution.nabia04_beta1.utilities.Const
 import mx.mobile.solution.nabia04_beta1.utilities.ExcelHelper
@@ -32,10 +28,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class FragmentPaymentUpdate : Fragment() {
-
-    private val networkViewModel by viewModels<NetworkViewModel>()
-
-    private val viewModel by activityViewModels<DuesViewModel>()
 
     @Inject
     lateinit var excelHelper: ExcelHelper
@@ -63,9 +55,9 @@ class FragmentPaymentUpdate : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.spinner?.adapter =
+        binding.spinner.adapter =
             ArrayAdapter(requireContext(), R.layout.simple_spinner_item, excelHelper.names)
-        binding.spinner?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 adapterView: AdapterView<*>?,
                 view: View?,
@@ -78,19 +70,19 @@ class FragmentPaymentUpdate : Fragment() {
                     folio = member.folio
                     Log.i("TAG", "FOLIO: $folio")
                     name = member.name
-                    binding.holder?.visibility = View.GONE
+                    binding.holder.visibility = View.GONE
                 } else {
-                    binding.holder?.visibility = View.VISIBLE
+                    binding.holder.visibility = View.VISIBLE
                 }
             }
 
             override fun onNothingSelected(adapterView: AdapterView<*>?) {}
         }
-        binding.update?.setOnClickListener {
-            amount = binding.amountEdit?.text.toString()
+        binding.update.setOnClickListener {
+            amount = binding.amountEdit.text.toString()
             if (spinnerPos < 1) {
-                folio = binding.folioEdit?.text.toString()
-                name = binding.nameEdit?.text.toString()
+                folio = binding.folioEdit.text.toString()
+                name = binding.nameEdit.text.toString()
             }
 
             if (folio.isEmpty()) {
@@ -231,15 +223,6 @@ class FragmentPaymentUpdate : Fragment() {
 //            }.setNegativeButton("CANCEL") { dialog: DialogInterface, _: Int -> dialog.dismiss() }
 //            .show()
 //    }
-
-    private fun showExelFileNotExistDial() {
-        AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
-            .setTitle("ERROR")
-            .setMessage("The excel file does not exist. Make sure it is created first")
-            .setPositiveButton("OK") { dialog: DialogInterface, _: Int ->
-                dialog.dismiss()
-            }.show()
-    }
 
     private fun showDialog(t: String, s: String) {
         AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)

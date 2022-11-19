@@ -403,17 +403,14 @@ class DBRepository @Inject constructor(
     }
 
     private fun shouldFetch(data: List<EntityUserData>): Boolean {
-        if (RateLimiter.shouldFetch("User_data", 12, TimeUnit.HOURS)) {
-            Log.i("TAG", "Time limit reached, ShouldFetch User_data data")
+        if (RateLimiter.shouldFetch("User_data", 1, TimeUnit.DAYS)) {
             return true
         }
 
         if (data.isEmpty()) {
-            Log.i("TAG", "Data is empty, ShouldFetch User_data data")
             return true
         }
 
-        Log.i("TAG", "Don't fetch new User_data data")
         return false
     }
 

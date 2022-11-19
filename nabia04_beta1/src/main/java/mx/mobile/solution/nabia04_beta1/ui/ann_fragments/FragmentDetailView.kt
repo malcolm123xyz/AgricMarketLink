@@ -53,7 +53,7 @@ class FragmentDetailView : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentAnnDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -73,13 +73,13 @@ class FragmentDetailView : Fragment() {
             announcement = viewModel.getAnn(annId)!!
             showAnnouncement()
         }
-        binding.fabShare?.setOnClickListener { v: View? -> doShare() }
+        binding.fabShare.setOnClickListener { v: View? -> doShare() }
     }
 
     private fun showAnnouncement() {
-        binding.heading?.text = announcement.heading
-        binding.annBody?.text = announcement.message
-        binding.date?.text = getDate(announcement.id)
+        binding.heading.text = announcement.heading
+        binding.annBody.text = announcement.message
+        binding.date.text = getDate(announcement.id)
         Linkify.addLinks(binding.annBody, Linkify.PHONE_NUMBERS or Linkify.WEB_URLS)
 
         loadImage(announcement.imageUri)
@@ -87,10 +87,10 @@ class FragmentDetailView : Fragment() {
         val eventDate = announcement.eventDate
         if (announcement.annType > 0) {
             val strEventDate = fd.format(eventDate)
-            binding.eventDate?.text = String.format("DATE: %s", strEventDate)
-            binding.eventVenue?.text = java.lang.String.format("VENUE: %s", announcement.venue)
-            binding.eventDate?.visibility = View.VISIBLE
-            binding.eventVenue?.visibility = View.VISIBLE
+            binding.eventDate.text = String.format("DATE: %s", strEventDate)
+            binding.eventVenue.text = java.lang.String.format("VENUE: %s", announcement.venue)
+            binding.eventDate.visibility = View.VISIBLE
+            binding.eventVenue.visibility = View.VISIBLE
         }
         lifecycleScope.launch {
             viewModel.setAnnAsRead(announcement)
@@ -208,7 +208,7 @@ class FragmentDetailView : Fragment() {
                     isFirstResource: Boolean
                 ): Boolean {
                     Log.i("AnnDetails", "onLoadFailed")
-                    binding.annImage?.visibility = View.GONE
+                    binding.annImage.visibility = View.GONE
                     return false
                 }
 
@@ -218,7 +218,7 @@ class FragmentDetailView : Fragment() {
                     isFirstResource: Boolean
                 ): Boolean {
                     Log.i("AnnDetails", "onResourceReady")
-                    binding.annImage?.visibility = View.VISIBLE
+                    binding.annImage.visibility = View.VISIBLE
                     return false
                 }
             }).into(binding.annImage)

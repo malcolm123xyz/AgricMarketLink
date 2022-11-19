@@ -107,7 +107,7 @@ class FragmentSchoolInfo : Fragment() {
         }
     }
 
-    fun onNext() {
+    private fun onNext() {
 
         updateObj?.className = clsass_spinner.selectedItem.toString()
         updateObj?.courseStudied = course_spinner.selectedItem.toString()

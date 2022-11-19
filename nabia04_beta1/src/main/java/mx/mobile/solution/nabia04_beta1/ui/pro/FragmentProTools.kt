@@ -35,16 +35,16 @@ class FragmentProTools : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.sendAnn?.setOnClickListener {
+        binding.sendAnn.setOnClickListener {
             val intent = Intent(requireActivity(), ActivitySendAnnouncement::class.java)
             startActivity(intent)
         }
-        binding.addNewMember?.setOnClickListener {
+        binding.addNewMember.setOnClickListener {
             val intent = Intent(requireActivity(), ActivityUpdateUserData::class.java)
             intent.putExtra("folio", "")
             startActivity(intent)
         }
-        binding.manageUsers?.setOnClickListener { findNavController().navigate(R.id.action_move_to_manage_users) }
+        binding.manageUsers.setOnClickListener { findNavController().navigate(R.id.action_move_to_manage_users) }
     }
 
     override fun onDestroyView() {

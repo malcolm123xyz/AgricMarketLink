@@ -1,3 +1,5 @@
+@file:Suppress("KDocUnresolvedReference", "KDocUnresolvedReference")
+
 package mx.mobile.solution.nabia04_beta1.ui.database_fragments
 
 import androidx.fragment.app.Fragment

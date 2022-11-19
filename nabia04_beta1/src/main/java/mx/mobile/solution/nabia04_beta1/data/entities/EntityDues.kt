@@ -1,3 +1,5 @@
+@file:Suppress("ArrayInDataClass")
+
 package mx.mobile.solution.nabia04_beta1.data.entities
 
 import androidx.room.Entity
@@ -19,5 +21,5 @@ data class EntityDues(
     @get:TypeConverters(DataConverter::class)
     @set:TypeConverters(DataConverter::class)
     @TypeConverters(DataConverter::class)
-    var payments: Array<String> = arrayOf<String>()
+    var payments: Array<String> = arrayOf()
 )

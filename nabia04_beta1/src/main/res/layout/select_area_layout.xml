@@ -8,6 +8,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/padding_10"
+        android:layout_gravity="center_horizontal"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:text="Ask a professional question!" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
         android:layout_marginStart="15dp"
         android:textSize="17sp"
         android:textStyle="bold"
@@ -67,12 +76,13 @@
         android:textStyle="bold"
         android:text="Anonymous" />
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="20dp"
-        android:text="Send" />
+        android:text="Send"
+        android:textColor="@color/black" />
 
 </LinearLayout>

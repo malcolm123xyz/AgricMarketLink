@@ -1,21 +1,14 @@
 package mx.mobile.solution.nabia04_beta1.workManager
 
-import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
 import android.util.Log
 import androidx.concurrent.futures.CallbackToFutureAdapter
-import androidx.core.app.NotificationCompat
-import androidx.preference.PreferenceManager
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.*
 import mx.mobile.solution.nabia04_beta1.App
-import mx.mobile.solution.nabia04_beta1.R
 import mx.mobile.solution.nabia04_beta1.data.entities.FcmToken
-import mx.mobile.solution.nabia04_beta1.ui.activities.MainActivity
 import mx.mobile.solution.nabia04_beta1.utilities.Const
 import mx.mobile.solution.nabia04_beta1.utilities.RateLimiter
 import java.io.File
@@ -27,14 +20,10 @@ import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 class ExcelDownloadWorker(val appContext: Context, workerParams: WorkerParameters) :
     ListenableWorker(appContext, workerParams) {
-
-    private val tag = "ExcelDownloadWorker"
-
-    private var sharedP: SharedPreferences =
-        PreferenceManager.getDefaultSharedPreferences(appContext)
 
     private val fd = SimpleDateFormat("EEE, d MMM yyyy hh:mm", Locale.US)
 
@@ -69,16 +58,13 @@ class ExcelDownloadWorker(val appContext: Context, workerParams: WorkerParameter
 
     private fun shouldFetch(excelFile: File?): Boolean {
         if (RateLimiter.shouldFetch("excelFile", 1, TimeUnit.MINUTES)) {
-            Log.i("TAG", "Time limit reached, ShouldFetch Excel doc")
             return true
         }
 
         if (excelFile == null) {
-            Log.i("TAG", "Excel file is null, ShouldFetch Excel doc")
             return true
         }
 
-        Log.i("TAG", "Don't fetch Excel doc")
         return false
     }
 
@@ -93,7 +79,7 @@ class ExcelDownloadWorker(val appContext: Context, workerParams: WorkerParameter
     }
 
     private fun downloader(callback: MyCallback) {
-        var urlConnection: HttpURLConnection?
+        val urlConnection: HttpURLConnection?
         try {
             val url = URL(Const.EXCEL_URL)
             urlConnection = url.openConnection() as HttpURLConnection
@@ -119,11 +105,10 @@ class ExcelDownloadWorker(val appContext: Context, workerParams: WorkerParameter
                 downloadedSize += bufferLength
                 Log.e(
                     "Progress:",
-                    "downloadedSize:" + Math.abs(downloadedSize * 100 / totalSize)
+                    "downloadedSize:" + abs(downloadedSize * 100 / totalSize)
                 )
             }
             outPut.close()
-            showNotification(System.currentTimeMillis(), "Excel downloaded")
             callback.onSuccess()
         } catch (e: IOException) {
             e.printStackTrace()
@@ -131,31 +116,5 @@ class ExcelDownloadWorker(val appContext: Context, workerParams: WorkerParameter
             callback.onFailure(e)
         }
     }
-
-    private fun showNotification(time: Long, content: String) {
-        val notificationManager = (appContext.getSystemService(Context.NOTIFICATION_SERVICE)
-                as NotificationManager?)
-
-        val builder: NotificationCompat.Builder =
-            NotificationCompat.Builder(applicationContext, Const.TOKEN_REFRESH_NOTIFY_CHANNEL)
-
-        val intent1 = Intent(applicationContext, MainActivity::class.java)
-        intent1.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-        builder.setSmallIcon(R.drawable.logo)
-        builder.setContentTitle("Excel download")
-        builder.setContentText("$content (${fd.format(Date(time))})")
-        builder.priority = NotificationCompat.PRIORITY_DEFAULT
-        builder.setAutoCancel(true)
-        builder.setVibrate(longArrayOf(100, 100, 100, 100, 100))
-        notificationManager?.notify(index, builder.build())
-    }
-
-    private val index: Int
-        get() {
-            var curVal = sharedP.getInt("Int_Count", 0)
-            curVal++
-            sharedP.edit().putInt("Int_Count", curVal).apply()
-            return curVal
-        }
 
 }

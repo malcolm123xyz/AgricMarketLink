@@ -60,34 +60,4 @@ class App : Application() {
         }
     }
 
-    private fun createAlarmNotChannel() {
-        val notificationManager =
-            (this.getSystemService(Context.NOTIFICATION_SERVICE)
-                    as NotificationManager?)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                Const.EVENT_CHANNEL_ID, "Event Alarm Notification",
-                NotificationManager.IMPORTANCE_HIGH
-            )
-
-            notificationManager?.createNotificationChannel(channel)
-        }
-    }
-
-    private fun createTokenRefreshNotChannel() {
-        val notificationManager =
-            (this.getSystemService(Context.NOTIFICATION_SERVICE)
-                    as NotificationManager?)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                Const.TOKEN_REFRESH_NOTIFY_CHANNEL, "Token Refreshment Notification",
-                NotificationManager.IMPORTANCE_HIGH
-            )
-
-            notificationManager?.createNotificationChannel(channel)
-        }
-    }
-
 }

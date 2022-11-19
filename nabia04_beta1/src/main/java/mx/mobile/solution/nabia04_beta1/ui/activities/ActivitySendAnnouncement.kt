@@ -323,6 +323,5 @@ class ActivitySendAnnouncement : AppCompatActivity() {
 
     companion object {
         private const val MY_PERMISSIONS_REQUEST_EXTERNAL_STORAGE = 87
-        private const val TAG = "ActivitySendAnn"
     }
 }

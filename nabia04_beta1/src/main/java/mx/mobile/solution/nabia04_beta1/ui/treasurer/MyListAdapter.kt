@@ -11,20 +11,17 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import mx.mobile.solution.nabia04_beta1.R
 import mx.mobile.solution.nabia04_beta1.utilities.GlideApp
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 class MyListAdapter @Inject constructor(private val context: Context) :
     ListAdapter<Map<String, String>, MyListAdapter.MyViewHolder>(ContDiffCallback()) {
-    private val fd = SimpleDateFormat("EEE, d MMM yyyy hh:mm", Locale.US)
 
     inner class MyViewHolder(val parent: View) : RecyclerView.ViewHolder(parent) {
 
         val name: TextView = itemView.findViewById(R.id.name)
-        private val totalPayment: TextView = itemView.findViewById<TextView?>(R.id.payment)
-        val date: TextView = itemView.findViewById<TextView?>(R.id.date)
-        val userIcon: ImageView = itemView.findViewById<android.widget.ImageView?>(R.id.userIcon)
+        private val totalPayment: TextView = itemView.findViewById(R.id.payment)
+        val date: TextView = itemView.findViewById(R.id.date)
+        private val userIcon: ImageView = itemView.findViewById(R.id.userIcon)
 
         fun bind(map: Map<String, String>, i: Int) {
             name.text = map["name"]
@@ -50,10 +47,6 @@ class MyListAdapter @Inject constructor(private val context: Context) :
         val flower = getItem(position)
         holder.bind(flower, position)
 
-    }
-
-    private fun getDate(l: Long): String {
-        return fd.format(l)
     }
 
     private class ContDiffCallback : DiffUtil.ItemCallback<Map<String, String>>() {

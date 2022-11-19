@@ -6,7 +6,7 @@ derived_file_type:
 threadsafe: True
 auto_id_policy: default
 beta_settings:
-  'source_reference': 'https://github.com/malcolm123xyz/Nabia04.git#afe9becbd2e49e8ff6d96e8b7ef8d0f870ba89a2'
+  'source_reference': 'https://github.com/malcolm123xyz/Nabia04.git#bf5a5c1ddeca4d030f200a5c1bf33364c0ee02f2'
 api_version: 'user_defined'
 handlers:
 - url: (/.*)

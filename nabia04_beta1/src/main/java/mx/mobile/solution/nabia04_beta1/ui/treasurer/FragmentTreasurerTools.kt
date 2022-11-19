@@ -56,20 +56,14 @@ class FragmentTreasurerTools : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.viewDuesPayment?.setOnClickListener { findNavController().navigate(R.id.action_move_to_dues_payment_view) }
-        binding.sendContRequest?.setOnClickListener { findNavController().navigate(R.id.action_move_to_cont_request) }
-        binding.updateCont?.setOnClickListener {
+        binding.viewDuesPayment.setOnClickListener { findNavController().navigate(R.id.action_move_to_dues_payment_view) }
+        binding.sendContRequest.setOnClickListener { findNavController().navigate(R.id.action_move_to_cont_request) }
+        binding.updateCont.setOnClickListener {
             val bundle = bundleOf("fragment" to "FragmentTreasurerTools")
             findNavController().navigate(R.id.action_move_cont_update, bundle)
         }
-        binding.manageBackups?.setOnClickListener { findNavController().navigate(R.id.action_move_manage_backups) }
-        binding.uploadMasterExcelSheet?.setOnClickListener {
-            if (checkPermission()) {
-                sendExcelDocToCloud()
-            } else {
-                requestPermission()
-            }
-        }
+        binding.manageBackups.setOnClickListener { findNavController().navigate(R.id.action_move_manage_backups) }
+
     }
 
     private fun getExcelFile(): File? {

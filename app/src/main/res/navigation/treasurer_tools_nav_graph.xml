@@ -40,6 +40,12 @@
             app:destination="@id/manage_backups"
             app:enterAnim="@anim/nav_anim_enter_foward"
             app:exitAnim="@anim/nav_anim_exit_forward" />
+
+        <action
+            android:id="@+id/action_move_folio_update"
+            app:destination="@id/member_folio_update"
+            app:enterAnim="@anim/nav_anim_enter_foward"
+            app:exitAnim="@anim/nav_anim_exit_forward" />
     </fragment>
 
     <fragment
@@ -113,6 +119,21 @@
         android:name="mx.mobile.solution.nabia04.ui.treasurer.FragmentContributionRequest"
         android:label="NEW CONTRIBUTION"
         tools:layout="@layout/fragment_cont_request">
+
+        <action
+            android:id="@+id/action_move_back"
+            app:destination="@id/fragment_treasuer_tools"
+            app:popUpTo="@id/fragment_treasuer_tools"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/nav_anim_enter_back"
+            app:exitAnim="@anim/nav_anim_exit_back" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/member_folio_update"
+        android:name="mx.mobile.solution.nabia04.ui.treasurer.FragmentFolioUpdate"
+        android:label="FOLIO UPDATE"
+        tools:layout="@layout/fragment_folio_update">
 
         <action
             android:id="@+id/action_move_back"

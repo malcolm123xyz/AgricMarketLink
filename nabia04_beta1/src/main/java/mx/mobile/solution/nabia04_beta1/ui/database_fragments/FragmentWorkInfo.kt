@@ -128,9 +128,9 @@ class FragmentWorkInfo : Fragment() {
                 }
             }
 
-        binding.employmentStatusSpinner?.onItemSelectedListener = OnEmploymentStatusClickListener()
+        binding.employmentStatusSpinner.onItemSelectedListener = OnEmploymentStatusClickListener()
 
-        binding.employmentSectorSpinner?.onItemSelectedListener = OnEmploymentSectorClickListener()
+        binding.employmentSectorSpinner.onItemSelectedListener = OnEmploymentSectorClickListener()
 
         listenOnBackPressed()
     }
@@ -173,9 +173,9 @@ class FragmentWorkInfo : Fragment() {
     private inner class OnEmploymentStatusClickListener : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
             if (p2 == 1) {
-                binding.holder?.visibility = View.VISIBLE
+                binding.holder.visibility = View.VISIBLE
             } else {
-                binding.holder?.visibility = View.GONE
+                binding.holder.visibility = View.GONE
             }
         }
 
@@ -229,7 +229,7 @@ class FragmentWorkInfo : Fragment() {
     }
 
 
-    fun onNext() {
+    private fun onNext() {
         userData.employmentStatus = employment_status_spinner.selectedItem.toString()
         userData.employmentSector = employment_sector_spinner.selectedItem.toString()
         if (employment_sector_spinner.selectedItem.toString() == "Other") {

@@ -81,8 +81,8 @@ class FragmentQuestionDetails : Fragment() {
             Lifecycle.State.RESUMED
         )
 
-        binding.send?.setOnClickListener {
-            val reply = binding.message?.text.toString()
+        binding.send.setOnClickListener {
+            val reply = binding.message.text.toString()
             if (reply.isEmpty()) {
                 Toast.makeText(requireContext(), "Message cannot be empty", Toast.LENGTH_SHORT)
                     .show()
@@ -99,17 +99,17 @@ class FragmentQuestionDetails : Fragment() {
 
     private fun replySender(reply: String) {
         lifecycleScope.launch {
-            binding.pb?.visibility = View.VISIBLE
-            binding.send?.visibility = View.GONE
+            binding.pb.visibility = View.VISIBLE
+            binding.send.visibility = View.GONE
             val response = withContext(Dispatchers.IO) {
                 val user = userRepo.getUser(userFolioNumber)
                 sendReply(createReply(user, reply))
             }
-            binding.pb?.visibility = View.GONE
-            binding.send?.visibility = View.VISIBLE
+            binding.pb.visibility = View.GONE
+            binding.send.visibility = View.VISIBLE
             if (response.status == Status.SUCCESS.toString()) {
                 showQuestion()
-                binding.message?.setText("")
+                binding.message.setText("")
             } else {
                 AlertDialog.Builder(requireContext(), R.style.AppCompatAlertDialogStyle)
                     .setTitle("Failed")
@@ -137,8 +137,7 @@ class FragmentQuestionDetails : Fragment() {
         }
 
         override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-            val id = menuItem.itemId
-            return when (id) {
+            return when (menuItem.itemId) {
                 R.id.refresh -> {
                     lifecycleScope.launch {
                         val dial =
@@ -269,12 +268,12 @@ class FragmentQuestionDetails : Fragment() {
 
     private suspend fun showQuestion() {
         question = viewModel.repository.getQuestion(questionId)
-        binding.from?.text = question.from
-        binding.date?.text = question.time
-        binding.question?.text = question.question
-        binding.upVote?.text = question.upVote
-        binding.downVote?.text = question.downVote
-        binding.area?.text = question.area
+        binding.from.text = question.from
+        binding.date.text = question.time
+        binding.question.text = question.question
+        binding.upVote.text = question.upVote
+        binding.downVote.text = question.downVote
+        binding.area.text = question.area
 
         binding.question.let {
             if (it != null) {
@@ -282,7 +281,7 @@ class FragmentQuestionDetails : Fragment() {
             }
         }
 
-        binding.icon?.let {
+        binding.icon.let {
             GlideApp.with(requireContext())
                 .load(question.imageUrl)
                 .placeholder(R.drawable.listitem_image_holder)
@@ -293,7 +292,7 @@ class FragmentQuestionDetails : Fragment() {
 
         val replys = getReplyList(this.question.replyList)
 
-        binding.questionViewItem?.removeAllViews()
+        binding.questionViewItem.removeAllViews()
 
         if (!replys.isNullOrEmpty()) {
             for (reply in replys) {
@@ -340,7 +339,7 @@ class FragmentQuestionDetails : Fragment() {
                     copy(reply.reply)
                 }
 
-                binding.questionViewItem?.addView(v)
+                binding.questionViewItem.addView(v)
             }
         }
     }

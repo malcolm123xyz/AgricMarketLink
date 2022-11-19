@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit
  * Utility class that decides whether we should fetch some data or not.
  */
 
-class RateLimiter() {
+class RateLimiter {
     companion object {
         val sharedP: SharedPreferences =
             PreferenceManager.getDefaultSharedPreferences(applicationContext())

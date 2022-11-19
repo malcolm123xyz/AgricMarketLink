@@ -75,8 +75,8 @@ class NoticeBoardHostFragment : Fragment() {
             || clearance == Const.AUTHORIZED
             || userFolioNumber == "13786"
         ) {
-            binding.fabSendAnn?.visibility = View.VISIBLE
-            binding.fabSendAnn?.setOnClickListener {
+            binding.fabSendAnn.visibility = View.VISIBLE
+            binding.fabSendAnn.setOnClickListener {
                 val i = Intent(activity, ActivitySendAnnouncement::class.java)
                 startActivity(i)
             }

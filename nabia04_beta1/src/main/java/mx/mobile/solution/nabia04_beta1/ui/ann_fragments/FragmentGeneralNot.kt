@@ -1,6 +1,7 @@
 package mx.mobile.solution.nabia04_beta1.ui.ann_fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +10,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.include_error.*
+import kotlinx.android.synthetic.main.include_loading.*
 import mx.mobile.solution.nabia04_beta1.data.entities.EntityAnnouncement
 import mx.mobile.solution.nabia04_beta1.data.view_models.AnnViewModel
 import mx.mobile.solution.nabia04_beta1.databinding.FragmentListBinding
+import mx.mobile.solution.nabia04_beta1.utilities.RateLimiter
 import mx.mobile.solution.nabia04_beta1.utilities.Response
 import mx.mobile.solution.nabia04_beta1.utilities.Status
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -41,30 +46,83 @@ class FragmentGeneralNot : Fragment() {
         binding.recyclerView.setHasFixedSize(true)
         binding.recyclerView.layoutManager = LinearLayoutManager(requireActivity())
         binding.recyclerView.adapter = adapter
+        showData()
 
-        setupObserver()
     }
 
-    private fun setupObserver() {
-
+    private fun showData() {
+        Log.i("TAG", "showData()...")
         viewModel.fetchAnn()
-            .observe(viewLifecycleOwner) { users: Response<List<EntityAnnouncement>> ->
-                when (users.status) {
+            .observe(viewLifecycleOwner) { response: Response<List<EntityAnnouncement>> ->
+                Log.i("TAG", "Data recieved in observer... Data: ${response}")
+                when (response.status) {
                     Status.SUCCESS -> {
-                        binding.pb?.visibility = View.GONE
-                        users.data?.let { renderList(it) }
+                        showLoading(false)
+                        showError(false, "")
+                        val announcements = response.data?.toMutableList()
+                        if (announcements != null) {
+                            announcements.sortWith { obj1: EntityAnnouncement, obj2: EntityAnnouncement ->
+                                obj2.id.compareTo(obj1.id)
+                            }
+                            renderList(announcements.toList())
+                        }
                     }
                     Status.LOADING -> {
-                        binding.pb?.visibility = View.VISIBLE
+                        showLoading(true)
+                        showError(false, "")
                     }
                     Status.ERROR -> {
-                        binding.pb?.visibility = View.GONE
-                        Toast.makeText(requireContext(), users.message, Toast.LENGTH_LONG).show()
-                        users.data?.let { renderList(it) }
+                        showLoading(false)
+
+                        Toast.makeText(
+                            requireContext(),
+                            response.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        if (adapter.currentList.isEmpty()) {
+                            showError(true, response.message)
+                        }
                     }
                     else -> {}
                 }
             }
+
+        Log.i("TAG", "Checking if should refresh announcements")
+        if (shouldFetch()) {
+            Log.i("TAG", "Yes, refresh")
+            viewModel.refreshDB()
+        } else {
+            Log.i("TAG", "Don't refresh")
+        }
+    }
+
+    private fun showError(isError: Boolean, errorMessage: String?) {
+        if (isError) {
+            ivError.visibility = View.VISIBLE
+            tvErrorMessage.visibility = View.VISIBLE
+            tvErrorMessage.text = errorMessage
+        } else {
+            ivError.visibility = View.GONE
+            tvErrorMessage.visibility = View.GONE
+        }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        if (isLoading) {
+            pbLoading.visibility = View.VISIBLE
+            tvLoadingMessage.visibility = View.VISIBLE
+        } else {
+            pbLoading.visibility = View.GONE
+            tvLoadingMessage.visibility = View.GONE
+        }
+    }
+
+    private fun shouldFetch(): Boolean {
+        if (RateLimiter.shouldFetch("Announcement", 1, TimeUnit.DAYS)) {
+            return true
+        }
+        return false
     }
 
     private fun renderList(list: List<EntityAnnouncement>) {

@@ -19,13 +19,6 @@ abstract class BackgroundTasks {
         startBackground()
     }
 
-    fun shutdown() {
-        executors.shutdown()
-    }
-
-    val isShutdown: Boolean
-        get() = executors.isShutdown
-
     abstract fun onPreExecute()
     abstract fun doInBackground()
     abstract fun onPostExecute()

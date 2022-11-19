@@ -65,7 +65,7 @@ class MyAlarmManager @Inject constructor(context: Context) {
         Log.i(TAG, "Events list size = ${annDataObject.size}")
         val numAlarms = 0
         for (eventItem in annDataObject) {
-            val alarmTime = eventItem.eventDate;
+            val alarmTime = eventItem.eventDate
             val currentTime = System.currentTimeMillis()
             if (alarmTime > currentTime) {
                 val alarmId = eventItem.id.toString().substring(9).toInt()
@@ -98,7 +98,7 @@ class MyAlarmManager @Inject constructor(context: Context) {
 
     fun scheduleBirthdayNotification(users: List<EntityUserData>) {
         for (user: EntityUserData in users) {
-            val alarmTime = user.birthDayAlarm;
+            val alarmTime = user.birthDayAlarm
             val currentTime = System.currentTimeMillis()
             if (alarmTime > currentTime) {
                 Log.i(TAG, "user name: " + user.fullName)
@@ -136,7 +136,7 @@ class MyAlarmManager @Inject constructor(context: Context) {
             Log.i(TAG, "Alarm canceled for : " + ann.heading)
             alarmManager.cancel(pendingIntent)
         } else {
-            Log.i(TAG, "Alarm not found for : " + alarmId)
+            Log.i(TAG, "Alarm not found for : $alarmId")
         }
     }
 

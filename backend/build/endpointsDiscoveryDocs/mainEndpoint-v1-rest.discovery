@@ -402,6 +402,36 @@
     "https://www.googleapis.com/auth/userinfo.email"
    ]
   },
+  "uploadUser": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.uploadUser",
+   "path": "uploadUser",
+   "request": {
+    "$ref": "LoginData",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "Response_String"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
+  "uploadUserList": {
+   "httpMethod": "POST",
+   "id": "mainEndpoint.uploadUserList",
+   "path": "uploadUserList",
+   "request": {
+    "$ref": "UsersListTP",
+    "parameterName": "resource"
+   },
+   "response": {
+    "$ref": "Response_String"
+   },
+   "scopes": [
+    "https://www.googleapis.com/auth/userinfo.email"
+   ]
+  },
   "userLogin": {
    "httpMethod": "POST",
    "id": "mainEndpoint.userLogin",
@@ -962,6 +992,18 @@
     },
     "msg": {
      "type": "string"
+    }
+   },
+   "type": "object"
+  },
+  "UsersListTP": {
+   "id": "UsersListTP",
+   "properties": {
+    "list": {
+     "items": {
+      "$ref": "DatabaseObject"
+     },
+     "type": "array"
     }
    },
    "type": "object"

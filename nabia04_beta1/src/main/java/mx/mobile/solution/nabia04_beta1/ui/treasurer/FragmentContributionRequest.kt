@@ -97,21 +97,21 @@ class FragmentContributionRequest : Fragment() {
         contData.momoName = ""
         contData.momoNum = ""
 
-        msgEdit = binding.messageEdit!!
+        msgEdit = binding.messageEdit
         msgEdit.setText("Contribution towards...")
-        momoNameEdit = binding.momoName!!
-        momoNumEdit = binding.phoneNumber!!
+        momoNameEdit = binding.momoName
+        momoNumEdit = binding.phoneNumber
 
-        userSpinner = binding.nameSpinner!!
-        reqTypeSpinner = binding.reqTypeSpinner!!
-        btnDeadline = binding.btnDeadline!!
-        tvDeadline = binding.tvDeadline!!
-        profilePic = binding.profilePic!!
+        userSpinner = binding.nameSpinner
+        reqTypeSpinner = binding.reqTypeSpinner
+        btnDeadline = binding.btnDeadline
+        tvDeadline = binding.tvDeadline
+        profilePic = binding.profilePic
 
         setSinners()
 
-        binding.send?.setOnClickListener { checkDataBeforeSend() }
-        binding.btnDeadline?.setOnClickListener {
+        binding.send.setOnClickListener { checkDataBeforeSend() }
+        binding.btnDeadline.setOnClickListener {
             MyAlarmManager(requireContext()).showDayMonthPicker(object : MyAlarmManager.CallBack {
                 override fun done(alarmTime: Long) {
                     val date = fd.format(Date(alarmTime))
@@ -121,7 +121,7 @@ class FragmentContributionRequest : Fragment() {
             })
         }
 
-        binding.selImage?.setOnClickListener {
+        binding.selImage.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.READ_EXTERNAL_STORAGE
